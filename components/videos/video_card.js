@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Import the Ionicons
-import { useTheme } from '../../constants/theme-provider';
+import { useTheme } from '../elements/theme-provider';
 import colors from '../../constants/colors'; // Import colors
 
 // Placeholder image

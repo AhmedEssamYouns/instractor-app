@@ -1,67 +1,105 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { FontAwesome6 } from '@expo/vector-icons'; // Import FontAwesome6 for the "bars" icon
-import { TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
+import { TouchableOpacity, StyleSheet, StatusBar, ActivityIndicator, View } from 'react-native';
 import Tabs from './tabs'; // Import your Tabs component
-import ThemeSwitcherModal from '../components/elements/menu';
-import { useTheme } from '../constants/theme-provider';
+import SignInScreen from '../screens/auth/sign_in';
+import SignUpScreen from '../screens/auth/sign_up';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import colors from '../constants/colors';
+import { useTheme } from '../components/elements/theme-provider';
 
 const Stack = createStackNavigator();
 
 export default function StackScreen() {
-    const { theme, setTheme } = useTheme(); // Access theme and setTheme from context
-    const [modalVisible, setModalVisible] = React.useState(false); // State to control modal visibility
+    const [user, setUser] = useState(null); // State to store the authenticated user
+    const [loading, setLoading] = useState(true); // Add a loading state for authentication check
+    const [modalVisible, setModalVisible] = useState(false); // State to control modal visibility
+    const { theme } = useTheme(); // Get the theme from context
+    const currentColors = colors[theme]; // Get colors based on the theme
+    useEffect(() => {
+        const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser); // Update user state based on authentication status
+            setLoading(false); // Authentication check is complete, stop loading
+        });
+
+        // Clean up subscription on unmount
+        return () => unsubscribe();
+    }, []);
 
     const toggleModal = () => {
         setModalVisible(!modalVisible);
     };
 
-    const handleChangeTheme = (newTheme) => {
-        setTheme(newTheme);
-    };
+    // Show loading indicator while checking authentication state
+    if (loading) {
+        return (
+            <View style={[styles.loadingContainer, { backgroundColor: currentColors.background }]}>
+                <ActivityIndicator size="large" color={currentColors.text} />
+            </View>
+        );
+    }
 
     return (
         <NavigationContainer>
             <StatusBar barStyle="light-content" backgroundColor="#121212" />
-            <Stack.Navigator
-                screenOptions={{
-                    headerStyle: {
-                        backgroundColor: colors[theme].background,
-                        elevation: 0
-                    },
-                    headerTitleStyle: {
-                        fontFamily: 'bold',
-                        color: colors[theme].text,
-                    },
-                    headerRight: () => (
-                        <TouchableOpacity onPress={toggleModal}>
-                            <FontAwesome6
-                                name="bars-staggered"
-                                size={25}
-                                color={colors[theme].text}
-                                style={styles.headerRight}
-                            />
-                        </TouchableOpacity>
-                    ),
-                }}
-            >
-                <Stack.Screen name="videos" component={Tabs} />
+            <Stack.Navigator>
+                {user ? (
+                    <>
+                        <Stack.Screen
+                            name="tabs"
+                            component={Tabs}
+                            options={{
+                                headerShown: false,
+                                headerRight: () => (
+                                    <TouchableOpacity
+                                        style={styles.headerButton}
+                                        onPress={toggleModal}
+                                    >
+                                        <FontAwesome6 name="bars" size={24} color="black" />
+                                    </TouchableOpacity>
+                                ),
+                            }}
+                        />
+                        <Stack.Screen
+                            name="SignUp"
+                            component={SignUpScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="SignIn"
+                            component={SignInScreen}
+                            options={{ headerShown: false }}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <Stack.Screen
+                            name="SignIn"
+                            component={SignInScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="SignUp"
+                            component={SignUpScreen}
+                            options={{ headerShown: false }}
+                        />
+                    </>
+                )}
             </Stack.Navigator>
-
-            <ThemeSwitcherModal
-                visible={modalVisible}
-                onClose={toggleModal}
-                onChangeTheme={handleChangeTheme}
-                currentTheme={theme}
-            />
         </NavigationContainer>
     );
 }
 
 const styles = StyleSheet.create({
-    headerRight: {
+    headerButton: {
         marginRight: 15,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

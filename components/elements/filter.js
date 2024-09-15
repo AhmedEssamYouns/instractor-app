@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, TextInput, StyleSheet, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useTheme } from '../../constants/theme-provider';
+import { useTheme } from './theme-provider';
 import colors from '../../constants/colors';
 
 const FilterBar = ({ data, setData }) => {
     const { theme } = useTheme(); // Get the theme from context
     const currentColors = colors[theme]; // Get colors based on the theme
-
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearchInput, setShowSearchInput] = useState(false);
     const [showPointsFilter, setShowPointsFilter] = useState(false);

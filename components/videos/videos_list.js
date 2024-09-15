@@ -1,7 +1,7 @@
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import VideoCard from './video_card';
-import { useTheme } from '../../constants/theme-provider';
+import { useTheme } from '../elements/theme-provider';
 import colors from '../../constants/colors';
 
 const VideoList = ({ videos, header }) => {

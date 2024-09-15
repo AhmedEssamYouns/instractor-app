@@ -1,12 +1,15 @@
 import React from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Pressable, AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from '../../constants/theme-provider';
+import { useTheme } from './theme-provider';
 import colors from '../../constants/colors';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
-
+import { Ionicons } from '@expo/vector-icons';
+import { useLanguage } from './language-provider';
+import { signOut } from '../../firebase/auth';
+import { FIREBASE_AUTH } from '../../firebase/config';
 const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) => {
   const { theme } = useTheme(); // Access the current theme
+  const { translations, changeLanguage, language } = useLanguage(); // Access language context
 
   const handleOptionPress = async (option) => {
     switch (option) {
@@ -14,7 +17,6 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
         // Handle profile navigation or action
         break;
       case 'mode':
-        // Toggle theme mode
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         try {
           await AsyncStorage.setItem('appTheme', newTheme); // Save the theme in AsyncStorage
@@ -24,19 +26,22 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
         }
         break;
       case 'logout':
-        // Handle logout action
+        signOut()
+        break;
+      case 'language':
+        const newLanguage = language === 'en' ? 'ar' : 'en';
+        changeLanguage(newLanguage);
         break;
       default:
         break;
     }
   };
 
-  // Determine icon and text for the theme change option
   const getChangeModeOptions = () => {
     if (currentTheme === 'light') {
-      return { icon: 'moon', text: 'Change to Dark' };
+      return { icon: 'moon', text: translations.switchToDark };
     } else {
-      return { icon: 'sunny', text: 'Change to Light' };
+      return { icon: 'sunny', text: translations.switchToLight };
     }
   };
 
@@ -51,7 +56,7 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
             onPress={() => handleOptionPress('profile')}
           >
             <Ionicons name="person" size={20} color={colors[theme].text} style={styles.icon} />
-            <Text style={[styles.optionText, { color: colors[theme].text }]}>Profile</Text>
+            <Text style={[styles.optionText, { color: colors[theme].text }]}>{translations.profile}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.option, { backgroundColor: colors[theme].button }]}
@@ -60,12 +65,25 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
             <Ionicons name={icon} size={20} color={colors[theme].text} style={styles.icon} />
             <Text style={[styles.optionText, { color: colors[theme].text }]}>{text}</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.option, {
+              backgroundColor: colors[theme].button,
+              borderBottomWidth: 1, borderColor: colors[theme].borderColor
+            }]}
+            onPress={() => handleOptionPress('language')}
+          >
+            <Ionicons name="globe" size={20} color={colors[theme].text} style={styles.icon} />
+            <Text style={[styles.optionText, { color: colors[theme].text }]}>
+              {language === 'en' ? translations.switchToArabic : translations.switchToEnglish}
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={[styles.option, { backgroundColor: colors[theme].button }]}
             onPress={() => handleOptionPress('logout')}
           >
             <Ionicons name="log-out" size={20} color={colors[theme].text} style={styles.icon} />
-            <Text style={[styles.optionText, { color: colors[theme].text }]}>Logout</Text>
+            <Text style={[styles.optionText, { color: colors[theme].text }]}>{translations.logout}</Text>
           </TouchableOpacity>
         </View>
       </Pressable>
@@ -76,24 +94,20 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    justifyContent: 'flex-start', // Align the modal to the top
-    alignItems: 'flex-end', // Align to the right
-    paddingTop:50,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingTop: 50,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    padding: 20, // Add some padding to ensure the content doesn't touch the edges
+    padding: 20,
   },
   modalContent: {
-    paddingTop:20,
+    paddingTop: 20,
     borderRadius: 10,
     paddingHorizontal: 20,
-    alignItems: 'flex-start', // Align items to the start (left)
-  },
-  modalTitle: {
-    padding: 20, 
-    fontSize: 18,
+    alignItems: 'flex-start',
   },
   option: {
-    paddingBottom:10,
+    paddingBottom: 10,
     borderRadius: 5,
     marginVertical: 5,
     flexDirection: 'row',
