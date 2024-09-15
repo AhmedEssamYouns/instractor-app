@@ -1,20 +1,49 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+
+import Tabs from './Routes/tabs';
+import StackScreen from './Routes/stack';
+import { ThemeProvider } from './constants/theme-provider';
+
+SplashScreen.preventAutoHideAsync();
+
+const fetchFonts = () => {
+  return Font.loadAsync({
+    'light': require('./assets/fonts/SUSE-Light.ttf'),
+    'bold': require('./assets/fonts/SUSE-Bold.ttf'),
+
+  });
+};
 
 export default function App() {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+  useEffect(() => {
+    const prepare = async () => {
+      try {
+        await fetchFonts();
+      } catch (e) {
+      } finally {
+        setFontsLoaded(true);
+        SplashScreen.hideAsync();
+      }
+    };
+
+    prepare();
+
+    return () => {
+    };
+  }, []);
+
+  if (!fontsLoaded) {
+    return null; // Optionally, return a loading indicator or placeholder
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ThemeProvider>
+      <StackScreen />
+    </ThemeProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
