@@ -43,6 +43,7 @@ const SignUpScreen = () => {
       <CustomText style={styles.title}>{translation.signUp}</CustomText>
 
       <TextInput
+      maxLength={25}
         placeholder={translation.displayName} // Display name field
         placeholderTextColor={currentColors.text}
         value={displayName}

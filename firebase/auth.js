@@ -37,7 +37,6 @@ const getFriendlyErrorMessage = (errorCode, language = 'en') => {
 };
 
 export default getFriendlyErrorMessage;
-
 export const signUp = async (email, password, confirmPassword, displayName, language = 'en') => {
   const translation = translations[language] || translations.en; // Fallback to English if translation is not available
   
@@ -47,25 +46,34 @@ export const signUp = async (email, password, confirmPassword, displayName, lang
       throw new Error(translation.allFieldsRequired || 'All fields are required.');
     }
 
+    // Trim the inputs to remove any extra whitespace
+    const trimmedDisplayName = displayName.trim();
+    const trimmedPassword = password.trim();
+
+    // Check if the displayName or password are just spaces
+    if (trimmedDisplayName.length === 0 || trimmedPassword.length === 0) {
+      throw new Error(translation.allFieldsRequired || 'All fields are required.');
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       throw new Error(translation.invalidEmail || 'Invalid email address.');
     }
 
-    if (password.length < 6) {
+    if (trimmedPassword.length < 6) {
       throw new Error(translation.weakPassword || 'Password should be at least 6 characters long.');
     }
 
-    if (password !== confirmPassword) {
+    if (trimmedPassword !== confirmPassword.trim()) {
       throw new Error(translation.passwordsDoNotMatch || 'Passwords do not match.');
     }
 
     // Proceed with Firebase sign-up
-    const userCredential = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
+    const userCredential = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, trimmedPassword);
     const user = userCredential.user;
 
     // Update the user's profile with the display name
-    await updateProfile(user, { displayName });
+    await updateProfile(user, { displayName: trimmedDisplayName });
 
     return user;
   } catch (error) {
@@ -76,6 +84,7 @@ export const signUp = async (email, password, confirmPassword, displayName, lang
     throw error; // Rethrow non-Firebase errors
   }
 };
+
 
 // Sign-In function
 export const signIn = async (email, password, language) => {
