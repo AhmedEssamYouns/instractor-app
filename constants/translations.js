@@ -18,7 +18,7 @@ const translations = {
     signIn: 'Sign In',
     displayName: 'Name',
     signUp: 'Sign Up',
-    allFieldsRequired:'all Fields Required',
+    allFieldsRequired: 'All fields required',
     passwordsDoNotMatch: 'Passwords do not match',
     invalidEmail: 'Invalid email address',
     weakPassword: 'Password must be at least 6 characters long',
@@ -28,7 +28,23 @@ const translations = {
     wrongPassword: 'Incorrect password.',
     networkRequestFailed: 'Network error. Please check your connection and try again.',
     invalidCredential: 'Invalid credential.',
-    somethingWentWrong: 'Something went wrong. Please try again later.'
+    somethingWentWrong: 'Something went wrong. Please try again later.',
+    editProfilePicture: 'Edit Picture',
+    name: 'Name',
+    points: 'Points',
+    changePassword: 'Change Password',
+    forgotPassword: 'Forgot Password',
+    close: 'Close',
+    grades:'Grades',
+    quiz: 'Quiz',
+    missed: 'Missed',
+    attended: 'Attended',
+    currentPassword: 'Current Password',
+    newPassword: 'New Password',
+    submit: 'Submit',
+    passwordChanged:"password Changed",
+    resetEmailSent: "Password reset email sent successfully!"
+
   },
   ar: {
     home: 'الرئيسية',
@@ -44,7 +60,7 @@ const translations = {
     switchToDark: 'التبديل إلى الوضع الداكن',
     switchToArabic: 'التبديل إلى العربية',
     switchToEnglish: 'التبديل إلى الإنجليزية',
-    allFieldsRequired:'ادخل كل البيانات',
+    allFieldsRequired: 'ادخل كل البيانات',
     email: 'البريد الإلكتروني',
     password: 'كلمة المرور',
     confirmPassword: 'تأكيد كلمة المرور',
@@ -59,7 +75,23 @@ const translations = {
     wrongPassword: 'كلمة المرور غير صحيحة.',
     networkRequestFailed: 'خطأ في الشبكة. يرجى التحقق من اتصالك والمحاولة مرة أخرى.',
     invalidCredential: 'بيانات اعتماد غير صالحة.',
-    somethingWentWrong: 'حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقًا.'
+    somethingWentWrong: 'حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقًا.',
+    editProfilePicture: 'تعديل الصورة',
+    name: 'الاسم',
+    points: 'النقاط',
+    changePassword: 'تغيير كلمة المرور',
+    forgotPassword: 'نسيت كلمة المرور',
+    close: 'إغلاق',
+    grades:"الدرجات",
+    quiz: 'الاختبار',
+    attended: 'حضر',
+    missed: 'غاب',
+    currentPassword: 'كلمة المرور الحالية',
+    newPassword: 'كلمة المرور الجديدة',
+    submit: 'إرسال',
+    passwordChanged:'تم تغيير الرقم السري بنجاح',
+    resetEmailSent: "تم ارسال رساله للايميل الخاص بك"
+
   },
 };
 

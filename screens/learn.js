@@ -69,7 +69,7 @@ const LearnScreen = () => {
   const renderTabBar = (props) => (
     <TabBar
       {...props}
-      indicatorStyle={[styles.indicator, { backgroundColor: currentColors.iconColor }]}
+      indicatorStyle={[styles.indicator, { backgroundColor: currentColors.indicator }]}
       style={[styles.tabBar, { backgroundColor: currentColors.background }]}
       labelStyle={[styles.label, { color: currentColors.text, fontFamily: language === 'ar' ? 'ar' : 'bold' }]}
       activeColor={currentColors.iconFocus} // Active tab text color

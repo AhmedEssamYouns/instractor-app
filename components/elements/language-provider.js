@@ -27,7 +27,6 @@ export const LanguageProvider = ({ children }) => {
     setLanguage(lang);
     await AsyncStorage.setItem('appLanguage', lang);
 
-    // Determine RTL setting based on language
     const isRTL = lang === 'ar';
     I18nManager.forceRTL(isRTL);
     await AsyncStorage.setItem('isRTL', isRTL.toString());

@@ -25,7 +25,7 @@ const SignInScreen = ({ navigation }) => {
     setLoading(true); // Start loading
     setError(null); // Clear any previous errors
     try {
-      await signIn(email, password,language);
+      await signIn(email, password, language);
       setLoading(false); // Stop loading after sign-in
 
       // Use navigation.dispatch to reset the stack and navigate to the home screen
@@ -49,7 +49,7 @@ const SignInScreen = ({ navigation }) => {
   return (
     <View style={[styles.container, { backgroundColor: currentColors.background }]}>
       <CustomText style={styles.title}>{translation.signIn}</CustomText>
-      
+
       <TextInput
         placeholder={translation.email} // Use translations
         placeholderTextColor={currentColors.text}
@@ -61,7 +61,7 @@ const SignInScreen = ({ navigation }) => {
           backgroundColor: currentColors.cardBackground,
         }]}
       />
-      
+
       <View style={styles.passwordContainer}>
         <TextInput
           placeholder={translation.password} // Use translations
@@ -77,7 +77,11 @@ const SignInScreen = ({ navigation }) => {
           }]}
         />
         <TouchableOpacity
-          style={styles.eyeIcon}
+          style={[
+            styles.eyeIcon,
+            {right: 10}
+          ]}
+        
           onPress={() => setShowPassword(!showPassword)}
         >
           <FontAwesome5
@@ -92,26 +96,28 @@ const SignInScreen = ({ navigation }) => {
       {error && <CustomText style={styles.errorText}>{error}</CustomText>}
 
       {/* Loading spinner */}
-      {loading ? (
-        <ActivityIndicator size="large" color={currentColors.text} />
-      ) : (
-        <TouchableOpacity style={[styles.button, { backgroundColor: currentColors.buttonColor }]} onPress={handleSignIn}>
-          <CustomText style={[styles.buttonText, { color: currentColors.text }]}>{translation.signIn}</CustomText>
-        </TouchableOpacity>
-      )}
-      
+      {
+        loading ? (
+          <ActivityIndicator size="large" color={currentColors.text} />
+        ) : (
+          <TouchableOpacity style={[styles.button, { backgroundColor: currentColors.buttonColor }]} onPress={handleSignIn}>
+            <CustomText style={[styles.buttonText, { color: currentColors.text }]}>{translation.signIn}</CustomText>
+          </TouchableOpacity>
+        )
+      }
+
       <TouchableOpacity style={styles.forgotPassword} onPress={handleForgotPassword}>
         <CustomText style={[styles.forgotPasswordText, { color: currentColors.iconColor }]}>
           {translation.forgotPassword}
         </CustomText>
       </TouchableOpacity>
-      
+
       <TouchableOpacity style={styles.signUp} onPress={() => navigation.navigate('SignUp')}>
         <CustomText style={[styles.signUpText, { color: currentColors.iconColor }]}>
           {translation.signUp}
         </CustomText>
       </TouchableOpacity>
-    </View>
+    </View >
   );
 };
 
@@ -137,9 +143,10 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   eyeIcon: {
+    alignSelf:'center',
+    alignItems:'center',
     position: 'absolute',
-    right: 10,
-    top: 10,
+    top: 15,
   },
   errorText: {
     marginBottom: 10,

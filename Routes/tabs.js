@@ -117,6 +117,7 @@ export default function Tabs() {
 
 const styles = StyleSheet.create({
     headerRight: {
+        paddingLeft:10,
         marginRight: 15,
     },
 });

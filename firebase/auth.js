@@ -2,7 +2,11 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
-  signOut as firebaseSignOut
+  signOut as firebaseSignOut,
+  sendPasswordResetEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider
 } from 'firebase/auth';
 import { FIREBASE_AUTH } from './config';
 import translations from '../constants/translations';
@@ -25,12 +29,15 @@ const getFriendlyErrorMessage = (errorCode, language = 'en') => {
       return translation.networkRequestFailed || 'Network error. Please check your connection and try again.';
     case 'auth/invalid-credential':
       return translation.invalidCredential || 'Invalid credential.';
+    case 'auth/missing-password':
+      return translation.missingPassword || 'Password is required.';
     default:
       return translation.somethingWentWrong || 'Something went wrong. Please try again later.';
   }
 };
 
 export default getFriendlyErrorMessage;
+
 export const signUp = async (email, password, confirmPassword, displayName, language = 'en') => {
   const translation = translations[language] || translations.en; // Fallback to English if translation is not available
   
@@ -71,10 +78,10 @@ export const signUp = async (email, password, confirmPassword, displayName, lang
 };
 
 // Sign-In function
-export const signIn = async (email, password,language) => {
+export const signIn = async (email, password, language) => {
   try {
-    if (!email || !password || !password) {
-  const translation = translations[language] || translations.en; // Fallback to English if translation is not available
+    if (!email || !password) {
+      const translation = translations[language] || translations.en; // Fallback to English if translation is not available
       throw new Error(translation.allFieldsRequired || 'All fields are required.');
     }
 
@@ -84,7 +91,60 @@ export const signIn = async (email, password,language) => {
   } catch (error) {
     if (error.code) {
       // Map Firebase auth error codes to friendly messages
-      throw new Error(getFriendlyErrorMessage(error.code,language));
+      throw new Error(getFriendlyErrorMessage(error.code, language));
+    }
+    throw error; // Rethrow non-Firebase errors
+  }
+};
+
+// Forgot Password function
+export const forgotPassword = async (email, language = 'en') => {
+  const translation = translations[language] || translations.en; // Fallback to English if translation is not available
+
+  try {
+    if (!email) {
+      throw new Error(translation.email || 'Email is required.');
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      throw new Error(translation.invalidEmail || 'Invalid email address.');
+    }
+
+    await sendPasswordResetEmail(FIREBASE_AUTH, email);
+  } catch (error) {
+    if (error.code) {
+      // Map Firebase auth error codes to friendly messages
+      throw new Error(getFriendlyErrorMessage(error.code, language));
+    }
+    throw error; // Rethrow non-Firebase errors
+  }
+};
+
+// Change Password function
+export const changePassword = async (currentPassword, newPassword, confirmPassword, language = 'en') => {
+  const translation = translations[language] || translations.en; // Fallback to English if translation is not available
+
+  try {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      throw new Error(translation.allFieldsRequired || 'All fields are required.');
+    }
+
+    if (newPassword.length < 6) {
+      throw new Error(translation.weakPassword || 'Password should be at least 6 characters long.');
+    }
+
+    if (newPassword !== confirmPassword) {
+      throw new Error(translation.passwordsDoNotMatch || 'Passwords do not match.');
+    }
+
+    const credential = EmailAuthProvider.credential(FIREBASE_AUTH.currentUser.email, currentPassword);
+    await reauthenticateWithCredential(FIREBASE_AUTH.currentUser, credential);
+    await updatePassword(FIREBASE_AUTH.currentUser, newPassword);
+  } catch (error) {
+    if (error.code) {
+      // Map Firebase auth error codes to friendly messages
+      throw new Error(getFriendlyErrorMessage(error.code, language));
     }
     throw error; // Rethrow non-Firebase errors
   }

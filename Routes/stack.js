@@ -9,6 +9,8 @@ import SignUpScreen from '../screens/auth/sign_up';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import colors from '../constants/colors';
 import { useTheme } from '../components/elements/theme-provider';
+import ForgotPasswordScreen from '../screens/auth/forget';
+import ChangePasswordScreen from '../screens/auth/change';
 
 const Stack = createStackNavigator();
 
@@ -73,6 +75,16 @@ export default function StackScreen() {
                             component={SignInScreen}
                             options={{ headerShown: false }}
                         />
+                        <Stack.Screen
+                            name="ChangePassword"
+                            component={ChangePasswordScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="ForgotPassword"
+                            component={ForgotPasswordScreen}
+                            options={{ headerShown: false }}
+                        />
                     </>
                 ) : (
                     <>
@@ -84,6 +96,17 @@ export default function StackScreen() {
                         <Stack.Screen
                             name="SignUp"
                             component={SignUpScreen}
+                            options={{ headerShown: false }}
+                        />
+                        
+                        <Stack.Screen
+                            name="ChangePassword"
+                            component={ChangePasswordScreen}
+                            options={{ headerShown: false }}
+                        />
+                        <Stack.Screen
+                            name="ForgotPassword"
+                            component={ForgotPasswordScreen}
                             options={{ headerShown: false }}
                         />
                     </>
