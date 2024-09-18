@@ -200,20 +200,23 @@ export const updatePost = async (id, updatedPost) => {
         console.error('Error updating post: ', error);
     }
 };
-
-// Get posts with real-time updates
 export const getPosts = (callback) => {
     const postsCollection = collection(db, 'posts');
+  
     return onSnapshot(postsCollection, snapshot => {
-        const posts = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        callback(posts);
+      const posts = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+  
+      // Sort posts by ISO 8601 timestamp (descending order)
+      const sortedPosts = posts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  
+      callback(sortedPosts);
     }, (error) => {
-        console.error('Error getting posts: ', error);
+      console.error('Error getting posts: ', error);
     });
-};
+  };
 
 // Upload a file and return the URL
 export const uploadFile = async (fileUri, fileName) => {

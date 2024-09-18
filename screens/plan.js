@@ -1,26 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import PostForm from '../components/notes/post_form';
 import PostList from '../components/notes/posts_list';
 import { getPosts } from '../firebase/posts';
+import colors from '../constants/colors';
+import { useTheme } from '../components/elements/theme-provider';
+import checkIfUserIsAdmin from '../firebase/user';
 
 const PostsScreen = () => {
   const [posts, setPosts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentPost, setCurrentPost] = useState(null);
-  const [loading, setLoading] = useState(true); // New state for loading
+  const [loading, setLoading] = useState(true); // New state for loading posts
+  const [isAdmin, setIsAdmin] = useState(false); // State to check if the user is an admin
+  const { theme } = useTheme(); // Get theme from context
+  const currentColors = colors[theme];
 
+  // Fetch posts and admin status when the component mounts
   useEffect(() => {
-    const unsubscribe = getPosts((fetchedPosts) => {
-      setPosts(fetchedPosts);
-      setLoading(false); // Stop loading once posts are fetched
-    });
-    return () => unsubscribe();
+    const fetchPostsAndAdminStatus = async () => {
+      setLoading(true);
+      const unsubscribe = getPosts((fetchedPosts) => {
+        setPosts(fetchedPosts);
+        setLoading(false); // Stop loading once posts are fetched
+      });
+      const adminStatus = await checkIfUserIsAdmin(); // Check if user is admin
+      setIsAdmin(adminStatus);
+
+      return () => unsubscribe();
+    };
+
+    fetchPostsAndAdminStatus();
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: currentColors.background }]}>
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#007bff" />
@@ -43,12 +58,14 @@ const PostsScreen = () => {
                   }} // Close the form without saving
                 />
               ) : (
-                <View style={styles.listContainer}>
-                  <TouchableOpacity style={styles.addButton} onPress={() => setIsEditing(true)}>
-                    <MaterialIcons name="add" size={24} color="#fff" />
-                    <Text style={styles.addButtonText}>Add Post</Text>
-                  </TouchableOpacity>
-                </View>
+                isAdmin && (
+                  <View style={styles.listContainer}>
+                    <TouchableOpacity style={styles.addButton} onPress={() => setIsEditing(true)}>
+                      <MaterialIcons name="add" size={24} color="#fff" />
+                      <Text style={styles.addButtonText}>Add Post</Text>
+                    </TouchableOpacity>
+                  </View>
+                )
               )}
             </>
           }
@@ -66,11 +83,9 @@ const PostsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   listContainer: {
     flex: 1,
-    backgroundColor: 'white',
   },
   addButton: {
     margin: 10,

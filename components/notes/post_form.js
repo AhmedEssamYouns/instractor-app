@@ -13,7 +13,6 @@ const PostForm = ({ post, onSave, onClose }) => {
     const [documentUri, setDocumentUri] = useState(post ? post.document : '');
     const [documentName, setDocumentName] = useState(post ? post.documentName : '');
     const [loading, setLoading] = useState(false);
-    console.log(imageUri)
     useEffect(() => {
         if (post) {
             setTitle(post.title);

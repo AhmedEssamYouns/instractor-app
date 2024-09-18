@@ -2,54 +2,64 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Modal, View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, Image, Keyboard, Alert, ActivityIndicator, Pressable } from 'react-native';
 import { addComment, getComments, addReply, likeComment, unlikeComment, deleteComment, handleLikeComment, deleteReply, formatCreatedAt } from '../../firebase/posts';
 import { FIREBASE_AUTH } from '../../firebase/config';
-import { getUserDetailsById } from '../../firebase/user';
+import colors from '../../constants/colors';
+import { useLanguage } from '../elements/language-provider';
+import { useTheme } from '../elements/theme-provider';
 import { FontAwesome, FontAwesome5, AntDesign } from '@expo/vector-icons';
 import CustomText from '../elements/text';
 
 const CommentModal = ({ visible, onClose, postId }) => {
     const [commentText, setCommentText] = useState('');
+    const { language, translations } = useLanguage(); // Get translations object
+    const { theme } = useTheme(); // Get theme from context
+    const currentColors = colors[theme];
     const [comments, setComments] = useState([]);
     const [activeReply, setActiveReply] = useState(null);
     const [showReplies, setShowReplies] = useState({});
     const [userLikes, setUserLikes] = useState(new Set());
     const [loading, setLoading] = useState(true); // Add loading state
     const inputRef = useRef(null);
-useEffect(() => {
-    let unsubscribe;
 
-    if (visible) {
-        setLoading(true);
 
-        getComments(postId, (updatedComments, likes) => {
-            setComments(updatedComments);  
-            setUserLikes(likes);  
-            setLoading(false);
-        }).then(unsub => {
-            unsubscribe = unsub;  
-        }).catch(error => {
-            console.error('Error fetching comments:', error);
-        });
-    }
+    useEffect(() => {
+        let unsubscribe;
 
-    const keyboardListener = Keyboard.addListener('keyboardDidHide', () => {
-        setActiveReply(null);
-    });
+        if (visible) {
+            setLoading(true);
 
-    return () => {
-        if (unsubscribe) {
-            unsubscribe(); // Unsubscribe properly when component unmounts
+            getComments(postId, (updatedComments, likes) => {
+                setComments(updatedComments);
+                setUserLikes(likes);
+                setLoading(false);
+            }).then(unsub => {
+                unsubscribe = unsub;
+            }).catch(error => {
+                console.error('Error fetching comments:', error);
+            });
         }
-        keyboardListener.remove();  // Remove the keyboard listener on cleanup
-    };
-}, [visible, postId]);
+
+        const keyboardListener = Keyboard.addListener('keyboardDidHide', () => {
+            setActiveReply(null);
+            setName(null)
+
+        });
+
+        return () => {
+            if (unsubscribe) {
+                unsubscribe(); // Unsubscribe properly when component unmounts
+            }
+            keyboardListener.remove();  // Remove the keyboard listener on cleanup
+        };
+    }, [visible, postId]);
 
 
     const handleAddComment = async () => {
         if (commentText.trim()) {
             if (activeReply) {
-                await addReply(postId, activeReply, FIREBASE_AUTH.currentUser.uid, commentText,setCommentText,setActiveReply,setShowReplies);
+                await addReply(postId, activeReply, FIREBASE_AUTH.currentUser.uid, commentText, setCommentText, setActiveReply, setShowReplies);
+                setName(null)
             } else {
-                await addComment(postId, FIREBASE_AUTH.currentUser.uid, commentText,setCommentText);
+                await addComment(postId, FIREBASE_AUTH.currentUser.uid, commentText, setCommentText);
             }
         }
     };
@@ -59,9 +69,10 @@ useEffect(() => {
             inputRef.current.focus();
         }
     }, [activeReply]);
-
-    const handleAddReply = (commentId) => {
+    const [name, setName] = useState(null)
+    const handleAddReply = (commentId, name) => {
         setActiveReply(commentId);
+        setName(name)
         inputRef.current?.focus();
     };
 
@@ -76,13 +87,21 @@ useEffect(() => {
             visible={visible}
             animationType="slide"
             transparent={true}
-            onRequestClose={onClose}
+            onRequestClose={() => {
+                onClose()
+                setActiveReply(null)
+            }}
         >
             <View style={styles.overlay}>
-                <View style={styles.modalContent}>
+                <View style={[styles.modalContent, { backgroundColor: currentColors.background }]}>
                     <View style={styles.header}>
-                        <CustomText style={styles.headerText}>Comments</CustomText>
-                        <FontAwesome onPress={onClose} name="close" size={24} color="#000" />
+                        <CustomText style={styles.headerText}>{translations.Comments}</CustomText>
+                        <FontAwesome onPress={
+                            () => {
+                                onClose()
+                                setActiveReply(null)
+                            }
+                        } name="close" size={24} color={currentColors.text} />
                     </View>
 
                     {loading ? ( // Show loading indicator if loading is true
@@ -101,22 +120,22 @@ useEffect(() => {
 
                                 return (
                                     <View style={styles.commentContainer}>
-                                        <Pressable onLongPress={() => deleteComment(postId,item.id,comments)}>
+                                        <Pressable onLongPress={() => deleteComment(postId, item.id, comments)}>
                                             <View style={styles.commentHeader}>
                                                 <Image
                                                     source={{ uri: item.photoURL }}
                                                     style={styles.commentAvatar}
                                                 />
                                                 <CustomText style={styles.commentName}>{item.displayName}</CustomText>
-                                                <Text style={{fontSize:10,position:'absolute',right:10}}>{formatCreatedAt(item.timestamp)}</Text>
+                                                <Text style={{ fontSize: 10, position: 'absolute', right: 10, color: 'grey' }}>{formatCreatedAt(item.timestamp)}</Text>
 
                                             </View>
                                             <View style={styles.commentItem}>
-                                                <Text style={styles.commentText}>{item.text}</Text>
+                                                <CustomText style={styles.commentText}>{item.text}</CustomText>
                                             </View>
 
                                             <View style={styles.actions}>
-                                                <TouchableOpacity onPress={() => handleLikeComment(postId,item.id,userLikes,setUserLikes)}>
+                                                <TouchableOpacity onPress={() => handleLikeComment(postId, item.id, userLikes, setUserLikes)}>
                                                     <AntDesign
                                                         name={isLiked ? 'like1' : 'like2'}
                                                         size={20}
@@ -126,18 +145,17 @@ useEffect(() => {
                                                 <CustomText style={{ color: 'grey', marginHorizontal: 5 }}>
                                                     {item.likes ? item.likes.length : 0}
                                                 </CustomText>
+                                                <TouchableOpacity style={{paddingLeft:10,flexDirection:'row',alignItems:'center'}} onPress={() => handleAddReply(item.id, item.displayName)}>
+                                                    <TouchableOpacity>
+                                                        <FontAwesome
+                                                            name={'reply-all'}
+                                                            size={12}
+                                                            color={'grey'}
+                                                        />
+                                                    </TouchableOpacity>
 
-                                                <TouchableOpacity>
-                                                    <FontAwesome
-                                                        name={'reply-all'}
-                                                        size={12}
-                                                        color={'grey'}
-                                                    />
-                                                </TouchableOpacity>
-
-                                                <TouchableOpacity onPress={() => handleAddReply(item.id)}>
                                                     <CustomText style={[styles.replyText, { color: '#999' }]}>
-                                                        Reply
+                                                        {translations.reply}
                                                     </CustomText>
                                                 </TouchableOpacity>
                                             </View>
@@ -149,11 +167,11 @@ useEffect(() => {
                                                 <CustomText style={{ color: 'grey' }}>
                                                     {areRepliesVisible ? (
                                                         <>
-                                                            Hide Replies <FontAwesome5 name="angle-up" size={15} color="grey" />
+                                                            {translations.hideRiplies} <FontAwesome5 name="angle-up" size={15} color="grey" />
                                                         </>
                                                     ) : (
                                                         <>
-                                                            View {item.replies.length} Replies <FontAwesome5 name="angle-down" size={15} color="grey" />
+                                                            {translations.show} {item.replies.length} {translations.replies} <FontAwesome5 name="angle-down" size={15} color="grey" />
                                                         </>
                                                     )}
                                                 </CustomText>
@@ -164,18 +182,18 @@ useEffect(() => {
                                             borderColor: '#aaa',
                                             marginLeft: 60,
                                         }}>
-                                            {areRepliesVisible && item.replies && item.replies.map((reply,index) => (
-                                                <Pressable onLongPress={()=>deleteReply(postId,item.id,reply.createdAt)} key={reply.createdAt} style={styles.replyContainer}>
+                                            {areRepliesVisible && item.replies && item.replies.map((reply, index) => (
+                                                <Pressable onLongPress={() => deleteReply(postId, item.id, reply.createdAt)} key={reply.createdAt} style={styles.replyContainer}>
                                                     <View style={styles.commentHeader}>
                                                         <Image
                                                             source={{ uri: reply.photoURL }}
                                                             style={styles.replyAvatar}
                                                         />
                                                         <CustomText style={styles.commentName}>{reply.displayName}</CustomText>
-                                                        <Text style={{fontSize:10,position:'absolute',right:10}}>{formatCreatedAt(reply.createdAt)}</Text>
+                                                        <Text style={{ fontSize: 10, position: 'absolute', right: 10, color: 'grey' }}>{formatCreatedAt(reply.createdAt)}</Text>
                                                     </View>
                                                     <View style={styles.replyItem}>
-                                                        <Text style={styles.commentText}>{reply.text}</Text>
+                                                        <CustomText style={styles.commentText}>{reply.text}</CustomText>
                                                     </View>
                                                 </Pressable>
                                             ))}
@@ -187,10 +205,21 @@ useEffect(() => {
                     )}
 
                     <View style={styles.inputContainer}>
+                        {activeReply &&
+                            <View style={{ padding: 10, flexDirection: "row", justifyContent: 'space-between',borderTopColor:currentColors.borderColor,borderTopWidth:2 }}>
+                                <CustomText>{translations.addreply} {name}</CustomText>
+                                <FontAwesome onPress={
+                                    () => {
+                                        setActiveReply(null)
+                                    }
+                                } name="close" size={24} color={currentColors.text} />
+                            </View>
+                        }
                         <TextInput
                             ref={inputRef}
-                            style={styles.input}
-                            placeholder={activeReply ? 'Reply to comment...' : 'Add a comment...'}
+                            style={[styles.input, { backgroundColor: currentColors.cardBackground,color:currentColors.text2 }]}
+                            placeholder={activeReply ? (translations.addreply + ' ' + name) : translations.addComment}
+                            placeholderTextColor={currentColors.text2}
                             value={commentText}
                             returnKeyType='send'
                             onChangeText={setCommentText}
@@ -214,7 +243,6 @@ const styles = StyleSheet.create({
     modalContent: {
         width: '100%',
         height: '75%',
-        backgroundColor: '#fff',
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
         paddingHorizontal: 20,
@@ -224,6 +252,7 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         paddingBottom: 15,
         borderBottomWidth: 1,
+        borderColor: 'grey',
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
@@ -253,12 +282,13 @@ const styles = StyleSheet.create({
     },
     commentName: {
         paddingLeft: 10,
+        paddingRight: 10,
         fontSize: 16,
     },
     commentItem: {
-        marginLeft: 50,
+        marginLeft: 20,
         paddingLeft: 10,
-        borderColor: '#aaa',
+        borderColor: 'grey',
         borderLeftWidth: 1,
         paddingVertical: 5,
     },
@@ -270,7 +300,6 @@ const styles = StyleSheet.create({
         width: '85%',
     },
     input: {
-        backgroundColor: '#eee',
         borderBottomWidth: 1,
         padding: 10,
         borderRadius: 20,
@@ -278,7 +307,7 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     actions: {
-        paddingLeft: 40,
+        paddingLeft: 10,
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 10,

@@ -1,18 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Linking, Animated, Easing } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Linking, Animated, Easing, Alert } from 'react-native';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import CustomText from '../elements/text';
 import { downloadImage } from '../elements/manage-files';
-import { getCommentAndReplyCounts, likePost, unlikePost } from '../../firebase/posts';
+import { getCommentAndReplyCounts, likePost, unlikePost, deletePost } from '../../firebase/posts';
 import CommentModal from '../comment/commentsModel';
 import { FIREBASE_AUTH } from '../../firebase/config';
-import { deletePost } from '../../firebase/posts';
+import { useTheme } from '../elements/theme-provider';
+import { useLanguage } from '../elements/language-provider';
+import colors from '../../constants/colors';
+import checkIfUserIsAdmin from '../../firebase/user';
 
 const PostItem = ({ post, onEdit }) => {
     const currentUserId = FIREBASE_AUTH.currentUser?.uid;
     const [liked, setLiked] = useState(post.likes?.includes(currentUserId) || false);
     const [isCommentModalVisible, setCommentModalVisible] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false); // State to check if the user is an admin
     const scaleValue = useRef(new Animated.Value(1)).current;
+    const { language, translations } = useLanguage(); // Get translations object
+    const { theme } = useTheme(); // Get theme from context
+    const currentColors = colors[theme];
+
+    // Fetch admin status when the component mounts
+    useEffect(() => {
+        const fetchAdminStatus = async () => {
+            const adminStatus = await checkIfUserIsAdmin(); // Check if user is admin
+            setIsAdmin(adminStatus);
+        };
+        fetchAdminStatus();
+    }, []);
 
     const handleLike = async () => {
         try {
@@ -53,30 +69,58 @@ const PostItem = ({ post, onEdit }) => {
         }
     };
 
+    const handleDelete = () => {
+        Alert.alert(
+            'Delete Post',
+            'Are you sure you want to delete this post?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'OK',
+                    onPress: async () => {
+                        try {
+                            await deletePost(post.id);
+                        } catch (error) {
+                            console.error('Error deleting post: ', error);
+                        }
+                    },
+                },
+            ],
+            { cancelable: false }
+        );
+    };
+
     return (
-        <View style={styles.item}>
+        <View style={[styles.item, { backgroundColor: currentColors.background,borderColor:currentColors.text2 }]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 10 }}>
                 <Image source={{ uri: 'https://trinityblood.solutions/wp-content/uploads/2022/02/avatar-guy.png' }} style={{ width: 30, height: 30 }} />
-                <CustomText>Teacher</CustomText>
+                <CustomText>{translations.teacher}</CustomText>
             </View>
             <View style={styles.iconContainer}>
                 <Text style={styles.timestamp}>{new Date(post.timestamp).toLocaleString()}</Text>
-                <TouchableOpacity onPress={() => onEdit(post)}>
-                    <MaterialIcons name="edit" size={24} color="#007BFF" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => deletePost(post.id)}>
-                    <MaterialIcons name="delete" size={24} color="#FF3B30" />
-                </TouchableOpacity>
+                {isAdmin && (
+                    <>
+                        <TouchableOpacity onPress={() => onEdit(post)}>
+                            <MaterialIcons name="edit" size={24} color="#007BFF" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleDelete}>
+                            <MaterialIcons name="delete" size={24} color="#FF3B30" />
+                        </TouchableOpacity>
+                    </>
+                )}
             </View>
-            <View style={{ marginHorizontal: 15, borderLeftWidth: 1, paddingHorizontal: 10 }}>
-                {post.title && <Text style={styles.title}>{post.title}</Text>}
-                {post.content && <Text style={styles.content}>{post.content}</Text>}
+            <View style={{ marginHorizontal: 15, borderLeftWidth: 1, paddingHorizontal: 10, borderLeftColor: currentColors.text2 }}>
+                {post.title && <CustomText style={styles.title}>{post.title}</CustomText>}
+                {post.content && <CustomText style={[styles.content, { color: currentColors.text2 }]}>{post.content}</CustomText>}
                 {post.image ? (
                     <View>
                         <Image source={{ uri: post.image }} style={styles.image} />
                         <TouchableOpacity style={styles.downloadButton} onPress={() => downloadImage(post.image)}>
                             <MaterialIcons name="file-download" size={20} color="#007BFF" />
-                            <Text style={styles.downloadText}>Download Image</Text>
+                            <CustomText style={styles.downloadText}>Download Image</CustomText>
                         </TouchableOpacity>
                     </View>
                 ) : null}
@@ -92,17 +136,17 @@ const PostItem = ({ post, onEdit }) => {
                 {/* Like and Comment Section */}
                 <View style={styles.actionContainer}>
                     <TouchableOpacity
-                        style={{ flexDirection: 'row', alignItems: 'center' }}
+                        style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}
                         onPress={handleLike}
                     >
                         <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
-                            <MaterialIcons name={liked ? "thumb-up" : "thumb-up-off-alt"} size={24} color={liked ? "#007BFF" : "#888"} />
+                            <MaterialIcons name={liked ? "thumb-up" : "thumb-up-off-alt"} size={24} color={liked ? "#007BFF" : currentColors.text2} />
                         </Animated.View>
-                        <Text> {post.likes.length > 0 ? post.likes.length : 0}</Text>
+                        <CustomText> {post.likes.length > 0 ? post.likes.length : 0}</CustomText>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => setCommentModalVisible(true)}>
-                        <Feather name="message-circle" size={24} color="#888" />
-                        <CustomText style={{color:'grey'}}> {getCommentAndReplyCounts(post.comments)}</CustomText>
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }} onPress={() => setCommentModalVisible(true)}>
+                        <Feather name="message-circle" size={24} color={currentColors.text2} />
+                        <CustomText> {getCommentAndReplyCounts(post.comments)}</CustomText>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -120,9 +164,8 @@ const PostItem = ({ post, onEdit }) => {
 const styles = StyleSheet.create({
     item: {
         padding: 16,
-        borderRadius: 8,
-        backgroundColor: '#fff',
         position: 'relative',
+        borderBottomWidth:1
     },
     iconContainer: {
         position: 'absolute',
@@ -139,8 +182,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     title: {
-        fontWeight: 'bold',
-        fontSize: 18,
+        fontSize: 20,
         marginBottom: 8,
     },
     content: {
@@ -156,17 +198,21 @@ const styles = StyleSheet.create({
     documentContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: '#eee',
         padding: 10,
         borderRadius: 10,
         marginBottom: 12,
     },
     documentText: {
+        width: 200,
+        alignSelf: 'center',
         fontSize: 16,
         marginLeft: 8,
-        color: '#444'
+        color: '#444',
     },
     timestamp: {
+        padding:15,
         fontSize: 12,
         color: '#888',
     },
