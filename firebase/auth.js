@@ -8,8 +8,12 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider
 } from 'firebase/auth';
-import { FIREBASE_AUTH } from './config';
+import { FIREBASE_AUTH,db } from './config';
 import translations from '../constants/translations';
+
+import { setDoc, doc } from 'firebase/firestore';
+
+
 
 const getFriendlyErrorMessage = (errorCode, language = 'en') => {
   const translation = translations[language] || translations.en; // Fallback to English if translation is not available
@@ -36,21 +40,25 @@ const getFriendlyErrorMessage = (errorCode, language = 'en') => {
   }
 };
 
+
+
+
 export default getFriendlyErrorMessage;
+
+
+
 export const signUp = async (email, password, confirmPassword, displayName, language = 'en') => {
-  const translation = translations[language] || translations.en; // Fallback to English if translation is not available
-  
+  const translation = translations[language] || translations.en;
+
   try {
     // Basic validation with translations
     if (!email || !password || !confirmPassword || !displayName) {
       throw new Error(translation.allFieldsRequired || 'All fields are required.');
     }
 
-    // Trim the inputs to remove any extra whitespace
     const trimmedDisplayName = displayName.trim();
     const trimmedPassword = password.trim();
 
-    // Check if the displayName or password are just spaces
     if (trimmedDisplayName.length === 0 || trimmedPassword.length === 0) {
       throw new Error(translation.allFieldsRequired || 'All fields are required.');
     }
@@ -75,22 +83,31 @@ export const signUp = async (email, password, confirmPassword, displayName, lang
     // Update the user's profile with the display name
     await updateProfile(user, { displayName: trimmedDisplayName });
 
+    // Create a user document in Firestore
+    await setDoc(doc(db, 'users', user.uid), {
+      displayName: trimmedDisplayName,
+      email: user.email,
+      photoURL: 'https://ganj.org/wp-content/uploads/elementor/thumbs/Vacant-qp5zvwg3uhphdhj4q8m7r7o6kwvwddnvqui5tk0vig.png'
+    });
+
     return user;
   } catch (error) {
     if (error.code) {
-      // Map Firebase auth error codes to friendly messages
       throw new Error(getFriendlyErrorMessage(error.code, language));
     }
-    throw error; // Rethrow non-Firebase errors
+    throw error;
   }
 };
+
+
+
 
 
 // Sign-In function
 export const signIn = async (email, password, language) => {
   try {
     if (!email || !password) {
-      const translation = translations[language] || translations.en; // Fallback to English if translation is not available
+      const translation = translations[language] || translations.en;
       throw new Error(translation.allFieldsRequired || 'All fields are required.');
     }
 
@@ -105,6 +122,8 @@ export const signIn = async (email, password, language) => {
     throw error; // Rethrow non-Firebase errors
   }
 };
+
+
 
 // Forgot Password function
 export const forgotPassword = async (email, language = 'en') => {
@@ -129,6 +148,10 @@ export const forgotPassword = async (email, language = 'en') => {
     throw error; // Rethrow non-Firebase errors
   }
 };
+
+
+
+
 
 // Change Password function
 export const changePassword = async (currentPassword, newPassword, confirmPassword, language = 'en') => {

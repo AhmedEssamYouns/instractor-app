@@ -1,7 +1,7 @@
 const translations = {
   en: {
     home: 'Home',
-    plan: 'Plan',
+    notes: 'Notes',
     cart: 'Cart',
     profile: 'Profile',
     lectures: 'Lectures',
@@ -49,7 +49,7 @@ const translations = {
   ar: {
     home: 'الرئيسية',
     displayName: 'اسمك',
-    plan: 'الخطة',
+    notes: 'الملاحظات',
     cart: 'السلة',
     profile: 'الملف الشخصي',
     lectures: 'المحاضرات',

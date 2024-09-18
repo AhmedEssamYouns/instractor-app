@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import ProfileScreen from '../screens/profile';
-import PlanScreen from '../screens/plan';
+import PostsScreen from '../screens/plan';
 import CartScreen from '../screens/cart';
 import LearnScreen from '../screens/learn';
 import { useTheme } from '../components/elements/theme-provider';
@@ -89,8 +89,8 @@ export default function Tabs() {
                 />
                 <Tab.Screen
                     name="Plan"
-                    component={PlanScreen}
-                    options={{ title: translations[language].plan }} // Use translations based on language
+                    component={PostsScreen}
+                    options={{ title: translations[language].notes }} // Use translations based on language
                 />
                 <Tab.Screen
                     name="Cart"

@@ -1,6 +1,9 @@
 import { updateProfile } from "firebase/auth";
 import * as ImagePicker from 'expo-image-picker';
-import { FIREBASE_AUTH } from "./config";
+import { FIREBASE_AUTH, db } from "./config";
+
+import { doc,updateDoc } from "firebase/firestore";
+
 export const selectImageAndUpdateProfile = async () => {
   // Request permission to access camera roll
   const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -22,6 +25,8 @@ export const selectImageAndUpdateProfile = async () => {
       throw new Error("User is not authenticated!");
     }
 
+    const userDocRef = doc(db, 'users', FIREBASE_AUTH.currentUser.uid);
+    await updateDoc(userDocRef, { photoURL : imageUri });
     // Update the profile with the new photoURL
     await updateProfile(FIREBASE_AUTH.currentUser, { photoURL: imageUri });
     return imageUri; // Return the image URI to be used in the component
