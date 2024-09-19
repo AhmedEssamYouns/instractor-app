@@ -118,9 +118,11 @@ const TeacherQuizCreation = () => {
                     />
                 </View>
             ))}
-            <TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveQuestion(index)}>
-                <Text style={styles.removeButtonText}>Remove Question</Text>
-            </TouchableOpacity>
+            {questions.length > 1 &&
+                <TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveQuestion(index)}>
+                    <Text style={styles.removeButtonText}>Remove Question</Text>
+                </TouchableOpacity>
+            }
         </View>
     );
 
@@ -170,7 +172,7 @@ const TeacherQuizCreation = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding:10,
+        padding: 10,
         paddingHorizontal: 20,
         backgroundColor: '#f5f5f5',
     },

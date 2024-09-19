@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config';
+import { useNavigation } from '@react-navigation/native';
 
-const StudentQuizList = ({ navigation }) => {
+const StudentQuizList = ({ }) => {
     const [quizzes, setQuizzes] = useState([]);
-
+    const navigation = useNavigation()
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
