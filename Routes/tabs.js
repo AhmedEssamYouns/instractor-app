@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import ProfileScreen from '../screens/profile';
-import PostsScreen from '../screens/plan';
-import CartScreen from '../screens/cart';
+import PostsScreen from '../screens/notes';
 import LearnScreen from '../screens/learn';
 import { useTheme } from '../components/elements/theme-provider';
 import colors from '../constants/colors';
@@ -11,6 +10,7 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 import ThemeSwitcherModal from '../components/elements/menu';
 import { useLanguage } from '../components/elements/language-provider';
 import translations from '../constants/translations'; // Import translations
+import TeacherAssignmentForm from '../screens/cart';
 
 const Tab = createBottomTabNavigator();
 
@@ -60,11 +60,13 @@ export default function Tabs() {
                     tabBarActiveTintColor: currentColors.iconFocus,
                     tabBarInactiveTintColor: currentColors.iconColor,
                     tabBarStyle: {
+                        borderRadius:1,
+                        borderWidth:0,
                         borderTopColor: currentColors.border,
                     },
                     headerStyle: {
                         backgroundColor: currentColors.background,
-                        elevation: 0,
+                        elevation:0,
                     },
                     headerTitleStyle: {
                         fontFamily: language === 'en' ? 'bold' : 'ar',
@@ -94,8 +96,8 @@ export default function Tabs() {
                 />
                 <Tab.Screen
                     name="Cart"
-                    component={CartScreen}
-                    options={{ title: translations[language].cart }} // Use translations based on language
+                    component={TeacherAssignmentForm}
+                    options={{ title: translations[language].train }} // Use translations based on language
                 />
                 <Tab.Screen
                     name="Profile"

@@ -12,6 +12,8 @@ const initialLayout = { width: Dimensions.get('window').width };
 // Fake Data Arrays
 const lecturesData = [
   { id: 1, name: 'Lecture 1', duration: '25 mins', points: 10, seen: true },
+
+
   // other data...
 ];
 
@@ -78,7 +80,7 @@ const LearnScreen = () => {
   );
 
   return (
-    <View style={{ flex: 1, direction: 'rtl', }}> 
+    <View style={{ flex: 1,backgroundColor:currentColors.background}}> 
       <TabView
         navigationState={{ index, routes }}
         renderScene={renderScene}
@@ -86,7 +88,7 @@ const LearnScreen = () => {
         onIndexChange={setIndex}
         initialLayout={initialLayout}
         renderTabBar={renderTabBar} // Use custom TabBar
-        style={[styles.container, { backgroundColor: currentColors.background, borderBottomWidth: 1, borderBottomColor: currentColors.borderColor }]}
+        style={[styles.container, { backgroundColor: currentColors.background, borderBottomColor: currentColors.borderColor }]}
       />
     </View>
   );

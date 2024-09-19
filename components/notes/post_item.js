@@ -69,29 +69,6 @@ const PostItem = ({ post, onEdit }) => {
         }
     };
 
-    const handleDelete = () => {
-        Alert.alert(
-            'Delete Post',
-            'Are you sure you want to delete this post?',
-            [
-                {
-                    text: 'Cancel',
-                    style: 'cancel',
-                },
-                {
-                    text: 'OK',
-                    onPress: async () => {
-                        try {
-                            await deletePost(post.id);
-                        } catch (error) {
-                            console.error('Error deleting post: ', error);
-                        }
-                    },
-                },
-            ],
-            { cancelable: false }
-        );
-    };
 
     return (
         <View style={[styles.item, { backgroundColor: currentColors.background,borderColor:currentColors.text2 }]}>
@@ -106,7 +83,7 @@ const PostItem = ({ post, onEdit }) => {
                         <TouchableOpacity onPress={() => onEdit(post)}>
                             <MaterialIcons name="edit" size={24} color="#007BFF" />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={handleDelete}>
+                        <TouchableOpacity onPress={()=>deletePost(post.id)}>
                             <MaterialIcons name="delete" size={24} color="#FF3B30" />
                         </TouchableOpacity>
                     </>

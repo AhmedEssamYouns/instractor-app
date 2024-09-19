@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import * as DocumentPicker from 'expo-document-picker';
+
+
 import { FontAwesome, Entypo, MaterialIcons } from '@expo/vector-icons';
-import { addPost, updatePost, uploadFile } from '../../firebase/posts';
+import { addPost, pickDocument, pickImage, updatePost, uploadFile } from '../../firebase/posts';
 import CustomText from '../elements/text';
 
 const PostForm = ({ post, onSave, onClose }) => {
@@ -18,8 +18,8 @@ const PostForm = ({ post, onSave, onClose }) => {
             setTitle(post.title);
             setContent(post.content);
             setImageUri(post.image || '');
-            setDocumentUri(post.document || ''); 
-            setDocumentName(post.documentName || ''); 
+            setDocumentUri(post.document || '');
+            setDocumentName(post.documentName || '');
         }
     }, [post]);
 
@@ -52,53 +52,6 @@ const PostForm = ({ post, onSave, onClose }) => {
         }
     };
 
-    const pickImage = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            alert('Sorry, we need media library permissions to make this work!');
-            return;
-        }
-
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.canceled && result.assets && result.assets.length > 0) {
-            setImageUri(result.assets[0].uri);
-            console.log('Selected image URI:', result.assets[0].uri);
-        } else {
-            console.log('Image selection canceled or no image selected');
-        }
-    };
-
-    const pickDocument = async () => {
-        try {
-            let result = await DocumentPicker.getDocumentAsync({
-                type: ['application/pdf', 'application/msword', 'application/vnd.ms-excel'],
-            });
-
-            if (result.canceled) {
-                console.log('Document selection canceled');
-                return; // Exit the function if canceled
-            }
-
-            // Check if assets array is populated and handle document URI and name
-            if (result.assets && result.assets.length > 0) {
-                const { uri, name } = result.assets[0];
-                setDocumentUri(uri);
-                setDocumentName(name);
-                console.log('Selected document URI:', uri);
-                console.log('Selected document name:', name);
-            } else {
-                console.log('No document selected or document details are missing', result);
-            }
-        } catch (error) {
-            console.error('Error picking document:', error);
-        }
-    };
 
     const cancelSelection = (type) => {
         if (type === 'image') {
@@ -128,10 +81,10 @@ const PostForm = ({ post, onSave, onClose }) => {
                 multiline
             />
             <View style={styles.selectionContainer}>
-                <TouchableOpacity style={styles.iconButton} onPress={pickImage}>
+                <TouchableOpacity style={styles.iconButton} onPress={() => pickImage(setImageUri)}>
                     <Entypo name="image" size={24} color="#007bff" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton} onPress={pickDocument}>
+                <TouchableOpacity style={styles.iconButton} onPress={()=>pickDocument(setDocumentUri,setDocumentName)}>
                     <MaterialIcons name="attach-file" size={24} color="#007bff" />
                 </TouchableOpacity>
             </View>
