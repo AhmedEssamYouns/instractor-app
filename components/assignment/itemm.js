@@ -9,14 +9,10 @@ import { useTheme } from '../elements/theme-provider';
 import colors from '../../constants/colors';
 import { useLanguage } from '../elements/language-provider';
 
-const formatDate = (date) => {
-    return format(date, 'MMM d, yyyy h:mm a');
-};
 
-const formatCreatedAt = (date) => {
-    return format(date, 'MMM d, h:mm a');
-};
 const AssignmentItem = ({ assignment, studentSubmission, studentId, onSubmissionChange }) => {
+
+
     const { theme } = useTheme();
     const currentColors = colors[theme];
     const { language, translations } = useLanguage();
@@ -26,6 +22,35 @@ const AssignmentItem = ({ assignment, studentSubmission, studentId, onSubmission
     const [hasDeadlinePassed, setHasDeadlinePassed] = useState(false);
     const [countdown, setCountdown] = useState('');
 
+
+    
+    const formatDate = (date) => {
+    
+        // Format date with default symbols
+        let formattedDate = format(date, 'M/d, h:mm a');
+    
+        // Replace AM/PM based on the language
+        if (language === 'ar') {
+            formattedDate = formattedDate.replace('AM', 'ص').replace('PM', 'م');
+        }
+    
+        return formattedDate;
+    };
+    
+    const formatCreatedAt = (date) => {
+    
+        // Format date with default symbols
+        let formattedDate = format(date, 'M/d, h:mm a');
+    
+        // Replace AM/PM based on the language
+        if (language === 'ar') {
+            formattedDate = formattedDate.replace('AM', 'ص').replace('PM', 'م');
+        }
+    
+        return formattedDate;
+    };
+
+    
     useEffect(() => {
         if (assignment && assignment.deadline) {
             const now = new Date();
@@ -90,7 +115,7 @@ const AssignmentItem = ({ assignment, studentSubmission, studentId, onSubmission
                     <View style={styles.deadline}>
                         <MaterialIcons name="timer" size={16} color={currentColors.iconColor} />
                         <CustomText>
-                            Deadline: {formatDate(new Date(assignment.deadline.seconds * 1000))}
+                            {translations.Deadline}: {formatDate(new Date(assignment.deadline.seconds * 1000))}
                         </CustomText>
                     </View>
                     {countdown && <CustomText style={styles.countdown}>{countdown}</CustomText>}

@@ -65,6 +65,11 @@ const translations = {
     expired: 'Expired',
     missedDeadline: 'Missed the deadline.',
     submittedOnTime: 'Homework was submitted on time.',
+    Deadline:'Deadline',
+    cancel:'cancel',
+    noAssignments:'No Assignments yet',
+    assignments:'assignments',
+    quizzes:'quizzes'
   },
   ar: {
     home: 'الرئيسية',
@@ -133,6 +138,11 @@ const translations = {
     expired: 'منتهي',
     missedDeadline: 'فوت الموعد النهائي',
     submittedOnTime: 'تم تقديم الواجب في الوقت المحدد.',
+    Deadline:'الموعد النهائي',
+    cancel:'الغاء',
+    noAssignments:'لا يوجد واجبات',
+    assignments:'الواجبات',
+    quizzes:'الاخبترات'
   },
 };
 

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { FlatList, View, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import { getAssignments, getStudentSubmission } from '../../firebase/assign';
 import AssignmentItem from './itemm';
 import { FIREBASE_AUTH } from '../../firebase/config';
 import colors from '../../constants/colors';
 import { useTheme } from '../elements/theme-provider';
+import CustomText from '../elements/text';
+import { useLanguage } from '../elements/language-provider';
 
 const StudentAssignmentsPage2 = () => {
+    const { language, translations } = useLanguage();
     const [assignments, setAssignments] = useState([]);
     const [submissions, setSubmissions] = useState({});
     const [loading, setLoading] = useState(true); // Add loading state
@@ -55,9 +58,9 @@ const StudentAssignmentsPage2 = () => {
     const renderItem = ({ item }) => {
         const studentSubmission = submissions[item.id] || null; // Get submission from state
         return (
-            <AssignmentItem 
-                assignment={item} 
-                studentSubmission={studentSubmission} 
+            <AssignmentItem
+                assignment={item}
+                studentSubmission={studentSubmission}
                 studentId={studentId}
                 onSubmissionChange={(updatedSubmission) => handleSubmissionChange(item.id, updatedSubmission)}
             />
@@ -73,6 +76,14 @@ const StudentAssignmentsPage2 = () => {
                     data={assignments}
                     keyExtractor={(item) => item.id}
                     renderItem={renderItem}
+                    ListEmptyComponent={
+                        <CustomText style={{
+                            marginTop: 100,
+                            fontSize: 25, alignSelf: 'center', justifyContent: 'center'
+                        }}>
+                            {translations.noAssignments}
+                        </CustomText>
+                    }
                 />
             )}
         </View>
