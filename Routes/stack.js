@@ -11,6 +11,7 @@ import colors from '../constants/colors';
 import { useTheme } from '../components/elements/theme-provider';
 import ForgotPasswordScreen from '../screens/auth/forget';
 import ChangePasswordScreen from '../screens/auth/change';
+import StudentQuizAttempt from '../components/quiz/student_quiz_attemt';
 
 const Stack = createStackNavigator();
 
@@ -80,6 +81,7 @@ export default function StackScreen() {
                             component={ChangePasswordScreen}
                             options={{ headerShown: false }}
                         />
+                        <Stack.Screen name="QuizAttempt" component={StudentQuizAttempt} />
                         <Stack.Screen
                             name="ForgotPassword"
                             component={ForgotPasswordScreen}
@@ -98,7 +100,7 @@ export default function StackScreen() {
                             component={SignUpScreen}
                             options={{ headerShown: false }}
                         />
-                        
+
                         <Stack.Screen
                             name="ChangePassword"
                             component={ChangePasswordScreen}

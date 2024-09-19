@@ -142,7 +142,7 @@ const translations = {
     cancel:'الغاء',
     noAssignments:'لا يوجد واجبات',
     assignments:'الواجبات',
-    quizzes:'الاخبترات'
+    quizzes:'الاختبارات'
   },
 };
 

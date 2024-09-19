@@ -2,11 +2,12 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import TeacherQuizCreation from '../components/quiz/create_quiz';
 
 export default function ArticleScreen() {
   return (
     <View style={styles.container}>
-      <Text>Article Screen</Text>
+      <TeacherQuizCreation/>
     </View>
   );
 }
@@ -14,7 +15,5 @@ export default function ArticleScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });

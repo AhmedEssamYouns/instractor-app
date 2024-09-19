@@ -10,7 +10,7 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 import ThemeSwitcherModal from '../components/elements/menu';
 import { useLanguage } from '../components/elements/language-provider';
 import translations from '../constants/translations'; // Import translations
-import TeacherAssignmentForm from '../screens/cart';
+import Practic from '../screens/practic';
 
 const Tab = createBottomTabNavigator();
 
@@ -47,7 +47,7 @@ export default function Tabs() {
                         } else if (route.name === 'Plan') {
                             iconName = focused ? 'clipboard-multiple' : 'clipboard-multiple-outline';
                             return <MaterialCommunityIcons name={iconName} size={30} color={color} />;
-                        } else if (route.name === 'Cart') {
+                        } else if (route.name === 'Practic') {
                             iconName = focused ? 'edit' : 'edit';
                             return <FontAwesome5 name={iconName} size={26} color={focused ? currentColors.iconFocus : currentColors.iconColor} />;
                         } else if (route.name === 'Profile') {
@@ -95,8 +95,8 @@ export default function Tabs() {
                     options={{ title: translations[language].notes }} // Use translations based on language
                 />
                 <Tab.Screen
-                    name="Cart"
-                    component={TeacherAssignmentForm}
+                    name="Practic"
+                    component={Practic}
                     options={{ title: translations[language].train }} // Use translations based on language
                 />
                 <Tab.Screen

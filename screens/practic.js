@@ -19,7 +19,7 @@ const AssignmentsRoute = () => (
     <StudentAssignmentsPage2 />
 );
 
-const LearnScreen = () => {
+const Practic = () => {
     const { theme } = useTheme(); // Get the theme from context
     const currentColors = colors[theme]; // Get colors based on the theme
     const { language, translations } = useLanguage(); // Get translations object
@@ -85,4 +85,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default LearnScreen;
+export default Practic;
