@@ -9,6 +9,7 @@ import { useLanguage } from '../elements/language-provider';
 import CustomText from '../elements/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import BackgroundTimer from 'react-native-background-timer';  // Import the background timer
 
 const StudentQuizAttempt = ({ route }) => {
     const { quizId } = route.params;
@@ -50,14 +51,6 @@ const StudentQuizAttempt = ({ route }) => {
         fetchQuiz();
     }, [quizId]);
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            if (timeLeft > 0 && !isSubmitting) {
-                setTimeLeft(prevTime => prevTime - 1);
-            }
-        }, 1000);
-        return () => clearInterval(timer);
-    }, [timeLeft, isSubmitting]);
 
     // Handle back button press
     useEffect(() => {
@@ -84,18 +77,17 @@ const StudentQuizAttempt = ({ route }) => {
         newAnswers[index] = optionIndex;
         setAnswers(newAnswers);
     }
-
     const handleSubmit = async (forceSubmit = false) => {
         if (isSubmitting || fullmark === null) return; // Ensure fullmark is not null before submitting
-
-        if (!forceSubmit) {
+    
+        if (!forceSubmit) {  // Only check for unanswered questions if the submission is not forced
             const unanswered = answers.some(answer => answer === null);
             if (unanswered) {
                 Alert.alert(translations.answerAllBeforeSubmit);
                 return;
             }
         }
-
+    
         setIsSubmitting(true);
         let score = 0;
         questions.forEach((question, index) => {
@@ -103,18 +95,18 @@ const StudentQuizAttempt = ({ route }) => {
                 score += 1;
             }
         });
-
+    
         Alert.alert(
             translations.timeUp,
             translations.scoreMessage.replace("{score}", score).replace("{total}", fullmark)
         );
-
+    
         try {
             await setDoc(doc(db, 'grades', quizId + '_' + FIREBASE_AUTH.currentUser.uid), {
                 quizId: quizId,
                 userId: FIREBASE_AUTH.currentUser.uid,
                 score: score,
-                quizName:quiz.title,
+                quizName: quiz.title,
                 fullmark: fullmark,
                 timestamp: new Date(),
             });
@@ -123,7 +115,28 @@ const StudentQuizAttempt = ({ route }) => {
             console.error('Error saving grade: ', error);
         }
     };
-
+    
+    // Updating the timer to automatically submit when time is up
+    useEffect(() => {
+        if (timeLeft > 0 && !isSubmitting) {
+            // Use BackgroundTimer for background countdown
+            const intervalId = BackgroundTimer.setInterval(() => {
+                setTimeLeft(prevTime => {
+                    if (prevTime <= 1) {
+                        BackgroundTimer.clearInterval(intervalId);
+                        handleSubmit(true);  // Auto submit quiz when time runs out
+                        return 0;
+                    }
+                    return prevTime - 1;
+                });
+            }, 1000);
+    
+            return () => {
+                BackgroundTimer.clearInterval(intervalId); // Clear the timer when component unmounts
+            };
+        }
+    }, [timeLeft, isSubmitting]);
+    
     const handleNextQuestion = () => {
         if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -184,27 +197,30 @@ const StudentQuizAttempt = ({ route }) => {
             />
 
             <View style={styles.navigationContainer}>
-                {currentQuestionIndex > 0 && (
-                    <TouchableOpacity style={styles.button} onPress={handlePreviousQuestion}>
-                        <CustomText style={{ color: 'white' }}>{translations.previous}</CustomText>
-                    </TouchableOpacity>
-                )}
-
-                {currentQuestionIndex < questions.length - 1 && answers[currentQuestionIndex] !== null && (
-                    <TouchableOpacity style={styles.button} onPress={handleNextQuestion}>
-                        <CustomText style={{ color: 'white' }}>{translations.next}</CustomText>
-                    </TouchableOpacity>
-                )}
 
                 {currentQuestionIndex === questions.length - 1 && answers[currentQuestionIndex] !== null && (
                     <TouchableOpacity style={[styles.button, { backgroundColor: currentColors.buttonColor }]} onPress={() => handleSubmit()}>
                         <CustomText style={{ color: 'white' }}>{translations.submitAns}</CustomText>
                     </TouchableOpacity>
                 )}
+
+                {currentQuestionIndex < questions.length - 1 && answers[currentQuestionIndex] !== null && (
+                    <TouchableOpacity style={[styles.button,{backgroundColor:'#67726B'}]} onPress={handleNextQuestion}>
+                        <CustomText style={{ color: 'white' }}>{translations.next}</CustomText>
+                    </TouchableOpacity>
+                )}
+
+                {currentQuestionIndex > 0 && (
+                    <TouchableOpacity style={styles.button} onPress={handlePreviousQuestion}>
+                        <CustomText style={{ color: 'white' }}>{translations.previous}</CustomText>
+                    </TouchableOpacity>
+                )}
+
             </View>
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {

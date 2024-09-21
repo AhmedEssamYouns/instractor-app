@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import ArticleScreen from './article'; // Import ArticleScreen
+import ArticleScreen from './quiz'; // Import ArticleScreen
 import StudentAssignmentsPage2 from '../components/assignment/list';
 import { useTheme } from '../components/elements/theme-provider';
 import colors from '../constants/colors';
