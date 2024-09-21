@@ -88,7 +88,10 @@ const translations = {
     closeAlertMessage: "Closing this page will attempt to submit your answers. Do you want to continue?",
     closeAlertCancel: "Cancel",
     closeAlertConfirm: "Continue",
-    noGrades:'No Grades yet'
+    noGrades:'No Grades yet',
+    confirmAccessTitle: "Access Quiz",
+    confirmAccessMessage: "Do you want to access this quiz now?",
+    ok: "OK",
   },
   ar: {
     home: 'الرئيسية',
@@ -180,7 +183,11 @@ const translations = {
     closeAlertMessage: "إغلاق هذه الصفحة سيحاول تقديم إجاباتك. هل تريد المتابعة؟",
     closeAlertCancel: "إلغاء",
     closeAlertConfirm: "استمرار",
-    noGrades:'لا يوجد درجات'
+    noGrades:'لا يوجد درجات',
+    confirmAccessTitle: "الوصول إلى الاختبار",
+    confirmAccessMessage: "هل تريد الوصول إلى هذا الاختبار الآن؟",
+    ok: "موافق",
+    
   },
 };
 

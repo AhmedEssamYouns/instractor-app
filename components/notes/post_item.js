@@ -34,13 +34,11 @@ const PostItem = ({ post, onEdit }) => {
         try {
             const userId = FIREBASE_AUTH.currentUser?.uid;
             if (userId) {
-                if (liked) {
-                    await unlikePost(post.id, userId);
-                    setLiked(false);
-                } else {
-                    await likePost(post.id, userId);
-                    setLiked(true);
-                }
+                // Update the liked state immediately
+                const newLikedState = !liked;
+                setLiked(newLikedState);
+
+
 
                 // Trigger animation
                 Animated.sequence([
@@ -57,6 +55,15 @@ const PostItem = ({ post, onEdit }) => {
                         useNativeDriver: true,
                     }),
                 ]).start();
+
+
+
+                if (newLikedState) {
+                    await likePost(post.id, userId);
+                } else {
+                    await unlikePost(post.id, userId);
+                }
+
             }
         } catch (error) {
             console.error('Error liking/unliking post: ', error);
@@ -71,19 +78,27 @@ const PostItem = ({ post, onEdit }) => {
 
 
     return (
-        <View style={[styles.item, { backgroundColor: currentColors.background,borderColor:currentColors.text2 }]}>
+        <View style={[styles.item, { backgroundColor: currentColors.background, borderColor: currentColors.text2 }]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 10 }}>
                 <Image source={{ uri: 'https://trinityblood.solutions/wp-content/uploads/2022/02/avatar-guy.png' }} style={{ width: 30, height: 30 }} />
                 <CustomText>{translations.teacher}</CustomText>
             </View>
             <View style={styles.iconContainer}>
-                <Text style={styles.timestamp}>{new Date(post.timestamp).toLocaleString()}</Text>
+                <Text style={styles.timestamp}>
+                    {new Date(post.timestamp).toLocaleString('en-US', {
+                        hour: 'numeric',
+                        day:'2-digit',
+                        month:'2-digit',
+                        minute: 'numeric',
+                        hour12: true,
+                    })}
+                </Text>
                 {isAdmin && (
                     <>
                         <TouchableOpacity onPress={() => onEdit(post)}>
                             <MaterialIcons name="edit" size={24} color="#007BFF" />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={()=>deletePost(post.id)}>
+                        <TouchableOpacity onPress={() => deletePost(post.id)}>
                             <MaterialIcons name="delete" size={24} color="#FF3B30" />
                         </TouchableOpacity>
                     </>
@@ -142,7 +157,7 @@ const styles = StyleSheet.create({
     item: {
         padding: 16,
         position: 'relative',
-        borderBottomWidth:1
+        borderBottomWidth: 1
     },
     iconContainer: {
         position: 'absolute',
@@ -189,7 +204,7 @@ const styles = StyleSheet.create({
         color: '#444',
     },
     timestamp: {
-        padding:15,
+        padding: 15,
         fontSize: 12,
         color: '#888',
     },

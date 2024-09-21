@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, Image, Keyboard, Alert, ActivityIndicator, Pressable } from 'react-native';
-import { addComment, getComments, addReply, likeComment, unlikeComment, deleteComment, handleLikeComment, deleteReply, formatCreatedAt } from '../../firebase/posts';
+import { addComment, getComments, addReply, deleteComment, handleLikeComment, deleteReply, formatCreatedAt } from '../../firebase/posts';
 import { FIREBASE_AUTH } from '../../firebase/config';
 import colors from '../../constants/colors';
 import { useLanguage } from '../elements/language-provider';

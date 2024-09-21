@@ -12,7 +12,9 @@ import { useTheme } from '../components/elements/theme-provider';
 import ForgotPasswordScreen from '../screens/auth/forget';
 import ChangePasswordScreen from '../screens/auth/change';
 import StudentQuizAttempt from '../components/quiz/student_quiz_attemt';
-
+import VideoList from '../Admin/videos_list';
+import UploadLectureVideo from '../Admin/uploadingVideos';
+import VideoDetail from '../Admin/Video'
 const Stack = createStackNavigator();
 
 export default function StackScreen() {
@@ -51,6 +53,9 @@ export default function StackScreen() {
             <Stack.Navigator>
                 {user ? (
                     <>
+                        <Stack.Screen name="UploadLectureVideo" component={UploadLectureVideo} />
+                        <Stack.Screen name="VideoList" component={VideoList} />
+                        <Stack.Screen name="VideoDetail" component={VideoDetail} />
                         <Stack.Screen
                             name="tabs"
                             component={Tabs}
@@ -83,7 +88,7 @@ export default function StackScreen() {
                         />
                         <Stack.Screen name="QuizAttempt" component={StudentQuizAttempt}
                             options={{ headerShown: false }}
-                         />
+                        />
                         <Stack.Screen
                             name="ForgotPassword"
                             component={ForgotPasswordScreen}

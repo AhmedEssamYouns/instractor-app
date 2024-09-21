@@ -30,9 +30,8 @@ const saveFile = async (fileUri) => {
             ToastAndroid.show('Image saved to gallery.', ToastAndroid.SHORT);
         } else {
             // Log a message and skip saving if permissions are not granted
-            console.log('Media Library permission not granted. Skipping image save.');
+            // console.log('Media Library permission not granted. Skipping image save.');
         }
     } catch (err) {
-        console.error("Save Error: ", err);
     }
 };
