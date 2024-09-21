@@ -39,8 +39,7 @@ const ProfileScreen = () => {
       indicatorStyle={[styles.tabIndicator, { backgroundColor: currentColors.indicator }]}
       style={[styles.tabBar, {
         backgroundColor: currentColors.background,
-        borderBottomWidth: theme === 'dark' ? 0 : 1, // Corrected conditional logic
-        borderBottomColor: currentColors.borderColor, // Correct placement of this line
+        borderBottomWidth: 1,borderBottomColor:currentColors.border 
       }]}
       labelStyle={[styles.tabLabel, { color: currentColors.text, fontFamily: language === 'ar' ? 'ar' : 'bold' }]}
       activeColor={currentColors.iconFocus} // Active tab text color

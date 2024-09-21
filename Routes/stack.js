@@ -14,7 +14,9 @@ import ChangePasswordScreen from '../screens/auth/change';
 import StudentQuizAttempt from '../components/quiz/student_quiz_attemt';
 import VideoList from '../Admin/videos_list';
 import UploadLectureVideo from '../Admin/uploadingVideos';
-import VideoDetail from '../Admin/Video'
+import VideoDetail from '../Admin/VideoLecture'
+import SectionList from '../Admin/section_list';
+import SectionDetail from '../Admin/VideoSection';
 const Stack = createStackNavigator();
 
 export default function StackScreen() {
@@ -53,9 +55,7 @@ export default function StackScreen() {
             <Stack.Navigator>
                 {user ? (
                     <>
-                        <Stack.Screen name="UploadLectureVideo" component={UploadLectureVideo} />
-                        <Stack.Screen name="VideoList" component={VideoList} />
-                        <Stack.Screen name="VideoDetail" component={VideoDetail} />
+
                         <Stack.Screen
                             name="tabs"
                             component={Tabs}
@@ -70,6 +70,18 @@ export default function StackScreen() {
                                     </TouchableOpacity>
                                 ),
                             }}
+                        />
+                        <Stack.Screen name="SectionList" component={SectionList} options={{ title: 'Sections' }} />
+                        
+                        <Stack.Screen name="UploadLectureVideo" component={UploadLectureVideo} />
+
+                        <Stack.Screen name="SectionDetail" component={SectionDetail} options={{ headerShown: false }}
+
+                        />
+                        <Stack.Screen name="VideoList" component={VideoList} />
+
+                        <Stack.Screen name="VideoDetail" component={VideoDetail}
+                            options={{ headerShown: false }}
                         />
                         <Stack.Screen
                             name="SignUp"

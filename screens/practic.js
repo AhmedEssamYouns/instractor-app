@@ -48,7 +48,7 @@ const Practic = () => {
 const renderTabBar = (props) => (
     <TabBar
         {...props}
-        indicatorStyle={[styles.indicator, { backgroundColor: currentColors.indicator }]}
+        indicatorStyle={[styles.indicator, { backgroundColor: currentColors.indicator,borderBottomWidth: 1,borderBottomColor:currentColors.border  }]}
         style={[styles.tabBar, { backgroundColor: currentColors.background }]}
         labelStyle={[styles.label, { color: currentColors.text, fontFamily: language === 'ar' ? 'ar' : 'bold', textTransform: 'none' }]} // Add textTransform: 'none'
         activeColor={currentColors.iconFocus} // Active tab text color

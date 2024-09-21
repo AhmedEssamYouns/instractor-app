@@ -92,6 +92,10 @@ const translations = {
     confirmAccessTitle: "Access Quiz",
     confirmAccessMessage: "Do you want to access this quiz now?",
     ok: "OK",
+    description:'description',
+    summary:'summary',
+    mainPoints: 'Main Points',
+    noData:'no data yet'
   },
   ar: {
     home: 'الرئيسية',
@@ -187,6 +191,10 @@ const translations = {
     confirmAccessTitle: "الوصول إلى الاختبار",
     confirmAccessMessage: "هل تريد الوصول إلى هذا الاختبار الآن؟",
     ok: "موافق",
+    description:'الشرح',
+    summary:'الملخص',
+    mainPoints: 'النقاط الرئيسية',
+    noData:'لا يوجد بيانات'
     
   },
 };

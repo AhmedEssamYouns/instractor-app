@@ -1,40 +1,72 @@
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import React from 'react';
-import { StyleSheet, View, Text, FlatList } from 'react-native';
-import { useTheme } from '../elements/theme-provider'; // Adjust the path according to your project structure
+import { useTheme } from '../elements/theme-provider';
 import { useLanguage } from '../elements/language-provider';
 import colors from '../../constants/colors';
-
-// Fake data for lectures
-const lecturesData = [
-  { id: 1, name: 'Lecture 1', attended: true },
-  { id: 2, name: 'Lecture 2', attended: false },
-  { id: 3, name: 'Lecture 3', attended: true },
-  { id: 4, name: 'Lecture 4', attended: true },
-  { id: 5, name: 'Lecture 5', attended: false },
-];
+import { db, FIREBASE_AUTH } from '../../firebase/config';
+import { doc, onSnapshot, getDoc } from 'firebase/firestore';
+import CustomText from '../elements/text';
 
 const LectureScreen = () => {
-  const { theme } = useTheme(); // Get current theme
-  const { language, translations } = useLanguage(); // Get current language and translations
-  const currentColors = colors[theme]; // Get the colors based on theme
+  const { theme } = useTheme();
+  const { language, translations } = useLanguage();
+  const currentColors = colors[theme];
+
+  const [lecturesData, setLecturesData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const userId = FIREBASE_AUTH.currentUser.uid
+
+  useEffect(() => {
+    const unsubscribeUser = onSnapshot(doc(db, 'users', userId), async (userDoc) => {
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const viewedLectures = userData.viewedLectures || [];
+
+        // Fetch lectures data in real-time
+        const lecturesPromises = viewedLectures.map(async (lectureId) => {
+          const lectureRef = doc(db, 'lectures', lectureId);
+          const lectureDoc = await getDoc(lectureRef); // Fetch the lecture document
+
+          return lectureDoc.exists() ? { id: lectureDoc.id, ...lectureDoc.data() } : null;
+        });
+
+        const lectures = await Promise.all(lecturesPromises);
+        setLecturesData(lectures.filter(lecture => lecture !== null)); // Filter out nulls
+      }
+      setLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribeUser();
+  }, [userId]);
 
   const renderLectureItem = ({ item }) => (
     <View style={[styles.lectureItem, { borderBottomColor: currentColors.borderColor }]}>
-      <Text style={[styles.name, { color: currentColors.text }]}>{item.name}</Text>
-      <Text style={[styles.attended, { color: currentColors.text2 }]}>
-        {item.attended ? translations.attended : translations.missed} 
-        {item.attended && <Feather color={currentColors.iconColor} name='check-circle' />}
-      </Text>
+      <CustomText style={[styles.name, { color: currentColors.text }]}>{item.title}</CustomText>
+      <CustomText style={[styles.attended, { color: currentColors.text2 }]}>
+        {translations.attended} <Feather color={'green'} name='check-circle' />
+      </CustomText>
     </View>
   );
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="white" style={styles.loader} />;
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: currentColors.background }]}>
       <FlatList
         data={lecturesData}
         renderItem={renderLectureItem}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item.id}
+        ListEmptyComponent={
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <CustomText>
+              {translations.noData}
+            </CustomText>
+          </View>
+        }
       />
     </View>
   );
@@ -58,6 +90,11 @@ const styles = StyleSheet.create({
   },
   attended: {
     fontSize: 16,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

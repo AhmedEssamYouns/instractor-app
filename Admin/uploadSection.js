@@ -6,12 +6,14 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc, updateDoc } from 'firebase/firestore';
 import * as Progress from 'react-native-progress';
 
-const UploadLectureVideo = () => {
+const UploadSectionVideo = () => {
     const [videoUri, setVideoUri] = useState(null);
     const [posterUri, setPosterUri] = useState(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [summary, setSummary] = useState(''); // State for summary
+    const [summary, setSummary] = useState('');
+    const [questions, setQuestions] = useState(''); // State for questions
+    const [mainPoints, setMainPoints] = useState(''); // State for main points
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
 
@@ -71,7 +73,7 @@ const UploadLectureVideo = () => {
             if (!response.ok) throw new Error(`Failed to fetch video: ${response.statusText}`);
 
             const blob = await response.blob();
-            const storageRef = ref(storage, `lectures/${title}.mp4`);
+            const storageRef = ref(storage, `sections/${title}.mp4`);
             const uploadTask = uploadBytesResumable(storageRef, blob);
 
             uploadTask.on('state_changed', (snapshot) => {
@@ -91,13 +93,11 @@ const UploadLectureVideo = () => {
                 posterDownloadURL = await getDownloadURL(posterRef);
             }
 
-            // Save the metadata to Firestore, including the summary
-            // Create a new document and get its ID
-            const docRef = await addDoc(collection(db, 'lectures'), {
+            // Save the metadata to Firestore, including questions and main points
+            const docRef = await addDoc(collection(db, 'sections'), {
                 title,
-                description,
-                vd:true,
-                summary, // Save summary to Firestore
+                questions: questions.split('\n'), // Split by line for multiple questions
+                mainPoints: mainPoints.split('\n'), // Split by line for multiple main points
                 poster: posterDownloadURL,
                 videoUrl: downloadURL,
                 createdAt: new Date(),
@@ -105,11 +105,14 @@ const UploadLectureVideo = () => {
 
             await updateDoc(docRef, { id: docRef.id });
 
+            // Clear inputs
             setVideoUri(null);
             setPosterUri(null);
             setTitle('');
             setDescription('');
-            setSummary(''); // Clear the summary
+            setSummary('');
+            setQuestions(''); // Clear questions
+            setMainPoints(''); // Clear main points
             setProgress(0);
         } catch (error) {
             console.error('Upload Error:', error);
@@ -120,7 +123,7 @@ const UploadLectureVideo = () => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Upload Lecture Video</Text>
+            <Text style={styles.title}>Upload Section Video</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Video Title"
@@ -129,17 +132,17 @@ const UploadLectureVideo = () => {
             />
             <TextInput
                 style={styles.input}
-                placeholder="Video Description"
-                value={description}
+                placeholder="Questions (one per line)"
+                value={questions}
                 multiline
-                onChangeText={setDescription}
+                onChangeText={setQuestions}
             />
             <TextInput
                 style={styles.input}
-                placeholder="Video Summary" // Summary input
-                value={summary}
+                placeholder="Main Points (one per line)"
+                value={mainPoints}
                 multiline
-                onChangeText={setSummary}
+                onChangeText={setMainPoints}
             />
             <TouchableOpacity style={styles.button} onPress={pickVideo}>
                 <Text style={styles.buttonText}>Pick a Video</Text>
@@ -206,4 +209,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default UploadLectureVideo;
+export default UploadSectionVideo;

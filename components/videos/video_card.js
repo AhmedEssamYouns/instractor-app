@@ -1,28 +1,83 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Import the Ionicons
+import React, { useEffect, useState } from 'react';
+import { View, Image, StyleSheet, Pressable, Touchable, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../elements/theme-provider';
-import colors from '../../constants/colors'; // Import colors
+import colors from '../../constants/colors';
+import CustomText from '../elements/text';
+import { FIREBASE_AUTH } from '../../firebase/config';
+import { collection, doc, onSnapshot, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase/config'; // Adjust based on your setup
+import { useNavigation } from '@react-navigation/native';
 
-// Placeholder image
 const placeholderImage = 'https://via.placeholder.com/100'; // URL to a placeholder image
 
+const formatDate = (timestamp) => {
+  const date = new Date(timestamp);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${day}/${month}`;
+};
+
 const VideoCard = ({ video }) => {
-  const { theme } = useTheme(); // Get the theme from context
-  const currentColors = colors[theme]; // Get colors based on the theme
+  const { theme } = useTheme();
+  const currentColors = colors[theme];
+  const [seen, setSeen] = useState(false);
+  const userId = FIREBASE_AUTH.currentUser.uid; // Get the current user's ID
+  useEffect(() => {
+    const userDocRef = doc(collection(db, 'users'), userId);
+
+    const unsubscribe = onSnapshot(userDocRef, (doc) => {
+      if (doc.exists()) {
+        const data = doc.data();
+        // console.log('User data:', data); // Log the data to see its structure
+        const viewedLectures = data.viewedLectures || [];
+        const viewedSections = data.viewedSections || [];
+
+        // Log the arrays for verification
+        console.log('Viewed Sections:', viewedSections);
+        console.log('Current Video id:', video.id); // Log current video URL
+
+        // Check if the videoUrl is in either viewed or viewedSections
+        if (viewedLectures.includes(video.id) || viewedSections.includes(video.id)) {
+          setSeen(true);
+          console.log('Video has been seen');
+        } else {
+          setSeen(false);
+          // console.log('Video has not been seen');
+        }
+      } else {
+        console.log('User document does not exist');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [video.videoUrl, userId]);
+  const navigation = useNavigation()
+
+
+  // Call this function when the video is watched (you might need a button or some trigger)
 
   return (
-    <View style={[styles.card, { backgroundColor: currentColors.cardBackground, borderColor: currentColors.borderColor }]}>
+    <TouchableOpacity
+      onPress={() =>
+        video.vd ?
+          navigation.navigate('VideoDetail', { videoId: video.id })
+          :
+          navigation.navigate('SectionDetail', { sectionId: video.id })
+
+      }
+      style={[styles.card, { backgroundColor: currentColors.cardBackground, borderColor: currentColors.borderColor }]}>
       <Image
-        source={{ uri: video.image || placeholderImage }}
+        source={{ uri: video.poster || placeholderImage }}
         style={styles.image}
       />
       <View style={styles.infoContainer}>
-        <Text style={[styles.name, { color: currentColors.text }]}>{video.name}</Text>
-        <Text style={[styles.points, { color: currentColors.text }]}>{video.points} points</Text>
+        <CustomText style={[styles.title, { color: currentColors.text2 }]}>{video.title}</CustomText>
+        <CustomText style={[styles.timestamp, { color: currentColors.text }]}>
+          {formatDate(Date(video.createdAt))}
+        </CustomText>
       </View>
-      <Text style={[styles.duration, { color: currentColors.text }]}>{video.duration}</Text>
-      {video.seen && (
+      {seen && (
         <Ionicons
           name='checkmark-done-circle'
           style={styles.icon}
@@ -30,7 +85,7 @@ const VideoCard = ({ video }) => {
           color={'green'}
         />
       )}
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -44,7 +99,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     elevation: 2,
     position: 'relative',
-    borderWidth: 1, 
+    borderWidth: 1,
   },
   image: {
     width: 100,
@@ -55,24 +110,17 @@ const styles = StyleSheet.create({
   infoContainer: {
     height: '100%',
   },
-  name: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    position: 'absolute',
-    left: 0,
+  title: {
+    fontSize: 14,
+    width: 180,
+    textAlign: 'left',
   },
-  duration: {
-    fontSize: 16,
+  timestamp: {
+    fontSize: 12,
+    marginTop: 5,
+    color: 'gray',
     position: 'absolute',
-    right: 10,
-    top: 10,
-  },
-  points: {
-    fontSize: 16,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
+    bottom: 10,
   },
   icon: {
     position: 'absolute',

@@ -13,10 +13,10 @@ const BackButton = () => {
   const currentColors = colors[theme]; // Get the current theme's colors
 
   // If language is Arabic ('ar'), position the button on the right, otherwise on the left
-  const buttonPosition = language === 'ar' ? { right: 10 } : { left: 10 };
+  const buttonPosition = language === 'ar' ? { right: 20 } : { left: 20 };
 
   return (
-    <TouchableOpacity style={[styles.button, buttonPosition]} onPress={() => navigation.goBack()}>
+    <TouchableOpacity style={[styles.button, buttonPosition,{backgroundColor:currentColors.background,borderRadius:60}]} onPress={() => navigation.goBack()}>
       <Icon name="arrow-back" size={35} color={currentColors.text} />
     </TouchableOpacity>
   );
@@ -24,9 +24,10 @@ const BackButton = () => {
 
 const styles = StyleSheet.create({
   button: {
+    zIndex:2,
     position: 'absolute',
-    top: 10,
-    padding: 10,
+    top: 20,
+    padding: 5,
   },
 });
 

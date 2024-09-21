@@ -1,40 +1,72 @@
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, FlatList, ActivityIndicator } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import React from 'react';
-import { StyleSheet, View, Text, FlatList } from 'react-native';
-import { useTheme } from '../elements/theme-provider'; // Adjust the path according to your project structure
-import { useLanguage } from '../elements/language-provider'; // Adjust the path according to your project structure
-import colors from '../../constants/colors'; // Adjust the path according to your project structure
-
-// Fake data for sections
-const sectionsData = [
-  { id: 1, name: 'Section 1', attended: true },
-  { id: 2, name: 'Section 2', attended: false },
-  { id: 3, name: 'Section 3', attended: true },
-  { id: 4, name: 'Section 4', attended: true },
-  { id: 5, name: 'Section 5', attended: false },
-];
+import { useTheme } from '../elements/theme-provider';
+import { useLanguage } from '../elements/language-provider';
+import colors from '../../constants/colors';
+import { db, FIREBASE_AUTH } from '../../firebase/config'; // Adjust import path
+import { doc, onSnapshot, getDoc } from 'firebase/firestore';
+import CustomText from '../elements/text';
 
 const SectionScreen = () => {
-  const { theme } = useTheme(); // Get current theme
-  const { language, translations } = useLanguage(); // Get current language and translations
-  const currentColors = colors[theme]; // Get the colors based on theme
+  const { theme } = useTheme();
+  const { language, translations } = useLanguage();
+  const currentColors = colors[theme];
+
+  const [sectionsData, setSectionsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const userId = FIREBASE_AUTH.currentUser.uid;
+
+  useEffect(() => {
+    const unsubscribeUser = onSnapshot(doc(db, 'users', userId), async (userDoc) => {
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const viewedSections = userData.viewedSections || [];
+
+        // Fetch sections data in real-time
+        const sectionsPromises = viewedSections.map(async (sectionId) => {
+          const sectionRef = doc(db, 'sections', sectionId);
+          const sectionDoc = await getDoc(sectionRef); // Fetch the section document
+
+          return sectionDoc.exists() ? { id: sectionDoc.id, ...sectionDoc.data() } : null;
+        });
+
+        const sections = await Promise.all(sectionsPromises);
+        setSectionsData(sections.filter(section => section !== null)); // Filter out nulls
+      }
+      setLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribeUser();
+  }, [userId]);
 
   const renderSectionItem = ({ item }) => (
     <View style={[styles.sectionItem, { borderBottomColor: currentColors.borderColor }]}>
-      <Text style={[styles.name, { color: currentColors.text }]}>{item.name}</Text>
-      <Text style={[styles.attended, { color: currentColors.text2 }]}>
-        {item.attended ? translations.attended : translations.missed} 
-        {item.attended && <Feather color={currentColors.iconColor} name='check-circle' />}
-      </Text>
+      <CustomText style={[styles.name, { color: currentColors.text }]}>{item.title}</CustomText>
+      <CustomText style={[styles.attended, { color: currentColors.text2 }]}>
+        {translations.attended} <Feather color={'green'} name='check-circle' />
+      </CustomText>
     </View>
   );
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="white" style={styles.loader} />;
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: currentColors.background }]}>
       <FlatList
         data={sectionsData}
         renderItem={renderSectionItem}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item.id}
+        ListEmptyComponent={
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <CustomText>
+              {translations.noData}
+            </CustomText>
+          </View>
+        }
       />
     </View>
   );
@@ -54,10 +86,16 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   name: {
+    width:200,
     fontSize: 18,
   },
   attended: {
     fontSize: 16,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

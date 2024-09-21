@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity, StyleSheet, Text, ActivityIndicator, Alert } from 'react-native';
+import { View, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import CustomText from '../components/elements/text';
-import UploadLectureVideo from './uploadingVideos';
+import UploadSectionVideo from './uploadSection';
 
-const VideoList = () => {
-    const [videos, setVideos] = useState([]);
+const SectionList = () => {
+    const [sections, setSections] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(db, 'lectures'), (snapshot) => {
-            const videoList = snapshot.docs.map(doc => ({
+        const unsubscribe = onSnapshot(collection(db, 'sections'), (snapshot) => {
+            const sectionList = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
             }));
-            setVideos(videoList);
+            setSections(sectionList);
             setLoading(false);
         });
 
@@ -28,7 +28,7 @@ const VideoList = () => {
     const renderItem = ({ item }) => (
         <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('VideoDetail', { videoId: item.id })}
+            onPress={() => navigation.navigate('SectionDetail', { sectionId: item.id })} // Adjust to your detail screen
         >
             <MaterialIcons name="video-library" size={24} color="black" style={styles.icon} />
             <View style={styles.cardContent}>
@@ -43,8 +43,8 @@ const VideoList = () => {
                 <ActivityIndicator size="large" color="#007BFF" />
             ) : (
                 <FlatList
-                    ListHeaderComponent={ <UploadLectureVideo/>}
-                    data={videos}
+                    ListHeaderComponent={<UploadSectionVideo />} // Component for uploading sections
+                    data={sections}
                     keyExtractor={item => item.id}
                     renderItem={renderItem}
                     contentContainerStyle={styles.list}
@@ -82,4 +82,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default VideoList;
+export default SectionList;
