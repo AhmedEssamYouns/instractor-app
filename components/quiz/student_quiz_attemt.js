@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { View, FlatList, ActivityIndicator, Pressable, Alert, StyleSheet, BackHandler } from 'react-native';
+import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
+import { db, FIREBASE_AUTH } from '../../firebase/config';
 import CustomCheckbox from '../elements/checkbox';
+import { useTheme } from '../elements/theme-provider';
+import colors from '../../constants/colors';
+import { useLanguage } from '../elements/language-provider';
+import CustomText from '../elements/text';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 
 const StudentQuizAttempt = ({ route }) => {
     const { quizId } = route.params;
     const [quiz, setQuiz] = useState(null);
+    const { theme } = useTheme();
+    const currentColors = colors[theme];
+    const { language, translations } = useLanguage();
     const [questions, setQuestions] = useState([]);
+    const [fullmark, setFull] = useState(null);
     const [answers, setAnswers] = useState([]);
     const [timeLeft, setTimeLeft] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const navigation = useNavigation();
 
     useEffect(() => {
         const fetchQuiz = async () => {
@@ -21,14 +33,14 @@ const StudentQuizAttempt = ({ route }) => {
 
                 const questionsRef = collection(db, 'quizzes', quizId, 'questions');
                 const questionsSnapshot = await getDocs(questionsRef);
+                const numberOfQuestions = questionsSnapshot.size;
+                setFull(numberOfQuestions); // Set fullmark based on number of questions
                 const questionsData = questionsSnapshot.docs.map(doc => doc.data());
                 setQuestions(questionsData);
-
                 setAnswers(new Array(questionsData.length).fill(null));
-                
-                // Set countdown timer
+
                 if (quizData.timeLimit) {
-                    setTimeLeft(quizData.timeLimit * 60); // Convert minutes to seconds
+                    setTimeLeft(quizData.timeLimit * 60);
                 }
             } catch (error) {
                 console.error('Error fetching quiz: ', error);
@@ -39,32 +51,52 @@ const StudentQuizAttempt = ({ route }) => {
     }, [quizId]);
 
     useEffect(() => {
-        let timer;
-        if (timeLeft > 0 && !isSubmitting) {
-            timer = setInterval(() => {
-                setTimeLeft(prevTime => {
-                    if (prevTime <= 1) {
-                        clearInterval(timer);
-                        handleSubmit();
-                        return 0;
-                    }
-                    return prevTime - 1;
-                });
-            }, 1000);
-        }
+        const timer = setInterval(() => {
+            if (timeLeft > 0 && !isSubmitting) {
+                setTimeLeft(prevTime => prevTime - 1);
+            }
+        }, 1000);
         return () => clearInterval(timer);
     }, [timeLeft, isSubmitting]);
+
+    // Handle back button press
+    useEffect(() => {
+        const handleBackPress = () => {
+            if (fullmark !== null) {
+                Alert.alert(
+                    translations.closeAlertTitle,
+                    translations.closeAlertMessage,
+                    [
+                        { text: translations.closeAlertCancel, onPress: () => { }, style: 'cancel' },
+                        { text: translations.closeAlertConfirm, onPress: () => handleSubmit(true) },
+                    ]
+                );
+            }
+            return true; // Prevent default back behavior
+        };
+
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+        return () => backHandler.remove();
+    }, [isSubmitting, fullmark]);
 
     const handleAnswerChange = (index, optionIndex) => {
         const newAnswers = [...answers];
         newAnswers[index] = optionIndex;
         setAnswers(newAnswers);
-    };
+    }
 
-    const handleSubmit = () => {
-        if (isSubmitting) return;
+    const handleSubmit = async (forceSubmit = false) => {
+        if (isSubmitting || fullmark === null) return; // Ensure fullmark is not null before submitting
+
+        if (!forceSubmit) {
+            const unanswered = answers.some(answer => answer === null);
+            if (unanswered) {
+                Alert.alert(translations.answerAllBeforeSubmit);
+                return;
+            }
+        }
+
         setIsSubmitting(true);
-
         let score = 0;
         questions.forEach((question, index) => {
             if (answers[index] === question.correctOption) {
@@ -72,64 +104,153 @@ const StudentQuizAttempt = ({ route }) => {
             }
         });
 
-        alert(`Your score: ${score}/${questions.length}`);
-        // Optionally, navigate to another screen or perform additional actions
+        Alert.alert(
+            translations.timeUp,
+            translations.scoreMessage.replace("{score}", score).replace("{total}", fullmark)
+        );
+
+        try {
+            await setDoc(doc(db, 'grades', quizId + '_' + FIREBASE_AUTH.currentUser.uid), {
+                quizId: quizId,
+                userId: FIREBASE_AUTH.currentUser.uid,
+                score: score,
+                quizName:quiz.title,
+                fullmark: fullmark,
+                timestamp: new Date(),
+            });
+            navigation.navigate('tabs', { screen: 'Profile' });
+        } catch (error) {
+            console.error('Error saving grade: ', error);
+        }
+    };
+
+    const handleNextQuestion = () => {
+        if (currentQuestionIndex < questions.length - 1) {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+        }
+    };
+
+    const handlePreviousQuestion = () => {
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex(currentQuestionIndex - 1);
+        }
     };
 
     if (!quiz || questions.length === 0) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
+        return (
+            <View style={{ backgroundColor: currentColors.background, flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <ActivityIndicator size="large" color={currentColors.text} />
+            </View>
+        );
     }
 
     return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.title}>Quiz: {quiz.title}</Text>
-            <Text style={styles.timer}>Time Left: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</Text>
-            {questions.map((question, index) => (
-                <View key={index} style={styles.questionContainer}>
-                    <Text style={styles.questionText}>{question.text}</Text>
-                    {question.options.map((option, optionIndex) => (
-                        <View key={optionIndex} style={styles.optionContainer}>
-                            <CustomCheckbox
-                                isChecked={answers[index] === optionIndex}
-                                onPress={() => handleAnswerChange(index, optionIndex)}
-                                label={option}
-                            />
-                        </View>
-                    ))}
-                </View>
-            ))}
-            <Button title="Submit" onPress={handleSubmit} disabled={isSubmitting} />
-        </ScrollView>
+        <View style={[styles.container, { backgroundColor: currentColors.background }]}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: 'grey', marginBottom: 17 }}>
+                <CustomText style={styles.title}>{quiz.title}</CustomText>
+                <CustomText style={styles.timer}>{translations.timeLeft} {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</CustomText>
+            </View>
+
+            <CustomText style={styles.order}>
+                {`${translations.question} ${currentQuestionIndex + 1} ${translations.of} ${questions.length}`}
+            </CustomText>
+
+            <FlatList
+                data={[questions[currentQuestionIndex]]}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item: question }) => (
+                    <View style={styles.questionContainer}>
+                        <CustomText style={styles.questionText}>{question.text}</CustomText>
+                        {question.options.map((option, optionIndex) => (
+                            <Pressable key={optionIndex} style={[styles.optionContainer, {
+                                backgroundColor: currentColors.cardBackground,
+                                borderRadius: 10,
+                                padding: 5,
+                                elevation: 1,
+                                borderWidth: 1,
+                                borderColor: answers[currentQuestionIndex] === optionIndex ? 'green' : currentColors.border
+                            }]}
+                                onPress={() => handleAnswerChange(currentQuestionIndex, optionIndex)}
+                            >
+                                <CustomCheckbox
+                                    onPress={() => handleAnswerChange(currentQuestionIndex, optionIndex)}
+                                    isChecked={answers[currentQuestionIndex] === optionIndex}
+                                    label={option}
+                                />
+                            </Pressable>
+                        ))}
+                    </View>
+                )}
+            />
+
+            <View style={styles.navigationContainer}>
+                {currentQuestionIndex > 0 && (
+                    <TouchableOpacity style={styles.button} onPress={handlePreviousQuestion}>
+                        <CustomText style={{ color: 'white' }}>{translations.previous}</CustomText>
+                    </TouchableOpacity>
+                )}
+
+                {currentQuestionIndex < questions.length - 1 && answers[currentQuestionIndex] !== null && (
+                    <TouchableOpacity style={styles.button} onPress={handleNextQuestion}>
+                        <CustomText style={{ color: 'white' }}>{translations.next}</CustomText>
+                    </TouchableOpacity>
+                )}
+
+                {currentQuestionIndex === questions.length - 1 && answers[currentQuestionIndex] !== null && (
+                    <TouchableOpacity style={[styles.button, { backgroundColor: currentColors.buttonColor }]} onPress={() => handleSubmit()}>
+                        <CustomText style={{ color: 'white' }}>{translations.submitAns}</CustomText>
+                    </TouchableOpacity>
+                )}
+            </View>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        justifyContent: 'center',
+        flex: 1,
     },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
+        fontSize: 20,
         marginBottom: 20,
     },
     timer: {
-        fontSize: 18,
+        fontSize: 12,
         fontWeight: '600',
         marginBottom: 20,
         color: '#FF0000',
     },
     questionContainer: {
-        marginBottom: 20,
+        marginBottom: 10,
     },
     questionText: {
         fontSize: 18,
         fontWeight: '600',
         marginBottom: 10,
     },
+    order: {
+        fontSize: 16,
+        marginBottom: 10,
+        textAlign: 'center',
+    },
     optionContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
+    },
+    navigationContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    button: {
+        borderRadius: 10,
+        padding: 10,
+        backgroundColor: 'grey',
+        alignItems: 'center',
+        marginBottom: 20,
     },
 });
 

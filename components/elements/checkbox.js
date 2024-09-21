@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // Using @expo/vector-icons
+import CustomText from './text';
 
 const CustomCheckbox = ({ isChecked, onPress, label }) => {
     return (
@@ -12,7 +13,7 @@ const CustomCheckbox = ({ isChecked, onPress, label }) => {
                     <MaterialIcons name="check-box-outline-blank" size={24} color="gray" />
                 )}
             </View>
-            {label && <Text style={styles.label}>{label}</Text>}
+            {label && <CustomText style={[styles.label]}>{label}</CustomText>}
         </TouchableOpacity>
     );
 };

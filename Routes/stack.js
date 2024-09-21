@@ -81,7 +81,9 @@ export default function StackScreen() {
                             component={ChangePasswordScreen}
                             options={{ headerShown: false }}
                         />
-                        <Stack.Screen name="QuizAttempt" component={StudentQuizAttempt} />
+                        <Stack.Screen name="QuizAttempt" component={StudentQuizAttempt}
+                            options={{ headerShown: false }}
+                         />
                         <Stack.Screen
                             name="ForgotPassword"
                             component={ForgotPasswordScreen}
