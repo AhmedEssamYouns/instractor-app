@@ -1,15 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, TextInput, StyleSheet, Text } from 'react-native';
+import { View, TouchableOpacity, TextInput, StyleSheet, Animated, I18nManager, Pressable, Dimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useTheme } from './theme-provider';
 import colors from '../../constants/colors';
+import { useLanguage } from './language-provider';
+
+
+const screenWidth = Dimensions.get('window').width // Get the screen width
 
 const FilterBar = ({ data, setData, originalData }) => {
     const { theme } = useTheme();
     const currentColors = colors[theme];
+    const { language, translations } = useLanguage();
+    const [open, setopen] = useState(true)
     const [searchQuery, setSearchQuery] = useState('');
-    const [showSearchInput, setShowSearchInput] = useState(false);
     const [sortOrder, setSortOrder] = useState('Newest to Oldest');
+    const [animation] = useState(new Animated.Value(0)); // Animation for expanding the search bar width
+    const [showSearchInput, setShowSearchInput] = useState(false);
+
+
+
+    const [rotate] = useState(new Animated.Value(0));
+    const [expanded, setexpanded] = useState(false)
+    useEffect(() => {
+        Animated.timing(rotate, {
+            toValue: expanded ? 1 : 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+    }, [expanded]);
+
+    const rotation2 = rotate.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0deg', '90deg'],
+    });
+
 
     useEffect(() => {
         filterData();
@@ -28,19 +53,17 @@ const FilterBar = ({ data, setData, originalData }) => {
         // Sort the data
         filteredData.sort((a, b) => {
             if (sortOrder === 'Newest to Oldest') {
-                return b.createdAt - a.createdAt; // Assuming createdAt is a timestamp
+                return b.createdAt - a.createdAt;
             } else {
                 return a.createdAt - b.createdAt;
             }
         });
 
-        // Create indexed data
         const indexedData = filteredData.map((item, index) => ({
             ...item,
             index: sortOrder === 'Newest to Oldest' ? index + 1 : filteredData.length - index
         }));
 
-        // Update displayed data only after filtering and sorting
         setData(indexedData);
     };
 
@@ -48,52 +71,76 @@ const FilterBar = ({ data, setData, originalData }) => {
         setSearchQuery(text);
     };
 
-    const handleClearFilters = () => {
-        setSearchQuery('');
-        setData(originalData); // Reset to original data
-    };
-
     const toggleSortOrder = () => {
         setSortOrder(prevOrder => (prevOrder === 'Newest to Oldest' ? 'Oldest to Newest' : 'Newest to Oldest'));
     };
 
     const handleSearchToggle = () => {
+        setexpanded(!expanded)
+        setopen(!open)
         setShowSearchInput(prev => {
             const newShowSearchInput = !prev;
+
+            Animated.timing(animation, {
+                toValue: newShowSearchInput ? 1 : 0,
+                duration: 400,
+                useNativeDriver: false, // Width animation
+            }).start();
+
             if (!newShowSearchInput) {
                 // When closing the search, reset data
                 setSearchQuery('');
                 setData(originalData);
             }
+
             return newShowSearchInput;
         });
     };
 
+    // Animate width from 0 to full width
+    const animatedWidth = animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, screenWidth * 0.8], // Adjust this value to control how much it expands
+    });
+
     return (
         <View style={{ paddingBottom: 10 }}>
             <View style={[styles.optionsContainer, { backgroundColor: currentColors.background }]}>
-                <TouchableOpacity style={[styles.optionIcon, { backgroundColor: currentColors.cardBackground, borderColor: currentColors.borderColor, borderWidth: 1 }]} onPress={toggleSortOrder}>
-                    <FontAwesome name="sort" size={24} color={currentColors.iconFocus} />
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.optionIcon, { backgroundColor: currentColors.cardBackground, borderColor: currentColors.borderColor, borderWidth: 1 }]} onPress={handleSearchToggle}>
-                    <FontAwesome name="search" size={24} color={currentColors.iconFocus} />
-                </TouchableOpacity>
-            </View>
+                {open &&
+                    <TouchableOpacity
+                        style={[styles.optionIcon, { backgroundColor: currentColors.cardBackground, borderColor: currentColors.borderColor, borderWidth: 1 }]}
+                        onPress={toggleSortOrder}
+                    >
+                        <FontAwesome name="sort" size={24} color={currentColors.iconFocus} />
+                    </TouchableOpacity>
+                }
+                {/* Search icon and expanding search bar */}
+                <View style={styles.searchContainer}>
+                    {/* Animated search bar */}
+                    <Animated.View style={[styles.animatedSearch, { width: animatedWidth, backgroundColor: currentColors.cardBackground, }]}>
+                        <TextInput
+                            style={[styles.searchInput, { backgroundColor: currentColors.cardBackground, borderColor: currentColors.borderColor }]}
+                            placeholder={translations.search}
+                            placeholderTextColor={currentColors.text}
+                            onChangeText={handleSearchChange}
+                            value={searchQuery}
+                        />
+                    </Animated.View>
 
-            {showSearchInput && (
-                <TextInput
-                    style={[styles.searchInput, { backgroundColor: currentColors.cardBackground, borderColor: currentColors.borderColor }]}
-                    placeholder="Search..."
-                    placeholderTextColor={currentColors.text}
-                    onChangeText={handleSearchChange}
-                    value={searchQuery}
-                />
-            )}
+                    <Pressable
+                        style={[styles.optionIcon, { backgroundColor: currentColors.cardBackground, borderColor: currentColors.borderColor, borderWidth: 1 }]}
+                        onPress={handleSearchToggle}
 
-            <View style={styles.sortContainer}>
-   
+                    >
+                        <Animated.View style={{ transform: [{ rotate: rotation2 }] }}>
+                            <FontAwesome name="search" size={24} color={currentColors.iconFocus} />
+                        </Animated.View>
+
+                    </Pressable>
+
+                </View>
             </View>
-        </View>
+        </View >
     );
 };
 
@@ -115,24 +162,27 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 50,
     },
-    searchInput: {
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end', // Align content to the right
+        flex: 1,
+        zIndex: 2
+    },
+    animatedSearch: {
+        position: 'absolute', // Absolutely positioned to expand from the right
+        right: 0, // Expand from the right side
         height: 40,
         borderRadius: 20,
-        margin: 10,
+        marginRight: 10,
         paddingHorizontal: 10,
         marginBottom: 10,
         borderLeftWidth: 1,
         borderRightWidth: 1,
-        elevation: 3,
     },
-    sortContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: 10,
-    },
-    sortText: {
-        textAlign: 'center',
-        fontSize: 14,
+    searchInput: {
+        height: '100%',
+        width: '100%',
     },
 });
 

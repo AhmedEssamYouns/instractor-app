@@ -95,7 +95,8 @@ const translations = {
     description:'description',
     summary:'summary',
     mainPoints: 'Main Points',
-    noData:'no data yet'
+    noData:'no data yet',
+    search:'search'
   },
   ar: {
     home: 'الرئيسية',
@@ -194,7 +195,8 @@ const translations = {
     description:'الشرح',
     summary:'الملخص',
     mainPoints: 'النقاط الرئيسية',
-    noData:'لا يوجد بيانات'
+    noData:'لا يوجد بيانات',
+    search:'بحث بالاسم'
     
   },
 };

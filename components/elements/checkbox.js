@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     label: {
+        width:'90%',
         marginLeft: 8,
         fontSize: 16,
     },

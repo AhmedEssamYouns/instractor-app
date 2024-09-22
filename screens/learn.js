@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Dimensions, ActivityIndicator, LogBox } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import VideoList from '../components/videos/videos_list';
 import FilterBar from '../components/elements/filter';
@@ -9,6 +9,8 @@ import { useLanguage } from '../components/elements/language-provider';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
+
+LogBox.ignoreAllLogs()
 const initialLayout = { width: Dimensions.get('window').width };
 
 // Lectures tab content
