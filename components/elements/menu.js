@@ -24,7 +24,6 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
 
       // If the user is an admin, set the theme to light and language to English
       if (adminStatus) {
-        setTheme('light');
         setLanguage('en');
       }
     };
@@ -43,7 +42,6 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
         onClose();
         break;
       case 'mode':
-        if (!isAdmin) {
           const newTheme = currentTheme === 'light' ? 'dark' : 'light';
           try {
             await AsyncStorage.setItem('appTheme', newTheme); // Save the theme in AsyncStorage
@@ -52,7 +50,6 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
           } catch (error) {
             console.error('Failed to save theme:', error);
           }
-        }
         break;
       case 'logout':
         signOut();
@@ -112,16 +109,18 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
               <Text style={[styles.optionText, { color: colors[theme].text }]}>{translations.password}</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity
+              style={[styles.option, { backgroundColor: colors[theme].button }]}
+              onPress={() => handleOptionPress('mode')}
+            >
+              <Ionicons name={icon} size={20} color={colors[theme].text} style={styles.icon} />
+              <Text style={[styles.optionText, { color: colors[theme].text }]}>{text}</Text>
+            </TouchableOpacity>
+
             {/* Hide theme and language options if the user is an admin */}
             {!isAdmin && (
               <>
-                <TouchableOpacity
-                  style={[styles.option, { backgroundColor: colors[theme].button }]}
-                  onPress={() => handleOptionPress('mode')}
-                >
-                  <Ionicons name={icon} size={20} color={colors[theme].text} style={styles.icon} />
-                  <Text style={[styles.optionText, { color: colors[theme].text }]}>{text}</Text>
-                </TouchableOpacity>
+
 
                 <TouchableOpacity
                   style={[styles.option, { backgroundColor: colors[theme].button, borderBottomWidth: 1, borderColor: colors[theme].borderColor }]}

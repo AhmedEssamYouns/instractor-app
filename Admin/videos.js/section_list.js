@@ -6,13 +6,16 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import CustomText from '../../components/elements/text';
 import UploadSectionVideo from './uploadSection';
+import { useTheme } from '../../components/elements/theme-provider';
+import colors from '../../constants/colors';
 
 const SectionList = () => {
     const [sections, setSections] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isHeaderVisible, setHeaderVisible] = useState(false); // State to toggle header visibility
     const navigation = useNavigation();
-
+    const { theme } = useTheme()
+    const currentColors = colors[theme]
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, 'sections'), (snapshot) => {
             const sectionList = snapshot.docs.map(doc => ({
@@ -51,12 +54,12 @@ const SectionList = () => {
     };
 
     const renderItem = ({ item }) => (
-        <View style={styles.card}>
+        <View style={[styles.card,{backgroundColor:currentColors.cardBackground}]}>
             <TouchableOpacity
                 style={styles.cardContent}
                 onPress={() => navigation.navigate('SectionDetail', { sectionId: item.id })} // Adjust to your detail screen
             >
-                <MaterialIcons name="video-library" size={24} color="black" style={styles.icon} />
+                <MaterialIcons name="video-library" size={24} color={currentColors.text2} style={styles.icon} />
                 <CustomText style={styles.title}>{item.title}</CustomText>
             </TouchableOpacity>
             {/* Delete button */}
@@ -71,12 +74,12 @@ const SectionList = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container,{backgroundColor:currentColors.background}]}>
             {/* Button to show/hide Upload Section */}
             <TouchableOpacity onPress={toggleHeader} style={styles.toggleButton}>
-                <Text style={styles.toggleButtonText}>
+                <CustomText style={styles.toggleButtonText}>
                     {isHeaderVisible ? 'Hide Upload Section' : 'Upload Section'}
-                </Text>
+                </CustomText>
             </TouchableOpacity>
 
             {loading ? (
@@ -98,7 +101,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#fff',
     },
     card: {
         flexDirection: 'row',

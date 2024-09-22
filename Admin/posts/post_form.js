@@ -3,6 +3,8 @@ import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator,
 import { FontAwesome, Entypo, MaterialIcons } from '@expo/vector-icons';
 import { addPost, pickDocument, pickImage, updatePost, uploadFile } from '../../firebase/posts';
 import CustomText from '../../components/elements/text';
+import { useTheme } from '../../components/elements/theme-provider';
+import colors from '../../constants/colors';
 
 const PostForm = ({ post, onSave, onClose }) => {
     const [title, setTitle] = useState(post ? post.title : '');
@@ -60,10 +62,14 @@ const PostForm = ({ post, onSave, onClose }) => {
         }
     };
 
+    const { theme } = useTheme(); // Get theme from context
+    const currentColors = colors[theme];
+
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: currentColors.cardBackground }]}>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <FontAwesome name="close" size={24} color="#000" />
+                <FontAwesome name="close" size={24} color={currentColors.text} />
             </TouchableOpacity>
             <TextInput
                 style={styles.input}
@@ -82,7 +88,7 @@ const PostForm = ({ post, onSave, onClose }) => {
                 <TouchableOpacity style={styles.iconButton} onPress={() => pickImage(setImageUri)}>
                     <Entypo name="image" size={24} color="#007bff" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton} onPress={()=>pickDocument(setDocumentUri,setDocumentName)}>
+                <TouchableOpacity style={styles.iconButton} onPress={() => pickDocument(setDocumentUri, setDocumentName)}>
                     <MaterialIcons name="attach-file" size={24} color="#007bff" />
                 </TouchableOpacity>
             </View>
@@ -92,7 +98,7 @@ const PostForm = ({ post, onSave, onClose }) => {
                         <View style={styles.selectedItem}>
                             <Image source={{ uri: imageUri }} style={styles.selectedImage} />
                             <TouchableOpacity style={styles.cancelButton} onPress={() => cancelSelection('image')}>
-                                <CustomText style={{ fontSize: 10 }}>cancel</CustomText>
+                                <CustomText style={{ fontSize: 10,color:'black' }}>cancel</CustomText>
                                 <FontAwesome name="close" size={15} color="black" />
                             </TouchableOpacity>
                         </View>
@@ -103,7 +109,7 @@ const PostForm = ({ post, onSave, onClose }) => {
                                 {documentName || 'Document Selected'}
                             </Text>
                             <TouchableOpacity style={styles.cancelButton} onPress={() => cancelSelection('document')}>
-                                <CustomText style={{ fontSize: 10 }}>cancel</CustomText>
+                            <CustomText style={{ fontSize: 10,color:'black'}}>cancel</CustomText>
                                 <FontAwesome name="close" size={15} color="black" />
                             </TouchableOpacity>
                         </View>
@@ -125,7 +131,6 @@ const styles = StyleSheet.create({
     container: {
         margin: 16,
         padding: 10,
-        backgroundColor: '#eee',
         borderRadius: 8,
         elevation: 4,
     },

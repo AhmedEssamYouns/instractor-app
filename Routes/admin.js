@@ -47,10 +47,11 @@ export default function TeacherTabs() {
         <>
             <Tab.Navigator
                 screenOptions={({ route }) => ({
+                    
                     tabBarActiveBackgroundColor: currentColors.background,
                     tabBarInactiveBackgroundColor: currentColors.background,
                     tabBarShowLabel: false,
-                    headerTitleStyle: { fontFamily: 'bold' },
+                    headerTitleStyle: { fontFamily: 'bold',color:currentColors.text },
                     tabBarIcon: ({ focused, color }) => {
                         let iconName;
 

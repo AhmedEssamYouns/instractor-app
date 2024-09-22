@@ -3,13 +3,17 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Activity
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import CustomCheckbox from '../../components/elements/checkbox';
+import { useTheme } from '../../components/elements/theme-provider';
+import colors from '../../constants/colors';
+import CustomText from '../../components/elements/text';
 
 const TeacherQuizCreation = () => {
     const [title, setTitle] = useState('');
     const [timeLimit, setTimeLimit] = useState('');
     const [questions, setQuestions] = useState([{ text: '', options: ['', '', '', ''], correctOption: 0 }]);
     const [loading, setLoading] = useState(false); // Loading state
-
+    const { theme } = useTheme()
+    const currentColors = colors[theme]
     const handleAddQuestion = () => {
         setQuestions([...questions, { text: '', options: ['', '', '', ''], correctOption: 0 }]);
     };
@@ -91,7 +95,7 @@ const TeacherQuizCreation = () => {
 
     const renderQuestion = ({ item, index }) => (
         <View key={index} style={styles.questionContainer}>
-            <Text style={styles.questionTitle}>Question {index + 1}</Text>
+            <CustomText style={styles.questionTitle}>Question {index + 1}</CustomText>
             <TextInput
                 value={item.text}
                 onChangeText={(text) => {
@@ -127,11 +131,15 @@ const TeacherQuizCreation = () => {
     );
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, {
+            backgroundColor: currentColors.cardBackground,
+            borderRadius: 10, borderWidth: 1, borderColor:currentColors.borderColor,
+            marginBottom:15,
+        }]}>
             <FlatList
                 ListHeaderComponent={
                     <>
-                        <Text style={styles.title}>Create Quiz</Text>
+                        <CustomText style={styles.title}>Create Quiz</CustomText>
                         <TextInput
                             value={title}
                             onChangeText={setTitle}
@@ -174,14 +182,11 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         paddingHorizontal: 20,
-        backgroundColor: '#f5f5f5',
     },
     title: {
         fontSize: 24,
-        fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
-        color: '#333',
     },
     input: {
         borderWidth: 1,
@@ -195,7 +200,6 @@ const styles = StyleSheet.create({
         width: '100%', // Ensure consistent width for all inputs
     },
     questionContainer: {
-        backgroundColor: '#fff',
         padding: 15,
         borderRadius: 10,
         marginBottom: 20,
@@ -205,12 +209,13 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
+        backgroundColor:'#ddd'
     },
     questionTitle: {
         fontSize: 18,
         fontWeight: '600',
         marginBottom: 10,
-        color: '#333',
+        color:'black'
     },
     optionContainer: {
         width: 200,

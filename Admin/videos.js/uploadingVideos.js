@@ -5,6 +5,9 @@ import { storage, db } from '../../firebase/config';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc, updateDoc } from 'firebase/firestore';
 import * as Progress from 'react-native-progress';
+import { useTheme } from '../../components/elements/theme-provider';
+import colors from '../../constants/colors';
+import CustomText from '../../components/elements/text';
 
 const UploadLectureVideo = () => {
     const [videoUri, setVideoUri] = useState(null);
@@ -14,6 +17,8 @@ const UploadLectureVideo = () => {
     const [summary, setSummary] = useState(''); // State for summary
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const { theme } = useTheme()
+    const currentColors = colors[theme]
 
     const pickVideo = async () => {
         try {
@@ -119,8 +124,8 @@ const UploadLectureVideo = () => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Upload Lecture Video</Text>
+        <ScrollView contentContainerStyle={[styles.container,{backgroundColor:currentColors.cardBackground}]}>
+            <CustomText style={styles.title}>Upload Lecture Video</CustomText>
             <TextInput
                 style={styles.input}
                 placeholder="Video Title"
@@ -142,23 +147,23 @@ const UploadLectureVideo = () => {
                 onChangeText={setSummary}
             />
             <TouchableOpacity style={styles.button} onPress={pickVideo}>
-                <Text style={styles.buttonText}>Pick a Video</Text>
+                <CustomText style={styles.buttonText}>Pick a Video</CustomText>
             </TouchableOpacity>
-            {videoUri && <Text style={styles.videoUri}>Selected Video: {videoUri}</Text>}
+            {videoUri && <CustomText style={styles.videoUri}>Selected Video: {videoUri}</CustomText>}
 
             <TouchableOpacity style={styles.button} onPress={pickPoster}>
-                <Text style={styles.buttonText}>Pick a Poster</Text>
+                <CustomText style={styles.buttonText}>Pick a Poster</CustomText>
             </TouchableOpacity>
-            {posterUri && <Text style={styles.videoUri}>Selected Poster: {posterUri}</Text>}
+            {posterUri && <CustomText style={styles.videoUri}>Selected Poster: {posterUri}</CustomText>}
 
             {loading ? (
                 <>
                     <Progress.Bar progress={progress / 100} width={300} />
-                    <Text style={styles.progressText}>{Math.round(progress)}% Uploaded</Text>
+                    <CustomText style={styles.progressText}>{Math.round(progress)}% Uploaded</CustomText>
                 </>
             ) : (
                 <TouchableOpacity style={styles.button} onPress={uploadVideo}>
-                    <Text style={styles.buttonText}>Upload Video</Text>
+                    <CustomText style={styles.buttonText}>Upload Video</CustomText>
                 </TouchableOpacity>
             )}
         </ScrollView>
@@ -168,7 +173,6 @@ const UploadLectureVideo = () => {
 const styles = StyleSheet.create({
     container: {
         padding: 20,
-        backgroundColor: '#f9f9f9',
     },
     title: {
         fontSize: 24,

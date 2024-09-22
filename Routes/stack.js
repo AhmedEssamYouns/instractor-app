@@ -59,20 +59,25 @@ export default function StackScreen() {
     return (
         <NavigationContainer>
             <StatusBar barStyle="light-content" backgroundColor="#121212" />
-            <Stack.Navigator>
+            <Stack.Navigator
+                screenOptions={{
+                    cardStyle: { backgroundColor: currentColors.background }, // Apply black background to all screens
+                    headerStyle: { backgroundColor: currentColors.background }, // Black background for headers
+                    headerTintColor: currentColors.text, // Ensure text is visible
+                }}>
                 {user ? (
                     <>
                         {isAdmin ? (
                             <>
-                                <Stack.Screen
-                                    name="TeacherTabs"
-                                    component={TeacherTabs}
-                                    options={{ headerShown: false }}
-
-                                />
-                                <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ headerShown: false }} />
-                                <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ headerShown: false }} />
-                            </>
+                            <Stack.Screen
+                                name="TeacherTabs"
+                                component={TeacherTabs}
+                                options={{ headerShown: false }}
+                                
+                            />
+                            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ headerShown: false }} />
+                            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ headerShown: false }} />
+                      </>
                         ) : (
                             <Stack.Screen
                                 name="tabs"

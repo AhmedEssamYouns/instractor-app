@@ -6,11 +6,16 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import CustomText from '../../components/elements/text';
 import UploadLectureVideo from './uploadingVideos';
+import { useTheme } from '../../components/elements/theme-provider';
+import colors from '../../constants/colors';
 
 const VideoList = () => {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isHeaderVisible, setHeaderVisible] = useState(false); // State to toggle header visibility
+    const { theme } = useTheme()
+    const currentColors = colors[theme]
+
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -51,12 +56,12 @@ const VideoList = () => {
     };
 
     const renderItem = ({ item }) => (
-        <View style={styles.card}>
+        <View style={[styles.card,{backgroundColor:currentColors.cardBackground}]}>
             <TouchableOpacity
                 style={styles.cardContent}
                 onPress={() => navigation.navigate('VideoDetail', { videoId: item.id })}
             >
-                <MaterialIcons name="video-library" size={24} color="black" style={styles.icon} />
+                <MaterialIcons name="video-library" size={24} color={currentColors.text2} style={styles.icon} />
                 <CustomText style={styles.title}>{item.title}</CustomText>
             </TouchableOpacity>
             {/* Delete button */}
@@ -71,7 +76,7 @@ const VideoList = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container,{backgroundColor:currentColors.background}]}>
             <TouchableOpacity onPress={toggleHeader} style={styles.toggleButton}>
                 <Text style={styles.toggleButtonText}>
                     {isHeaderVisible ? 'Hide Upload Video' : 'Upload Video'}
@@ -96,7 +101,6 @@ const VideoList = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
         paddingHorizontal: 20,
         paddingTop: 20,
     },
@@ -109,7 +113,6 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 8,
         marginBottom: 15,
-        backgroundColor: '#f9f9f9',
     },
     cardContent: {
         flexDirection: 'row',

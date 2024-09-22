@@ -8,7 +8,7 @@ import { useTheme } from '../../components/elements/theme-provider';
 const initialLayout = { width: Dimensions.get('window').width };
 
 const TabAdminView = () => {
-    const {theme} = useTheme()
+    const { theme } = useTheme()
     const currentColors = colors[theme]
     const [index, setIndex] = useState(0);
     const [routes] = useState([
@@ -26,7 +26,7 @@ const TabAdminView = () => {
             {...props}
             indicatorStyle={[styles.indicator, { backgroundColor: currentColors.indicator }]}
             style={[styles.tabBar, { backgroundColor: currentColors.background, borderBottomWidth: 1, borderBottomColor: currentColors.border }]}
-            labelStyle={[styles.label, { color: currentColors.text,fontFamily:'bold'}]}
+            labelStyle={[styles.label, { color: currentColors.text, fontFamily: 'bold' }]}
             activeColor={currentColors.iconFocus}
             inactiveColor={currentColors.iconColor}
         />
@@ -37,6 +37,7 @@ const TabAdminView = () => {
             navigationState={{ index, routes }}
             renderScene={renderScene}
             onIndexChange={setIndex}
+            style={{ backgroundColor: currentColors.background }}
             initialLayout={initialLayout}
             renderTabBar={renderTabBar}
         />
@@ -45,7 +46,6 @@ const TabAdminView = () => {
 
 const styles = StyleSheet.create({
     tabBar: {
-        backgroundColor: '#ffffff',
     },
     indicator: {
         backgroundColor: '#6200ee',

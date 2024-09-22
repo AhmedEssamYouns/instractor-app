@@ -4,6 +4,8 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { collection, addDoc, serverTimestamp, updateDoc, doc, Timestamp } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import AssignmentsList from './list';
+import { useTheme } from '../../components/elements/theme-provider';
+import colors from '../../constants/colors';
 
 const AssignmentForm = () => {
     const [title, setTitle] = useState('');
@@ -84,9 +86,10 @@ const AssignmentForm = () => {
         setPickedDeadline(date.toLocaleString());
         hideDeadlinePicker();
     };
-
+    const { theme } = useTheme()
+    const currentColors = colors[theme]
     return (
-        <View style={styles.container}>
+        <View style={[styles.container,{backgroundColor:currentColors.background}]}>
             <TouchableOpacity style={styles.toggleButton} onPress={() => setIsFormVisible(!isFormVisible)}>
                 <Text style={styles.buttonText}>{isFormVisible ? 'Hide Form' : 'Show Form'}</Text>
             </TouchableOpacity>
@@ -152,9 +155,8 @@ const AssignmentForm = () => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
         flex:1,
-        backgroundColor:'white',
+        paddingHorizontal:20,
     },
     toggleButton: {
         backgroundColor: '#007BFF',

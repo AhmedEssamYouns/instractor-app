@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
+import { useTheme } from '../../components/elements/theme-provider';
+import colors from '../../constants/colors';
+import CustomText from '../../components/elements/text'
 
 const Students = () => {
     const [students, setStudents] = useState([]);
@@ -11,6 +14,8 @@ const Students = () => {
     const [loadingLectures, setLoadingLectures] = useState(true);
     const [loadingSections, setLoadingSections] = useState(true);
     const [searchQuery, setSearchQuery] = useState(''); // Add search state
+    const { theme } = useTheme(); // Get theme from context
+    const currentColors = colors[theme];
 
     useEffect(() => {
         // Fetch all student documents
@@ -54,25 +59,25 @@ const Students = () => {
     }, []);
 
     const renderStudent = ({ item }) => (
-        <View style={styles.studentCard}>
-            <Text style={styles.studentName}>{item.displayName}</Text>
-            <Text>{item.email}</Text>
+        <View style={[styles.studentCard,{backgroundColor:currentColors.cardBackground}]}>
+            <CustomText style={styles.studentName}>{item.displayName}</CustomText>
+            <CustomText>{item.email}</CustomText>
 
             {/* Viewed Lectures */}
-            <Text style={{ width: 300 }}>Viewed Lectures:
+            <CustomText style={{ width: 300 }}>Viewed Lectures:
                 {item.viewedLectures && item.viewedLectures.map((lectureId) => {
                     const lecture = lectures.find(lec => lec.id === lectureId);
-                    return lecture ? <Text key={lectureId}> {lecture.title} ,</Text> : null;
+                    return lecture ? <CustomText key={lectureId}> {lecture.title} ,</CustomText> : null;
                 })}
-            </Text>
+            </CustomText>
 
             {/* Viewed Sections */}
-            <Text style={{ width: 300 }}>Viewed Sections:
+            <CustomText style={{ width: 300 }}>Viewed Sections:
                 {item.viewedSections && item.viewedSections.map((sectionId) => {
                     const section = sections.find(sec => sec.id === sectionId);
-                    return section ? <Text key={sectionId}> {section.title} ,</Text> : null;
+                    return section ? <CustomText key={sectionId}> {section.title} ,</CustomText> : null;
                 })}
-            </Text>
+            </CustomText>
         </View>
     );
 
@@ -93,13 +98,14 @@ const Students = () => {
     }
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: currentColors.background }}>
 
             <FlatList
                 ListHeaderComponent={
                     <TextInput
-                        style={styles.searchBar}
+                        style={[styles.searchBar, { backgroundColor: currentColors.cardBackground, color: currentColors.text }]}
                         placeholder="Search by email"
+                        placeholderTextColor={currentColors.text2}
                         value={searchQuery}
                         onChangeText={setSearchQuery} // Update search query on text input
                     />

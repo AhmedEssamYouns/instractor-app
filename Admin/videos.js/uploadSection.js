@@ -5,6 +5,9 @@ import { storage, db } from '../../firebase/config';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc, updateDoc } from 'firebase/firestore';
 import * as Progress from 'react-native-progress';
+import { useTheme } from '../../components/elements/theme-provider';
+import colors from '../../constants/colors';
+import CustomText from '../../components/elements/text';
 
 const UploadSectionVideo = () => {
     const [videoUri, setVideoUri] = useState(null);
@@ -16,7 +19,8 @@ const UploadSectionVideo = () => {
     const [mainPoints, setMainPoints] = useState(''); // State for main points
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
-
+    const { theme } = useTheme()
+    const currentColors = colors[theme]
     const pickVideo = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
@@ -122,8 +126,8 @@ const UploadSectionVideo = () => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Upload Section Video</Text>
+        <ScrollView contentContainerStyle={[styles.container,{backgroundColor:currentColors.background}]}>
+            <CustomText style={styles.title}>Upload Section Video</CustomText>
             <TextInput
                 style={styles.input}
                 placeholder="Video Title"
@@ -157,7 +161,7 @@ const UploadSectionVideo = () => {
             {loading ? (
                 <>
                     <Progress.Bar progress={progress / 100} width={300} />
-                    <Text style={styles.progressText}>{Math.round(progress)}% Uploaded</Text>
+                    <CustomText style={styles.progressText}>{Math.round(progress)}% Uploaded</CustomText>
                 </>
             ) : (
                 <TouchableOpacity style={styles.button} onPress={uploadVideo}>

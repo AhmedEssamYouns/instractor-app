@@ -3,15 +3,17 @@ import { View, Text, TouchableOpacity, StyleSheet, FlatList, ActivityIndicator, 
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import TeacherQuizCreation from './quiz_form';
+import { useTheme } from '../../components/elements/theme-provider';
+import colors from '../../constants/colors';
+import CustomText from '../../components/elements/text';
 
 const QuizAdminList = () => {
     const [quizzes, setQuizzes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);  // State to control form visibility
-    const navigation = useNavigation();
-
+    const { theme } = useTheme()
+    const currentColors = colors[theme]
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, 'quizzes'), (snapshot) => {
             const quizList = snapshot.docs.map(doc => ({
@@ -51,10 +53,10 @@ const QuizAdminList = () => {
     };
 
     const renderQuiz = ({ item }) => (
-        <View style={styles.card}>
+        <View style={[styles.card,{backgroundColor:currentColors.cardBackground}]}>
             <View style={styles.cardContent}>
-                <Text style={styles.quizTitle}>{item.title}</Text>
-                <Text style={styles.quizTime}>Time Limit: {item.timeLimit} mins</Text>
+                <CustomText style={styles.quizTitle}>{item.title}</CustomText>
+                <CustomText style={styles.quizTime}>Time Limit: {item.timeLimit} mins</CustomText>
             </View>
             <TouchableOpacity onPress={() => handleDeleteQuiz(item.id)} style={styles.deleteButton}>
                 <MaterialIcons name="delete" size={24} color="red" />
@@ -63,7 +65,7 @@ const QuizAdminList = () => {
     );
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container,{backgroundColor:currentColors.background}]}>
             {/* Button to toggle form visibility */}
 
 
@@ -98,9 +100,9 @@ const QuizAdminList = () => {
 
 const styles = StyleSheet.create({
     container: {
+        paddingHorizontal:20,
         flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
+        paddingTop:10,
     },
     card: {
         flexDirection: 'row',
@@ -119,7 +121,6 @@ const styles = StyleSheet.create({
     quizTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#333',
     },
     quizTime: {
         fontSize: 16,

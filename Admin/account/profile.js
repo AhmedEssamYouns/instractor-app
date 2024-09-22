@@ -12,9 +12,6 @@ import Quizzes from './quizes';
 const ProfileWithStudents = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [students, setStudents] = useState([]);
-    const [quizzes, setQuizzes] = useState([]);
-    const [grades, setGrades] = useState([]);
     const [photoURL, setPhotoURL] = useState('');
     const userId = FIREBASE_AUTH.currentUser.uid;
     const { theme } = useTheme(); // Get theme from context
@@ -104,10 +101,10 @@ const ProfileWithStudents = () => {
     return (
         <View style={styles.container}>
             {userData && (
-                <View style={styles.profileContainer}>
+                <View style={[styles.profileContainer,{backgroundColor:currentColors.background}]}>
                     <View>
-                        <Text style={styles.profileName}>{userData.displayName}</Text>
-                        <Text style={styles.profileEmail}>{userData.email}</Text>
+                        <CustomText style={styles.profileName}>{userData.displayName}</CustomText>
+                        <CustomText style={styles.profileEmail}>{userData.email}</CustomText>
                     </View>
                     <TouchableOpacity onPress={handleImagePicker}>
                         {photoURL ? (
@@ -123,6 +120,7 @@ const ProfileWithStudents = () => {
                 navigationState={{ index, routes }}
                 renderScene={renderScene}
                 onIndexChange={setIndex}
+                style={{backgroundColor:currentColors.background}}
                 initialLayout={{ width: '100%' }}
                 renderTabBar={renderTabBar}
             />
@@ -133,7 +131,6 @@ const ProfileWithStudents = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 10,
         backgroundColor: '#fff',
     },
     profileContainer: {

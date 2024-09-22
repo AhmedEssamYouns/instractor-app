@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, Text, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { View, FlatList, Text, TouchableOpacity, StyleSheet, Alert, Image, ActivityIndicator } from 'react-native';
 import { collection, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
 const SubmissionsList = ({ assignmentId }) => {
     const [submissions, setSubmissions] = useState([]);
     const [studentDetailsMap, setStudentDetailsMap] = useState({});
+    const [loading, setLoading] = useState(true); // Add loading state
 
     useEffect(() => {
         const submissionsRef = collection(db, 'submissions');
@@ -39,18 +39,21 @@ const SubmissionsList = ({ assignmentId }) => {
         });
         await Promise.all(fetchPromises);
         setStudentDetailsMap(detailsMap);
+        setLoading(false); // Stop loading after student details are fetched
     };
 
     useEffect(() => {
         if (submissions.length > 0) {
+            setLoading(true); // Start loading when fetching submissions
             loadStudentDetails();
+        } else {
+            setLoading(false); // Stop loading if no submissions
         }
     }, [submissions]);
 
     const openDocument = async (uri) => {
-        const fileUri = uri; // Assuming 'uri' is the path to your file
         try {
-            await Sharing.shareAsync(fileUri);
+            await Sharing.shareAsync(uri);
         } catch (error) {
             Alert.alert('Error', 'Could not open the document: ' + error.message);
         }
@@ -79,17 +82,30 @@ const SubmissionsList = ({ assignmentId }) => {
     };
 
     return (
-        <FlatList
-            data={submissions}
-            keyExtractor={item => item.id}
-            renderItem={renderSubmission}
-            contentContainerStyle={styles.flatList}
-            ListEmptyComponent={<Text>No submissions for this assignment.</Text>}
-        />
+        <View style={styles.container}>
+            {loading ? (
+                <ActivityIndicator size="large" color="#007BFF" style={styles.loading} />
+            ) : (
+                <FlatList
+                    data={submissions}
+                    keyExtractor={item => item.id}
+                    renderItem={renderSubmission}
+                    contentContainerStyle={styles.flatList}
+                    ListEmptyComponent={<Text style={{color:'grey',alignSelf:'center'}}>No submissions for this assignment.</Text>}
+                />
+            )}
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 10,
+    },
+    loading: {
+        marginTop: 20,
+    },
     flatList: {
         paddingBottom: 20,
     },
@@ -100,7 +116,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 10,
         backgroundColor: 'white',
-        elevation:1
+        elevation: 1,
     },
     studentName: {
         fontWeight: 'bold',

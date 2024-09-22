@@ -44,7 +44,7 @@ const PostsScreen = () => {
       ) : (
         <PostList
           header={
-            <>
+            <View style={{backgroundColor:currentColors.background}}>
               {isEditing ? (
                 <PostForm
                   post={currentPost}
@@ -59,7 +59,7 @@ const PostsScreen = () => {
                 />
               ) : (
                 isAdmin && (
-                  <View style={styles.listContainer}>
+                  <View style={[styles.listContainer,{backgroundColor:currentColors.background}]}>
                     <TouchableOpacity style={styles.addButton} onPress={() => setIsEditing(true)}>
                       <MaterialIcons name="add" size={24} color="#fff" />
                       <Text style={styles.addButtonText}>Add Post</Text>
@@ -67,7 +67,7 @@ const PostsScreen = () => {
                   </View>
                 )
               )}
-            </>
+            </View>
           }
           posts={posts}
           onEdit={(post) => {

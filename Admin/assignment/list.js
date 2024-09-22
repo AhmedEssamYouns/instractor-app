@@ -5,11 +5,14 @@ import SubmissionsList from './submitiion_list';
 import CustomText from '../../components/elements/text';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
+import { useTheme } from '../../components/elements/theme-provider';
+import colors from '../../constants/colors';
 
 const AssignmentsList = ({ onEdit }) => {
     const [assignments, setAssignments] = useState([]);
     const [loading, setLoading] = useState(true); // Add loading state
-
+    const { theme } = useTheme()
+    const currentColors = colors[theme]
     useEffect(() => {
         const assignmentsRef = collection(db, 'assignments');
         const unsubscribe = onSnapshot(assignmentsRef, (snapshot) => {
@@ -46,10 +49,10 @@ const AssignmentsList = ({ onEdit }) => {
 
     const renderAssignment = ({ item }) => {
         return (
-            <View style={styles.card}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text>{item.description}</Text>
-                <Text style={styles.deadline}>Deadline: {item.deadline.toDate().toLocaleString()}</Text>
+            <View style={[styles.card,{backgroundColor:currentColors.cardBackground}]}>
+                <CustomText style={styles.title}>{item.title}</CustomText>
+                <CustomText>{item.description}</CustomText>
+                <CustomText style={styles.deadline}>Deadline: {item.deadline.toDate().toLocaleString()}</CustomText>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.editButton} onPress={() => onEdit(item)}>
                         <Text style={styles.buttonText}>Edit</Text>
@@ -61,7 +64,7 @@ const AssignmentsList = ({ onEdit }) => {
                         <CustomText>
                             {item.showSubmissions ? 'Hide Submissions' : `See Submissions`}
                         </CustomText>
-                        <Entypo name={item.showSubmissions ? 'chevron-up' : 'chevron-down'} size={16} />
+                        <Entypo color={currentColors.text} name={item.showSubmissions ? 'chevron-up' : 'chevron-down'} size={16} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
                         <Text style={styles.buttonText}>Delete</Text>
@@ -93,7 +96,6 @@ const AssignmentsList = ({ onEdit }) => {
 
 const styles = StyleSheet.create({
     flatList: {
-        paddingBottom: 50,
     },
     card: {
         borderWidth: 1,
@@ -101,7 +103,6 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 8,
         marginBottom: 10,
-        backgroundColor: '#f9f9f9',
         elevation: 1
     },
     title: {
