@@ -58,7 +58,7 @@ export default function StackScreen() {
 
     return (
         <NavigationContainer>
-            <StatusBar barStyle="light-content" backgroundColor="#121212" />
+            <StatusBar barStyle="light-content"  backgroundColor="#121212" />
             <Stack.Navigator
                 screenOptions={{
                     cardStyle: { backgroundColor: currentColors.background }, // Apply black background to all screens
@@ -68,16 +68,12 @@ export default function StackScreen() {
                 {user ? (
                     <>
                         {isAdmin ? (
-                            <>
                             <Stack.Screen
                                 name="TeacherTabs"
                                 component={TeacherTabs}
                                 options={{ headerShown: false }}
                                 
                             />
-                            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ headerShown: false }} />
-                            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ headerShown: false }} />
-                      </>
                         ) : (
                             <Stack.Screen
                                 name="tabs"
@@ -89,16 +85,22 @@ export default function StackScreen() {
                                             <FontAwesome6 name="bars" size={24} color="black" />
                                         </TouchableOpacity>
                                     ),
+                                    
                                 }}
+                                
                             />
+                            
                         )}
-                        {/* Other stack screens can go here */}
                         <Stack.Screen name="SectionList" component={SectionList} options={{ title: 'Sections' }} />
                         <Stack.Screen name="UploadLectureVideo" component={UploadLectureVideo} />
                         <Stack.Screen name="SectionDetail" component={SectionDetail} options={{ headerShown: false }} />
                         <Stack.Screen name="VideoList" component={VideoList} />
                         <Stack.Screen name="VideoDetail" component={VideoDetail} options={{ headerShown: false }} />
                         <Stack.Screen name="QuizAttempt" component={StudentQuizAttempt} options={{ headerShown: false }} />
+                        <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
+                        <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
+                        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ headerShown: false }} />
+                        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ headerShown: false }} />
                     </>
                 ) : (
                     <>
