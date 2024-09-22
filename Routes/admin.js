@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { Keyboard, TouchableOpacity, StyleSheet } from 'react-native';
 import PostsScreen from '../Admin/posts/posts_screen';
 import { useTheme } from '../components/elements/theme-provider';
 import colors from '../constants/colors';
-import { TouchableOpacity, StyleSheet } from 'react-native';
 import ThemeSwitcherModal from '../components/elements/menu';
 import TabAdminView from '../Admin/videos.js/Tabs';
 import QuizAdminList from '../Admin/manageQuiz.js/quiz_list';
@@ -18,6 +18,22 @@ export default function TeacherTabs() {
     const { theme, setTheme } = useTheme();
     const currentColors = colors[theme];
     const [isModalVisible, setModalVisible] = useState(false);
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false); // Track keyboard visibility
+
+    // Detect keyboard events
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+            setKeyboardVisible(true);
+        });
+        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+            setKeyboardVisible(false);
+        });
+
+        return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        };
+    }, []);
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
@@ -50,8 +66,7 @@ export default function TeacherTabs() {
                         } else if (route.name === 'Posts') {
                             iconName = focused ? 'clipboard-list' : 'clipboard-list-outline';
                             return <MaterialCommunityIcons name={iconName} size={30} color={color} />;
-                        }
-                        else if (route.name === 'Assinments') {
+                        } else if (route.name === 'Assinments') {
                             iconName = focused ? 'book' : 'book-edit';
                             return <MaterialCommunityIcons name={iconName} size={30} color={color} />;
                         }
@@ -60,7 +75,7 @@ export default function TeacherTabs() {
                     },
                     tabBarActiveTintColor: currentColors.iconFocus,
                     tabBarInactiveTintColor: currentColors.iconColor,
-                    tabBarStyle: {
+                    tabBarStyle: isKeyboardVisible ? { display: 'none' } : { // Hide tab bar when keyboard is visible
                         borderRadius: 1,
                         borderWidth: 0,
                         borderTopColor: currentColors.border,

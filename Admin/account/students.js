@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 
@@ -10,6 +10,7 @@ const Students = () => {
     const [loadingStudents, setLoadingStudents] = useState(true);
     const [loadingLectures, setLoadingLectures] = useState(true);
     const [loadingSections, setLoadingSections] = useState(true);
+    const [searchQuery, setSearchQuery] = useState(''); // Add search state
 
     useEffect(() => {
         // Fetch all student documents
@@ -56,7 +57,7 @@ const Students = () => {
         <View style={styles.studentCard}>
             <Text style={styles.studentName}>{item.displayName}</Text>
             <Text>{item.email}</Text>
-            
+
             {/* Viewed Lectures */}
             <Text style={{ width: 300 }}>Viewed Lectures:
                 {item.viewedLectures && item.viewedLectures.map((lectureId) => {
@@ -75,6 +76,11 @@ const Students = () => {
         </View>
     );
 
+    // Filter students by search query (email)
+    const filteredStudents = students.filter(student =>
+        student.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     // Check if any data is still loading
     const isLoading = loadingStudents || loadingLectures || loadingSections;
 
@@ -87,12 +93,23 @@ const Students = () => {
     }
 
     return (
-        <FlatList
-            data={students}
-            keyExtractor={item => item.id}
-            renderItem={renderStudent}
-            contentContainerStyle={styles.flatList}
-        />
+        <View style={{ flex: 1 }}>
+
+            <FlatList
+                ListHeaderComponent={
+                    <TextInput
+                        style={styles.searchBar}
+                        placeholder="Search by email"
+                        value={searchQuery}
+                        onChangeText={setSearchQuery} // Update search query on text input
+                    />
+                }
+                data={filteredStudents}
+                keyExtractor={item => item.id}
+                renderItem={renderStudent}
+                contentContainerStyle={styles.flatList}
+            />
+        </View>
     );
 };
 
@@ -118,6 +135,14 @@ const styles = StyleSheet.create({
     },
     flatList: {
         paddingBottom: 20,
+    },
+    searchBar: {
+        height: 40,
+        borderColor: '#ddd',
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingLeft: 10,
+        margin: 20,
     },
 });
 

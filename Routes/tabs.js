@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
+import { Keyboard, TouchableOpacity, StyleSheet } from 'react-native';
 import ProfileScreen from '../screens/profile';
 import PostsScreen from '../screens/notes';
 import LearnScreen from '../screens/learn';
-import { useTheme } from '../components/elements/theme-provider';
-import colors from '../constants/colors';
-import { TouchableOpacity, StyleSheet } from 'react-native';
-import ThemeSwitcherModal from '../components/elements/menu';
-import { useLanguage } from '../components/elements/language-provider';
-import translations from '../constants/translations'; // Import translations
 import Practic from '../screens/practic';
+import { useTheme } from '../components/elements/theme-provider';
+import ThemeSwitcherModal from '../components/elements/menu';
+import colors from '../constants/colors';
+import { useLanguage } from '../components/elements/language-provider';
+import translations from '../constants/translations';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,7 +18,24 @@ export default function Tabs() {
     const { theme, setTheme } = useTheme(); // Get the theme from context and setter
     const currentColors = colors[theme]; // Get colors based on the theme
     const [isModalVisible, setModalVisible] = useState(false);
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false); // Track keyboard visibility
     const { language } = useLanguage(); // Access the current language
+
+    useEffect(() => {
+        // Add keyboard listeners
+        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+            setKeyboardVisible(true);
+        });
+        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+            setKeyboardVisible(false);
+        });
+
+        return () => {
+            // Cleanup keyboard listeners
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        };
+    }, []);
 
     // Toggle modal visibility
     const toggleModal = () => {
@@ -37,6 +54,11 @@ export default function Tabs() {
                     tabBarActiveBackgroundColor: currentColors.background,
                     tabBarInactiveBackgroundColor: currentColors.background,
                     tabBarShowLabel: false,
+                    tabBarStyle: isKeyboardVisible ? { display: 'none' } : { // Hide tab bar when keyboard is visible
+                        borderRadius: 1,
+                        borderWidth: 0,
+                        borderTopColor: currentColors.border,
+                    },
                     tabBarIcon: ({ focused, color }) => {
                         let iconName;
 
@@ -59,14 +81,9 @@ export default function Tabs() {
                     },
                     tabBarActiveTintColor: currentColors.iconFocus,
                     tabBarInactiveTintColor: currentColors.iconColor,
-                    tabBarStyle: {
-                        borderRadius:1,
-                        borderWidth:0,
-                        borderTopColor: currentColors.border,
-                    },
                     headerStyle: {
                         backgroundColor: currentColors.background,
-                        elevation:0,
+                        elevation: 0,
                     },
                     headerTitleStyle: {
                         fontFamily: language === 'en' ? 'bold' : 'ar',
@@ -119,7 +136,7 @@ export default function Tabs() {
 
 const styles = StyleSheet.create({
     headerRight: {
-        paddingLeft:10,
+        paddingLeft: 10,
         marginRight: 15,
     },
 });

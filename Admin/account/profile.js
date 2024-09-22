@@ -76,7 +76,7 @@ const ProfileWithStudents = () => {
     const [index, setIndex] = useState(0);
     const [routes] = useState([
         { key: 'students', title: 'Students' },
-        { key: 'quizzes', title: 'Quizzes' },
+        { key: 'quizzes', title: 'grades' },
     ]);
 
     const renderScene = SceneMap({
