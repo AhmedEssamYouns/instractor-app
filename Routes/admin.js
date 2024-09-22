@@ -9,6 +9,8 @@ import ThemeSwitcherModal from '../components/elements/menu';
 import TabAdminView from '../Admin/videos.js/Tabs';
 import QuizAdminList from '../Admin/manageQuiz.js/quiz_list';
 import ProfileWithStudents from '../Admin/account/profile';
+import AssignmentsList from '../Admin/assignment/list';
+import AssignmentForm from '../Admin/assignment/assign_form';
 
 const Tab = createBottomTabNavigator();
 
@@ -47,6 +49,10 @@ export default function TeacherTabs() {
                             return <FontAwesome5 name={iconName} size={26} color={color} />;
                         } else if (route.name === 'Posts') {
                             iconName = focused ? 'clipboard-list' : 'clipboard-list-outline';
+                            return <MaterialCommunityIcons name={iconName} size={30} color={color} />;
+                        }
+                        else if (route.name === 'Assinments') {
+                            iconName = focused ? 'book' : 'book-edit';
                             return <MaterialCommunityIcons name={iconName} size={30} color={color} />;
                         }
 
@@ -89,6 +95,10 @@ export default function TeacherTabs() {
                     name="UploadLecture"
                     component={TabAdminView}
                     options={{ title: 'Upload Lecture' }}
+                />
+                <Tab.Screen
+                    name="Assinments"
+                    component={AssignmentForm}
                 />
                 <Tab.Screen
                     name="Quizzes"

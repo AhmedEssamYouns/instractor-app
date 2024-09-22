@@ -26,7 +26,7 @@ const TabAdminView = () => {
             {...props}
             indicatorStyle={[styles.indicator, { backgroundColor: currentColors.indicator }]}
             style={[styles.tabBar, { backgroundColor: currentColors.background, borderBottomWidth: 1, borderBottomColor: currentColors.border }]}
-            labelStyle={[styles.label, { color: currentColors.text}]}
+            labelStyle={[styles.label, { color: currentColors.text,fontFamily:'bold'}]}
             activeColor={currentColors.iconFocus}
             inactiveColor={currentColors.iconColor}
         />
