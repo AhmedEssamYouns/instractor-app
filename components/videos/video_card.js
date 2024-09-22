@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, Pressable, Touchable, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../elements/theme-provider';
 import colors from '../../constants/colors';
 import CustomText from '../elements/text';
@@ -67,6 +67,8 @@ const VideoCard = ({ video }) => {
 
       }
       style={[styles.card, { backgroundColor: currentColors.cardBackground, borderColor: currentColors.borderColor }]}>
+      <MaterialIcons name='video-library' size={24} color={currentColors.text2} style={{ position: 'absolute', right: 15, top: 15 }} />
+
       <Image
         source={{ uri: video.poster || placeholderImage }}
         style={styles.image}
@@ -112,7 +114,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    width: 180,
+    width: 170,
     textAlign: 'left',
   },
   timestamp: {

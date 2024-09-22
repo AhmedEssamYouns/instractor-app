@@ -2,7 +2,7 @@ import { collection, addDoc, deleteDoc, updateDoc, doc, getDoc, onSnapshot, quer
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, FIREBASE_AUTH, storage } from './config'; // Adjust the path according to your file structure
 import { Alert } from 'react-native';
-import { getUserDetailsById } from './user';
+import checkIfUserIsAdmin, { getUserDetailsById } from './user';
 
 
 import * as ImagePicker from 'expo-image-picker';
@@ -388,8 +388,10 @@ export const addReply = async (postId, commentId, userId, replyText, setCommentT
 export const deleteComment = async (postId, commentId, comments) => {
     const currentUserId = FIREBASE_AUTH.currentUser.uid;
     const comment = comments.find(c => c.id === commentId);
+    const isAdmin = await checkIfUserIsAdmin(); // Check if user is admin
 
-    if (comment && comment.user === currentUserId) {
+    // Allow deletion if the current user is either the comment's owner or an admin
+    if (comment && (comment.user === currentUserId || isAdmin)) {
         Alert.alert(
             'Delete Comment',
             'Are you sure you want to delete this comment?',
@@ -425,12 +427,13 @@ export const deleteComment = async (postId, commentId, comments) => {
             ]
         );
     } else {
-        // console.error('Comment not found or user is not authorized.');
+        // Comment not found or user is not authorized
+        console.error('Comment not found or user is not authorized.');
     }
 };
-
-export const deleteReply = async (postId, commentId, createdAt) => {
+export const deleteReply = async (postId, commentId, createdAt, comments) => {
     const currentUserId = FIREBASE_AUTH.currentUser.uid;
+    const isAdmin = await checkIfUserIsAdmin(); // Check if user is admin
 
     try {
         const postRef = doc(db, 'posts', postId);
@@ -442,11 +445,10 @@ export const deleteReply = async (postId, commentId, createdAt) => {
                 if (comment.id === commentId) {
                     // Find the reply based on createdAt and userId
                     const updatedReplies = (comment.replies || []).filter(reply => {
-                        return reply.createdAt !== createdAt || reply.user !== currentUserId;
+                        return reply.createdAt !== createdAt || (reply.user !== currentUserId && !isAdmin);
                     });
 
-                    // Only proceed if the reply is by the current user
-                    if (comment.replies.some(reply => reply.createdAt === createdAt && reply.user === currentUserId)) {
+                    if (comment.replies.some(reply => reply.createdAt === createdAt && (reply.user === currentUserId || isAdmin))) {
                         Alert.alert(
                             'Delete Reply',
                             'Are you sure you want to delete this reply?',
@@ -469,8 +471,6 @@ export const deleteReply = async (postId, commentId, createdAt) => {
                                 }
                             ]
                         );
-                    } else {
-                        // console.error('Reply not found or user is not authorized.');
                     }
 
                     return {
@@ -480,8 +480,6 @@ export const deleteReply = async (postId, commentId, createdAt) => {
                 }
                 return comment;
             });
-
-            // No need to update if the deletion has been handled in the alert callback
         } else {
             console.error('No post document found.');
         }

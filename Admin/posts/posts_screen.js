@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import PostForm from '../components/notes/post_form';
-import PostList from '../components/notes/posts_list';
-import { getPosts } from '../firebase/posts';
-import colors from '../constants/colors';
-import { useTheme } from '../components/elements/theme-provider';
-import checkIfUserIsAdmin from '../firebase/user';
+import PostForm from './post_form';
+import PostList from '../../components/notes/posts_list';
+import { getPosts } from '../../firebase/posts';
+import colors from '../../constants/colors';
+import { useTheme } from '../../components/elements/theme-provider';
+import checkIfUserIsAdmin from '../../firebase/user';
 
 const PostsScreen = () => {
   const [posts, setPosts] = useState([]);
@@ -43,7 +43,37 @@ const PostsScreen = () => {
         </View>
       ) : (
         <PostList
+          header={
+            <>
+              {isEditing ? (
+                <PostForm
+                  post={currentPost}
+                  onSave={() => {
+                    setCurrentPost(null);
+                    setIsEditing(false); // Close the form when saving
+                  }}
+                  onClose={() => {
+                    setCurrentPost(null);
+                    setIsEditing(false);
+                  }} // Close the form without saving
+                />
+              ) : (
+                isAdmin && (
+                  <View style={styles.listContainer}>
+                    <TouchableOpacity style={styles.addButton} onPress={() => setIsEditing(true)}>
+                      <MaterialIcons name="add" size={24} color="#fff" />
+                      <Text style={styles.addButtonText}>Add Post</Text>
+                    </TouchableOpacity>
+                  </View>
+                )
+              )}
+            </>
+          }
           posts={posts}
+          onEdit={(post) => {
+            setCurrentPost(post);
+            setIsEditing(true);
+          }}
         />
       )}
     </View>

@@ -3,13 +3,13 @@ import { View, StyleSheet, ActivityIndicator, ScrollView, Dimensions, Alert } fr
 import { Video } from 'expo-av';
 import { useRoute } from '@react-navigation/native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db, FIREBASE_AUTH } from '../firebase/config';
-import CustomText from '../components/elements/text';
+import { db,FIREBASE_AUTH } from '../../firebase/config';
+import CustomText from '../elements/text';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import colors from '../constants/colors';
-import { useTheme } from '../components/elements/theme-provider';
-import { useLanguage } from '../components/elements/language-provider';
-import BackButton from '../components/elements/back-button';
+import colors from '../../constants/colors';
+import { useTheme } from '../elements/theme-provider';
+import { useLanguage } from '../elements/language-provider';
+import BackButton from '../elements/back-button';
 
 const initialLayout = { width: Dimensions.get('window').width };
 

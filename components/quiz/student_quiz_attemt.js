@@ -171,10 +171,10 @@ const StudentQuizAttempt = ({ route }) => {
                                 elevation: 1,
                                 borderWidth: 1,
                                 borderColor: answers[currentQuestionIndex] === optionIndex ? 'green' : currentColors.border
-                                
+
                             }]}
-                            onPress={() => handleAnswerChange(currentQuestionIndex, optionIndex)}
-                            
+                                onPress={() => handleAnswerChange(currentQuestionIndex, optionIndex)}
+
                             >
                                 <CustomCheckbox
                                     onPress={() => handleAnswerChange(currentQuestionIndex, optionIndex)}
@@ -188,24 +188,28 @@ const StudentQuizAttempt = ({ route }) => {
             />
 
             <View style={styles.navigationContainer}>
-                {currentQuestionIndex === questions.length - 1 && answers[currentQuestionIndex] !== null && (
-                    <TouchableOpacity style={[styles.button, { backgroundColor: currentColors.buttonColor }]} onPress={() => handleSubmit()}>
-                        <CustomText style={{ color: 'white' }}>{translations.submitAns}</CustomText>
-                    </TouchableOpacity>
-                )}
-
-                {currentQuestionIndex < questions.length - 1 && answers[currentQuestionIndex] !== null && (
-                    <TouchableOpacity style={[styles.button, { backgroundColor: '#67726B' }]} onPress={handleNextQuestion}>
-                        <CustomText style={{ color: 'white' }}>{translations.next}</CustomText>
-                    </TouchableOpacity>
-                )}
-
                 {currentQuestionIndex > 0 && (
-                    <TouchableOpacity style={styles.button} onPress={handlePreviousQuestion}>
+                    <TouchableOpacity style={[styles.button, { alignSelf: 'flex-start', backgroundColor: 'grey' }]} onPress={handlePreviousQuestion}>
                         <CustomText style={{ color: 'white' }}>{translations.previous}</CustomText>
                     </TouchableOpacity>
                 )}
-            </View>
+
+                    {currentQuestionIndex < questions.length - 1 && answers[currentQuestionIndex] !== null && (
+                        <TouchableOpacity style={ { backgroundColor: '#67726B', position: 'absolute', right: 0, bottom: 0,
+                            padding: 10,
+                            borderRadius: 5,
+                            marginHorizontal: 5, // Add some space between buttons
+                         }} onPress={handleNextQuestion}>
+                            <CustomText style={{ color: 'white' }}>{translations.next}</CustomText>
+                        </TouchableOpacity>
+                    )}
+
+                    {currentQuestionIndex === questions.length - 1 && answers[currentQuestionIndex] !== null && (
+                        <TouchableOpacity style={[styles.button, { backgroundColor: currentColors.buttonColor }]} onPress={() => handleSubmit()}>
+                            <CustomText style={{ color: 'white' }}>{translations.submitAns}</CustomText>
+                        </TouchableOpacity>
+                    )}
+                </View>
         </View>
     );
 };
@@ -248,14 +252,19 @@ const styles = StyleSheet.create({
     },
     navigationContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between', // Space between previous button and the button container
+        alignItems: 'center', // Center vertically
+        padding: 10,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end', // Align next and submit buttons to the right
+        alignItems: 'center',
     },
     button: {
-        borderRadius: 10,
         padding: 10,
-        backgroundColor: 'grey',
-        alignItems: 'center',
-        marginBottom: 20,
+        borderRadius: 5,
+        marginBottom:50
     },
 });
 
