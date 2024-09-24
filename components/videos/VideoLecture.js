@@ -14,8 +14,6 @@ import VideoPlayer from 'expo-video-player';
 import { StatusBar } from 'react-native';
 
 const initialLayout = { width: Dimensions.get('window').width };
-const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
 
 const VideoDetail = () => {
     const route = useRoute();
@@ -28,6 +26,8 @@ const VideoDetail = () => {
     const [inFullscreen, setInFullscreen] = useState(false);
     const refVideo = useRef(null);
     const { language, translations } = useLanguage();
+    const [width, setWidth] = useState(Dimensions.get('window').width);
+    const [height, setHeight] = useState(Dimensions.get('window').height);
 
     useEffect(() => {
         const fetchVideo = async () => {
@@ -54,11 +54,23 @@ const VideoDetail = () => {
         }
     };
 
+    // Listener for dimension changes
+    useEffect(() => {
+        const updateDimensions = () => {
+            setWidth(Dimensions.get('window').width);
+            setHeight(Dimensions.get('window').height);
+        };
+
+        const subscription = Dimensions.addEventListener('change', updateDimensions);
+
+        return () => {
+            subscription?.remove();
+        };
+    }, []);
 
     // Add useFocusEffect to handle exiting fullscreen when navigating away
     useFocusEffect(
         React.useCallback(() => {
-            // Function to reset fullscreen and orientation when leaving the screen
             return () => {
                 if (inFullscreen) {
                     setInFullscreen(false);
@@ -67,7 +79,6 @@ const VideoDetail = () => {
             };
         }, [inFullscreen])
     );
-
 
     const updateUserViewed = async (videoId) => {
         try {
@@ -90,7 +101,7 @@ const VideoDetail = () => {
         { key: 'description', title: translations.description },
         { key: 'summary', title: translations.summary },
     ]);
-    
+
     useFocusEffect(
         React.useCallback(() => {
             const backAction = () => {
@@ -121,6 +132,7 @@ const VideoDetail = () => {
             </ScrollView>
         ),
     });
+
     const [videoLoading, setVideoLoading] = useState(true);
 
     const renderTabBar = (props) => (
@@ -151,7 +163,7 @@ const VideoDetail = () => {
             {video && (
                 <VideoPlayer
                     videoProps={{
-                        shouldPlay: true,
+                        shouldPlay:true,
                         resizeMode: 'contain',
                         source: { uri: video.videoUrl },
                         ref: refVideo,
@@ -169,7 +181,7 @@ const VideoDetail = () => {
                         },
                         inFullscreen: inFullscreen,
                     }}
-                    style={{ height: inFullscreen ? height : 260, width: inFullscreen ? width : 400 }}
+                    style={{ height: inFullscreen ? height : 260, width: inFullscreen ? width : 10000 }}
                     slider={{ visible: true }}
                 />
             )}

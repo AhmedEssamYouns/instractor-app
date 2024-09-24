@@ -29,6 +29,8 @@ const SectionDetail = () => {
     const [videoLoading, setVideoLoading] = useState(true);
     const refVideo = useRef(null);
     const { language, translations } = useLanguage();
+    const [width, setWidth] = useState(Dimensions.get('window').width);
+    const [height, setHeight] = useState(Dimensions.get('window').height);
 
     useEffect(() => {
         const fetchSection = async () => {
@@ -44,7 +46,6 @@ const SectionDetail = () => {
 
         fetchSection();
     }, [sectionId]);
-
     const handleFullscreenUpdate = async (isFullscreen) => {
         if (isFullscreen) {
             await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
@@ -54,6 +55,21 @@ const SectionDetail = () => {
             StatusBar.setHidden(false); // Show the status bar again
         }
     };
+
+    // Listener for dimension changes
+    useEffect(() => {
+        const updateDimensions = () => {
+            setWidth(Dimensions.get('window').width);
+            setHeight(Dimensions.get('window').height);
+        };
+
+        const subscription = Dimensions.addEventListener('change', updateDimensions);
+
+        return () => {
+            subscription?.remove();
+        };
+    }, []);
+
 
     // Add useFocusEffect to handle exiting fullscreen when navigating away
     useFocusEffect(
@@ -164,6 +180,7 @@ const SectionDetail = () => {
                     )}
                     <VideoPlayer
                         videoProps={{
+                            shouldPlay:true,
                             resizeMode: 'contain',
                             source: { uri: section.videoUrl }, // Use the video's URL from section data
                             ref: refVideo,
@@ -181,7 +198,7 @@ const SectionDetail = () => {
                             },
                             inFullscreen: inFullscreen,
                         }}
-                        style={{ height: inFullscreen ? height : 260, width: inFullscreen ? width : 400 }}
+                        style={{ height: inFullscreen ? height : 260, width: inFullscreen ? width : 10000 }}
                         slider={{ visible: true }}
                     />
                 </>

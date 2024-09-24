@@ -100,6 +100,21 @@ const CommentModal = ({ visible, onClose, postId }) => {
         inputRef.current?.focus();
     };
 
+    const handleToggleLike = (commentId) => {
+        // Use functional state updates to ensure we have the latest state
+        setUserLikes((prevLikes) => {
+            const newUserLikes = new Set(prevLikes);
+            if (newUserLikes.has(commentId)) {
+                newUserLikes.delete(commentId); // Unlike the comment
+            } else {
+                newUserLikes.add(commentId); // Like the comment
+            }
+            // Update the like on Firebase as well
+            handleLikeComment(postId, commentId, userLikes);
+            return newUserLikes;
+        });
+    };
+
     const toggleReplies = (commentId) => {
         setShowReplies((prev) => ({
             ...prev,
@@ -130,7 +145,7 @@ const CommentModal = ({ visible, onClose, postId }) => {
                         <View style={{ height: 4, borderRadius: 50, position: 'absolute', left: '35%', top: 15, backgroundColor: currentColors.text2, width: 100, }} />
 
                     </View>
-                    <Pressable style={{ padding: 5, zIndex: 22,position:'absolute',right:20,top:22 }} onPress={onClose}>
+                    <Pressable style={{ padding: 5, zIndex: 22, position: 'absolute', right: 20, top: 22 }} onPress={onClose}>
                         <FontAwesome name="close" size={20} color={currentColors.text} />
                     </Pressable>
                     {loading ? (
@@ -149,7 +164,7 @@ const CommentModal = ({ visible, onClose, postId }) => {
                             renderItem={({ item }) => {
                                 const hasReplies = item.replies && item.replies.length > 0;
                                 const areRepliesVisible = showReplies[item.id];
-                                const isLiked = userLikes.has(item.id);
+                                const isLiked = userLikes.has(item.id)
 
                                 return (
                                     <View style={styles.commentContainer}>
@@ -164,7 +179,10 @@ const CommentModal = ({ visible, onClose, postId }) => {
                                             </View>
 
                                             <View style={styles.actions}>
-                                                <TouchableOpacity onPress={() => handleLikeComment(postId, item.id, userLikes, setUserLikes)}>
+                                                <TouchableOpacity onPress={() =>
+                                                    handleToggleLike(item.id)
+                                                }
+                                                >
                                                     <AntDesign name={isLiked ? 'like1' : 'like2'} size={20} color={isLiked ? '#007BFF' : 'grey'} />
                                                 </TouchableOpacity>
                                                 <CustomText style={{ color: 'grey', marginHorizontal: 5 }}>

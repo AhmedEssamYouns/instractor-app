@@ -488,7 +488,7 @@ export const deleteReply = async (postId, commentId, createdAt, comments) => {
     }
 };
 
-export const handleLikeComment = async (postId, commentId, userLikes, setUserLikes) => {
+export const handleLikeComment = async (postId, commentId, userLikes) => {
     try {
         const currentUserId = FIREBASE_AUTH.currentUser.uid;
         if (userLikes.has(commentId)) {
@@ -498,7 +498,6 @@ export const handleLikeComment = async (postId, commentId, userLikes, setUserLik
             await likeComment(postId, commentId, currentUserId);
             userLikes.add(commentId);
         }
-        setUserLikes(new Set(userLikes));
     } catch (error) {
         console.error('Error liking/unliking comment: ', error);
     }
