@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity, StyleSheet, Text, ActivityIndicator, Alert } from 'react-native';
+import { View, FlatList, TouchableOpacity, StyleSheet, Text, ActivityIndicator, Alert, Pressable } from 'react-native';
 import { collection, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { useNavigation } from '@react-navigation/native';
@@ -56,19 +56,20 @@ const VideoList = () => {
     };
 
     const renderItem = ({ item }) => (
-        <View style={[styles.card,{backgroundColor:currentColors.cardBackground}]}>
-            <TouchableOpacity
+        <TouchableOpacity style={[styles.card,{backgroundColor:currentColors.cardBackground}]}
+        onPress={() => navigation.navigate('VideoDetail', { videoId: item.id })}
+        >
+            <View
                 style={styles.cardContent}
-                onPress={() => navigation.navigate('VideoDetail', { videoId: item.id })}
             >
                 <MaterialIcons name="video-library" size={24} color={currentColors.text2} style={styles.icon} />
                 <CustomText style={styles.title}>{item.title}</CustomText>
-            </TouchableOpacity>
+            </View>
             {/* Delete button */}
             <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteButton}>
                 <MaterialIcons name="delete" size={24} color="red" />
             </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
     );
 
     const toggleHeader = () => {

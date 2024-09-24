@@ -58,6 +58,8 @@ export default function Tabs() {
                         borderRadius: 1,
                         borderWidth: 0,
                         borderTopColor: currentColors.border,
+                        backgroundColor: 'red', // Set your background color here
+
                     },
                     tabBarIcon: ({ focused, color }) => {
                         let iconName;

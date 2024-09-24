@@ -54,19 +54,20 @@ const SectionList = () => {
     };
 
     const renderItem = ({ item }) => (
-        <View style={[styles.card,{backgroundColor:currentColors.cardBackground}]}>
-            <TouchableOpacity
+        <TouchableOpacity style={[styles.card,{backgroundColor:currentColors.cardBackground}]}
+        onPress={() => navigation.navigate('SectionDetail', { sectionId: item.id })} // Adjust to your detail screen
+        >
+            <View
                 style={styles.cardContent}
-                onPress={() => navigation.navigate('SectionDetail', { sectionId: item.id })} // Adjust to your detail screen
             >
                 <MaterialIcons name="video-library" size={24} color={currentColors.text2} style={styles.icon} />
                 <CustomText style={styles.title}>{item.title}</CustomText>
-            </TouchableOpacity>
+            </View>
             {/* Delete button */}
             <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteButton}>
                 <MaterialIcons name="delete" size={24} color="red" />
             </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
     );
 
     const toggleHeader = () => {

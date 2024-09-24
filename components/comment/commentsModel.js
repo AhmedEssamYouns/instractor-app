@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, Image, Keyboard, ActivityIndicator, Pressable } from 'react-native';
+import { Modal, View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, Image, Keyboard, ActivityIndicator, Pressable, PanResponder } from 'react-native';
 import { addComment, getComments, addReply, deleteComment, handleLikeComment, deleteReply, formatCreatedAt } from '../../firebase/posts';
 import { FIREBASE_AUTH } from '../../firebase/config';
 import colors from '../../constants/colors';
@@ -19,6 +19,33 @@ const CommentModal = ({ visible, onClose, postId }) => {
     const [userLikes, setUserLikes] = useState(new Set());
     const [loading, setLoading] = useState(true);
     const inputRef = useRef(null);
+
+    // State to handle the modal position
+    const [modalOffset, setModalOffset] = useState(0);
+
+    // Initialize PanResponder
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onMoveShouldSetPanResponder: () => true,
+            onPanResponderMove: (evt, gestureState) => {
+                // Calculate the new position of the modal
+                const newOffset = Math.max(0, modalOffset + gestureState.dy);
+                setModalOffset(newOffset);
+            },
+            onPanResponderRelease: (evt, gestureState) => {
+                // If the modal is dragged down more than a threshold, close it
+                if (gestureState.dy > 100) {
+                    onClose();
+                    setModalOffset(0);
+
+                } else {
+                    // Reset position if not dragged enough
+                    setModalOffset(0);
+                }
+            },
+        })
+    ).current;
 
     useEffect(() => {
         let unsubscribe;
@@ -90,134 +117,146 @@ const CommentModal = ({ visible, onClose, postId }) => {
                 setActiveReply(null);
             }}
         >
-            <Pressable style={styles.overlay} onPress={onClose}>
-            </Pressable>
-            <View style={[styles.modalContent, { backgroundColor: currentColors.background }]}>
-                <View style={styles.header}>
-                    <CustomText style={styles.headerText}>{translations.Comments}</CustomText>
-                    <FontAwesome onPress={onClose} name="close" size={24} color={currentColors.text} />
-                </View>
+            <View style={styles.overlay}>
+                <Pressable style={styles.out} onPress={onClose}>
+                </Pressable>
 
-                {loading ? (
-                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                        <ActivityIndicator size="large" color="#007BFF" style={styles.loader} />
+                <View
+                    style={[styles.modalContent, { backgroundColor: currentColors.background, transform: [{ translateY: modalOffset }] }]}>
+                    <View style={styles.header}
+                        {...panResponder.panHandlers}
+                    >
+                        <CustomText style={styles.headerText}>{translations.Comments}</CustomText>
+                        <View style={{ height: 4, borderRadius: 50, position: 'absolute', left: '35%', top: 15, backgroundColor: currentColors.text2, width: 100, }} />
+
                     </View>
-                ) : (
-                    <FlatList
-                        data={comments}
-                        ListEmptyComponent={
-                            <CustomText style={{alignSelf:'center'}}>
-                               {translations.nocomments}
-                            </CustomText>}
-                        contentContainerStyle={styles.commentList}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => {
-                            const hasReplies = item.replies && item.replies.length > 0;
-                            const areRepliesVisible = showReplies[item.id];
-                            const isLiked = userLikes.has(item.id);
-
-                            return (
-                                <View style={styles.commentContainer}>
-                                    <Pressable onLongPress={() => deleteComment(postId, item.id, comments)}>
-                                        <View style={styles.commentHeader}>
-                                            <Image source={{ uri: item.photoURL }} style={styles.commentAvatar} />
-                                            <CustomText style={styles.commentName}>{item.displayName}</CustomText>
-                                            <Text style={{ fontSize: 10, position: 'absolute', right: 10, color: 'grey' }}>{formatCreatedAt(item.timestamp)}</Text>
-                                        </View>
-                                        <View style={styles.commentItem}>
-                                            <CustomText style={styles.commentText}>{item.text}</CustomText>
-                                        </View>
-
-                                        <View style={styles.actions}>
-                                            <TouchableOpacity onPress={() => handleLikeComment(postId, item.id, userLikes, setUserLikes)}>
-                                                <AntDesign name={isLiked ? 'like1' : 'like2'} size={20} color={isLiked ? '#007BFF' : 'grey'} />
-                                            </TouchableOpacity>
-                                            <CustomText style={{ color: 'grey', marginHorizontal: 5 }}>
-                                                {item.likes ? item.likes.length : 0}
-                                            </CustomText>
-                                            <TouchableOpacity style={{ paddingLeft: 10, flexDirection: 'row', alignItems: 'center' }} onPress={() => handleAddReply(item.id, item.displayName)}>
-                                                <FontAwesome name={'reply-all'} size={12} color={'grey'} />
-                                                <CustomText style={[styles.replyText, { color: '#999' }]}>{translations.reply}</CustomText>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </Pressable>
-
-                                    {hasReplies && (
-                                        <TouchableOpacity style={styles.viewReplies} onPress={() => toggleReplies(item.id)}>
-                                            <View style={styles.line}></View>
-                                            <CustomText style={{ color: 'grey' }}>
-                                                {areRepliesVisible ? (
-                                                    <>
-                                                        {translations.hideRiplies} <FontAwesome5 name="angle-up" size={15} color="grey" />
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        {translations.show} {item.replies.length} {translations.replies} <FontAwesome5 name="angle-down" size={15} color="grey" />
-                                                    </>
-                                                )}
-                                            </CustomText>
-                                        </TouchableOpacity>
-                                    )}
-                                    <View style={{ borderLeftWidth: 1, borderColor: '#aaa', marginLeft: 60 }}>
-                                        {areRepliesVisible && item.replies && item.replies.map((reply, index) => (
-                                            <Pressable onLongPress={() => deleteReply(postId, item.id, reply.createdAt)} key={reply.createdAt} style={styles.replyContainer}>
-                                                <View style={styles.commentHeader}>
-                                                    <Image source={{ uri: reply.photoURL }} style={styles.replyAvatar} />
-                                                    <CustomText style={[styles.commentName,{fontSize:12}]}>{reply.displayName}</CustomText>
-                                                    <Text style={{ fontSize: 10, position: 'absolute', right: 0, color: 'grey', }}>{formatCreatedAt(reply.createdAt)}</Text>
-                                                </View>
-                                                <View style={styles.replyItem}>
-                                                    <CustomText style={styles.commentText}>{reply.text}</CustomText>
-                                                </View>
-                                            </Pressable>
-                                        ))}
-                                    </View>
-                                </View>
-                            );
-                        }}
-                    />
-                )}
-
-                <View style={styles.inputContainer}>
-                    {activeReply && (
-                        <View style={{ padding: 10, flexDirection: "row", justifyContent: 'space-between', borderTopColor: currentColors.borderColor, borderTopWidth: 2 }}>
-                            <CustomText>{translations.addreply} {name}</CustomText>
-                            <FontAwesome onPress={() => setActiveReply(null)} name="close" size={24} color={currentColors.text} />
+                    <Pressable style={{ padding: 5, zIndex: 22,position:'absolute',right:20,top:22 }} onPress={onClose}>
+                        <FontAwesome name="close" size={20} color={currentColors.text} />
+                    </Pressable>
+                    {loading ? (
+                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                            <ActivityIndicator size="large" color="#007BFF" style={styles.loader} />
                         </View>
+                    ) : (
+                        <FlatList
+                            data={comments}
+                            ListEmptyComponent={
+                                <CustomText style={{ alignSelf: 'center' }}>
+                                    {translations.nocomments}
+                                </CustomText>}
+                            contentContainerStyle={styles.commentList}
+                            keyExtractor={(item) => item.id}
+                            renderItem={({ item }) => {
+                                const hasReplies = item.replies && item.replies.length > 0;
+                                const areRepliesVisible = showReplies[item.id];
+                                const isLiked = userLikes.has(item.id);
+
+                                return (
+                                    <View style={styles.commentContainer}>
+                                        <Pressable onLongPress={() => deleteComment(postId, item.id, comments)}>
+                                            <View style={styles.commentHeader}>
+                                                <Image source={{ uri: item.photoURL }} style={styles.commentAvatar} />
+                                                <CustomText style={styles.commentName}>{item.displayName}</CustomText>
+                                                <Text style={{ fontSize: 10, position: 'absolute', right: 10, color: 'grey' }}>{formatCreatedAt(item.timestamp)}</Text>
+                                            </View>
+                                            <View style={styles.commentItem}>
+                                                <CustomText style={styles.commentText}>{item.text}</CustomText>
+                                            </View>
+
+                                            <View style={styles.actions}>
+                                                <TouchableOpacity onPress={() => handleLikeComment(postId, item.id, userLikes, setUserLikes)}>
+                                                    <AntDesign name={isLiked ? 'like1' : 'like2'} size={20} color={isLiked ? '#007BFF' : 'grey'} />
+                                                </TouchableOpacity>
+                                                <CustomText style={{ color: 'grey', marginHorizontal: 5 }}>
+                                                    {item.likes ? item.likes.length : 0}
+                                                </CustomText>
+                                                <TouchableOpacity style={{ paddingLeft: 10, flexDirection: 'row', alignItems: 'center' }} onPress={() => handleAddReply(item.id, item.displayName)}>
+                                                    <FontAwesome name={'reply-all'} size={12} color={'grey'} />
+                                                    <CustomText style={[styles.replyText, { color: '#999' }]}>{translations.reply}</CustomText>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </Pressable>
+
+                                        {hasReplies && (
+                                            <TouchableOpacity style={styles.viewReplies} onPress={() => toggleReplies(item.id)}>
+                                                <View style={styles.line}></View>
+                                                <CustomText style={{ color: 'grey' }}>
+                                                    {areRepliesVisible ? (
+                                                        <>
+                                                            {translations.hideRiplies} <FontAwesome5 name="angle-up" size={15} color="grey" />
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            {translations.show} {item.replies.length} {translations.replies} <FontAwesome5 name="angle-down" size={15} color="grey" />
+                                                        </>
+                                                    )}
+                                                </CustomText>
+                                            </TouchableOpacity>
+                                        )}
+                                        <View style={{ borderLeftWidth: 1, borderColor: '#aaa', marginLeft: 60 }}>
+                                            {areRepliesVisible && item.replies && item.replies.map((reply, index) => (
+                                                <Pressable onLongPress={() => deleteReply(postId, item.id, reply.createdAt)} key={reply.createdAt} style={styles.replyContainer}>
+                                                    <View style={styles.commentHeader}>
+                                                        <Image source={{ uri: reply.photoURL }} style={styles.replyAvatar} />
+                                                        <CustomText style={[styles.commentName, { fontSize: 12 }]}>{reply.displayName}</CustomText>
+                                                        <Text style={{ fontSize: 10, position: 'absolute', right: 0, color: 'grey', }}>{formatCreatedAt(reply.createdAt)}</Text>
+                                                    </View>
+                                                    <View style={styles.replyItem}>
+                                                        <CustomText style={styles.commentText}>{reply.text}</CustomText>
+                                                    </View>
+                                                </Pressable>
+                                            ))}
+                                        </View>
+                                    </View>
+                                );
+                            }}
+                        />
                     )}
-                    <TextInput
-                        ref={inputRef}
-                        style={[styles.input, { backgroundColor: currentColors.cardBackground, color: currentColors.text2 }]}
-                        placeholder={activeReply ? (translations.addreply + ' ' + name) : translations.addComment}
-                        placeholderTextColor={currentColors.text2}
-                        value={commentText}
-                        returnKeyType='send'
-                        onChangeText={setCommentText}
-                        onSubmitEditing={handleAddComment}
-                    />
+
+                    <View style={styles.inputContainer}>
+                        {activeReply && (
+                            <View style={{ padding: 10, flexDirection: "row", justifyContent: 'space-between', borderTopColor: currentColors.borderColor, borderTopWidth: 2 }}>
+                                <CustomText>{translations.addreply} {name}</CustomText>
+                                <FontAwesome onPress={() => setActiveReply(null)} name="close" size={24} color={currentColors.text} />
+                            </View>
+                        )}
+                        <TextInput
+                            ref={inputRef}
+                            style={[styles.input, { backgroundColor: currentColors.cardBackground, color: currentColors.text2 }]}
+                            placeholder={activeReply ? (translations.addreply + ' ' + name) : translations.addComment}
+                            placeholderTextColor={currentColors.text2}
+                            value={commentText}
+                            returnKeyType='send'
+                            onChangeText={setCommentText}
+                            onSubmitEditing={handleAddComment}
+                        />
+                    </View>
                 </View>
             </View>
         </Modal>
     );
 };
 
-
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
         justifyContent: 'flex-end',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 1
+    },
+    out: {
+        flex: 0.3,
     },
     modalContent: {
-        width: '100%',
-        height: '75%',
+        flex: 0.7,
+        zIndex: 2,
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
         paddingHorizontal: 20,
         paddingBottom: 20,
     },
     header: {
-        marginVertical: 20,
+        paddingVertical: 25,
         paddingBottom: 15,
         borderBottomWidth: 1,
         borderColor: 'grey',

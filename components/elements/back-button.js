@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   button: {
     zIndex:2,
     position: 'absolute',
-    top: 50,
+    top: 30,
     padding: 5,
   },
 });
