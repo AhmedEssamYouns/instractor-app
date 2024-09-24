@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    width: 170,
+    width: 150,
     textAlign: 'left',
   },
   timestamp: {

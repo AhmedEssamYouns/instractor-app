@@ -163,12 +163,13 @@ const VideoDetail = () => {
             {video && (
                 <VideoPlayer
                     videoProps={{
-                        shouldPlay:true,
+                        shouldPlay: true,
                         resizeMode: 'contain',
                         source: { uri: video.videoUrl },
                         ref: refVideo,
                         onLoadStart: () => setVideoLoading(true),
                         onReadyForDisplay: () => setVideoLoading(false),
+
                     }}
                     fullscreen={{
                         enterFullscreen: async () => {
