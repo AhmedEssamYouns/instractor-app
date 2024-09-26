@@ -4,7 +4,7 @@ import { Feather } from '@expo/vector-icons';
 import { useTheme } from '../elements/theme-provider';
 import { useLanguage } from '../elements/language-provider';
 import colors from '../../constants/colors';
-import { db, FIREBASE_AUTH } from '../../firebase/config'; // Adjust import path
+import { db, FIREBASE_AUTH } from '../../firebase/config';
 import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 import CustomText from '../elements/text';
 
@@ -62,7 +62,7 @@ const SectionScreen = () => {
         keyExtractor={item => item.id}
         ListEmptyComponent={
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <CustomText>
+            <CustomText style={{ color: currentColors.text2 }}>
               {translations.noData}
             </CustomText>
           </View>
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   name: {
-    width:200,
+    width: 200,
     fontSize: 18,
   },
   attended: {

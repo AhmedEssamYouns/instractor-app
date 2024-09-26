@@ -22,6 +22,8 @@ const StudentQuizAttempt = ({ route }) => {
     const [timeLeft, setTimeLeft] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [halfTimeAlertShown, setHalfTimeAlertShown] = useState(false);
+    const [twentyPercentTimeAlertShown, setTwentyPercentTimeAlertShown] = useState(false);
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -54,12 +56,31 @@ const StudentQuizAttempt = ({ route }) => {
         const timer = setInterval(() => {
             if (timeLeft > 0 && !isSubmitting) {
                 setTimeLeft(prevTime => prevTime - 1);
+
+                // Show half-time alert
+                if (!halfTimeAlertShown && timeLeft <= quiz.timeLimit * 60 / 2) {
+                    setHalfTimeAlertShown(true);
+                    Alert.alert(
+                        language === 'ar' ? 'انتهى نصف الوقت' : 'Half Time Passed',
+                        language === 'ar' ? 'لقد وصلت إلى منتصف مدة الاختبار.' : 'You have reached the halfway point of your quiz.'
+                    );
+                }
+
+                // Show 20% time left alert
+                if (!twentyPercentTimeAlertShown && timeLeft <= quiz.timeLimit * 60 * 0.2) {
+                    setTwentyPercentTimeAlertShown(true);
+                    Alert.alert(
+                        language === 'ar' ? 'الوقت يكاد ينفد' : 'Time is Running Out',
+                        language === 'ar' ? `يتبقى فقط 20٪ من الوقت.` : 'Only 20% of the time remains.'
+                    );
+                }
             } else if (timeLeft === 0) {
                 handleSubmit(true); // Submit quiz when time is up
             }
         }, 1000);
         return () => clearInterval(timer);
-    }, [timeLeft, isSubmitting]);
+    }, [timeLeft, isSubmitting, halfTimeAlertShown, twentyPercentTimeAlertShown, language]);
+
 
     // Handle back button press
     useEffect(() => {
@@ -194,25 +215,31 @@ const StudentQuizAttempt = ({ route }) => {
                     </TouchableOpacity>
                 )}
 
-                    {currentQuestionIndex < questions.length - 1 && answers[currentQuestionIndex] !== null && (
-                        <TouchableOpacity style={ { backgroundColor: '#67726B', position: 'absolute', right: 0, bottom: 0,
-                            padding: 10,
-                            borderRadius: 5,
-                            marginHorizontal: 5, // Add some space between buttons
-                         }} onPress={handleNextQuestion}>
-                            <CustomText style={{ color: 'white' }}>{translations.next}</CustomText>
-                        </TouchableOpacity>
-                    )}
 
-                    {currentQuestionIndex === questions.length - 1 && answers[currentQuestionIndex] !== null && (
-                        <TouchableOpacity style={[styles.button, { backgroundColor: currentColors.buttonColor }]} onPress={() => handleSubmit()}>
-                            <CustomText style={{ color: 'white' }}>{translations.submitAns}</CustomText>
-                        </TouchableOpacity>
-                    )}
-                </View>
+                {currentQuestionIndex === questions.length - 1 && answers[currentQuestionIndex] !== null && (
+                    <TouchableOpacity style={[styles.button, { backgroundColor: currentColors.buttonColor }]} onPress={() => handleSubmit()}>
+                        <CustomText style={{ color: 'white' }}>{translations.submitAns}</CustomText>
+                    </TouchableOpacity>
+                )}
+            </View>
+            {currentQuestionIndex < questions.length - 1 && answers[currentQuestionIndex] !== null && (
+                <TouchableOpacity style={{
+                    backgroundColor: '#67726B',
+                    position: 'absolute',
+                    right: 0,
+                    bottom: 60,
+                    padding: 10,
+                    borderRadius: 5,
+                    marginHorizontal: 5, // Add some space between buttons
+                }} onPress={handleNextQuestion}>
+                    <CustomText style={{ color: 'white' }}>{translations.next}</CustomText>
+                </TouchableOpacity>
+            )}
+
         </View>
     );
 };
+
 
 
 const styles = StyleSheet.create({
@@ -264,7 +291,7 @@ const styles = StyleSheet.create({
     button: {
         padding: 10,
         borderRadius: 5,
-        marginBottom:50
+        marginBottom: 50
     },
 });
 

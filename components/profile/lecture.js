@@ -62,7 +62,7 @@ const LectureScreen = () => {
         keyExtractor={item => item.id}
         ListEmptyComponent={
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <CustomText>
+            <CustomText style={{color:currentColors.text2}}>
               {translations.noData}
             </CustomText>
           </View>

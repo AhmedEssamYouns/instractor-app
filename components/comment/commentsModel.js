@@ -19,8 +19,6 @@ const CommentModal = ({ visible, onClose, postId }) => {
     const [userLikes, setUserLikes] = useState(new Set());
     const [loading, setLoading] = useState(true);
     const inputRef = useRef(null);
-
-    // State to handle the modal position
     const [modalOffset, setModalOffset] = useState(0);
 
     // Initialize PanResponder
