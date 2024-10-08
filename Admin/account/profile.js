@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { doc, collection, onSnapshot, updateDoc } from 'firebase/firestore';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import * as ImagePicker from 'expo-image-picker';
 import { db, FIREBASE_AUTH } from '../../firebase/config';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import CustomText from '../../components/elements/text';
 import colors from '../../constants/colors';
 import { useTheme } from '../../components/elements/theme-provider';
 import Students from './students';
 import Quizzes from './quizes';
+import AdminUsers from './conrtollAdmin';
+
 const ProfileWithStudents = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -16,7 +18,6 @@ const ProfileWithStudents = () => {
     const userId = FIREBASE_AUTH.currentUser.uid;
     const { theme } = useTheme(); // Get theme from context
     const currentColors = colors[theme];
-
 
     useEffect(() => {
         // Fetch the logged-in user's document
@@ -29,6 +30,8 @@ const ProfileWithStudents = () => {
             }
             setLoading(false);
         });
+
+        return unsubscribeUser;
     }, []);
 
     const handleImagePicker = async () => {
@@ -56,37 +59,35 @@ const ProfileWithStudents = () => {
         }
     };
 
-
-
+    // Define the Students tab content
+    const StudentsRoute = () => <Students />;
 
     // Define the Quizzes tab content
-    const QuizzesRoute = () => (
-        <Quizzes />
-    );
+    const QuizzesRoute = () => <Quizzes />;
 
-    // Define the Students tab content
-    const StudentsRoute = () => (
-        <Students />
-    );
-
-    // Setup tab navigation
-    const [index, setIndex] = useState(0);
-    const [routes] = useState([
+    // Conditionally add Admins tab if the user is an author
+    const routes = [
         { key: 'students', title: 'Students' },
-        { key: 'quizzes', title: 'grades' },
-    ]);
+        { key: 'quizzes', title: 'Grades' },
+        ...(userData?.author ? [{ key: 'admins', title: 'Admins' }] : []), // Conditionally add 'Admins' tab
+    ];
 
     const renderScene = SceneMap({
-        quizzes: QuizzesRoute,
         students: StudentsRoute,
+        quizzes: QuizzesRoute,
+        admins: () => <AdminUsers />, // Admin tab scene
     });
+
+    const [index, setIndex] = useState(0);
 
     if (loading) {
         return (
-            <View style={{flex:1,alignItems:'center',justifyContent:"center"}}>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <ActivityIndicator size="large" color={currentColors.text} />
-            </View>)
+            </View>
+        );
     }
+
     const renderTabBar = (props) => (
         <TabBar
             {...props}
@@ -101,7 +102,7 @@ const ProfileWithStudents = () => {
     return (
         <View style={styles.container}>
             {userData && (
-                <View style={[styles.profileContainer,{backgroundColor:currentColors.background}]}>
+                <View style={[styles.profileContainer, { backgroundColor: currentColors.background }]}>
                     <View>
                         <CustomText style={styles.profileName}>{userData.displayName}</CustomText>
                         <CustomText style={styles.profileEmail}>{userData.email}</CustomText>
@@ -120,7 +121,7 @@ const ProfileWithStudents = () => {
                 navigationState={{ index, routes }}
                 renderScene={renderScene}
                 onIndexChange={setIndex}
-                style={{backgroundColor:currentColors.background}}
+                style={{ backgroundColor: currentColors.background }}
                 initialLayout={{ width: '100%' }}
                 renderTabBar={renderTabBar}
             />
@@ -153,37 +154,6 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 50,
         marginBottom: 15,
-    },
-    quizCard: {
-        borderColor: '#ddd',
-        padding: 15,
-        borderRadius: 8,
-        marginBottom: 15,
-        backgroundColor: '#f9f9f9',
-    },
-    attendeeCard: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
-    },
-    attendeeText: {
-        fontSize: 16,
-    },
-    flatList: {
-        paddingBottom: 20,
-    },
-    studentCard: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        padding: 15,
-        borderRadius: 8,
-        marginBottom: 15,
-        backgroundColor: '#f9f9f9',
-    },
-    studentName: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 5,
     },
 });
 
