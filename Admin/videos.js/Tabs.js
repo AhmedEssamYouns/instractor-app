@@ -12,12 +12,12 @@ const TabAdminView = () => {
     const currentColors = colors[theme]
     const [index, setIndex] = useState(0);
     const [routes] = useState([
-        { key: 'videos', title: 'Videos' },
+        { key: 'lectures', title: 'Lectures' },
         { key: 'sections', title: 'Sections' },
     ]);
 
     const renderScene = SceneMap({
-        videos: VideoList,
+        lectures: VideoList,
         sections: SectionList,
     });
 

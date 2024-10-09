@@ -93,7 +93,7 @@ export default function TeacherTabs() {
                 <Tab.Screen
                     name="UploadLecture"
                     component={TabAdminView}
-                    options={{ title: 'Upload Lecture' }}
+                    options={{ title: 'Videos' }}
                 />
                 <Tab.Screen
                     name="Assinments"

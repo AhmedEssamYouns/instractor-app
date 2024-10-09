@@ -232,11 +232,11 @@ const CommentModal = ({ visible, onClose, postId }) => {
                                                 <Pressable onLongPress={() => deleteReply(postId, item.id, reply.createdAt)} key={reply.createdAt} style={styles.replyContainer}>
                                                     <View style={styles.commentHeader}>
                                                         <Image source={{ uri: reply.photoURL }} style={styles.replyAvatar} />
-                                                        <View style={{ flexDirection: 'column', width: 95 }}>
+                                                        <View style={{ flexDirection: 'column', width: 100 }}>
                                                             <CustomText style={[styles.commentName, { fontSize: 12 }]}>{reply.displayName}</CustomText>
-                                                            {item.admin && (
+                                                            {reply.admin && (
                                                                 <View style={[styles.admin, { backgroundColor: currentColors.cardBackground }]}>
-                                                                    {item.author ? (
+                                                                    {reply.author ? (
                                                                         <>
                                                                             <CustomText style={styles.badge}>@{translations.owner} </CustomText>
                                                                             <MaterialCommunityIcons name="crown" style={styles.badge} />

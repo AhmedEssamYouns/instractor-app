@@ -123,8 +123,8 @@ export const getComments = async (postId, callback) => {
                                     ...reply,
                                     displayName: replyUser.displayName || 'user',
                                     photoURL: replyUser.photoURL || 'https://redcoraluniverse.com/img/default_profile_image.png',
-                                    admin: userDetails.admin || false,
-                                    author: userDetails.author || false,
+                                    admin: replyUser.admin || false,
+                                    author: replyUser.author || false,
 
                                 };
                             })

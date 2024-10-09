@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, SectionList, StyleSheet, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, SectionList, StyleSheet, TouchableOpacity, ActivityIndicator, Image, TextInput } from 'react-native';
 import { collection, onSnapshot, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { useTheme } from '../../components/elements/theme-provider';
@@ -7,7 +7,9 @@ import colors from '../../constants/colors';
 
 const AdminUsers = () => {
     const [sections, setSections] = useState([]);
-    const [loading, setLoading] = useState(true); // State to track loading status
+    const [filteredSections, setFilteredSections] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [loading, setLoading] = useState(true);
     const { theme } = useTheme();
     const currentColors = colors[theme];
 
@@ -15,11 +17,9 @@ const AdminUsers = () => {
         const usersCollectionRef = collection(db, 'users');
         const unsubscribe = onSnapshot(usersCollectionRef, (snapshot) => {
             const usersData = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-            // Filter admins and users
             const admins = usersData.filter((user) => user.admin);
             const regularUsers = usersData.filter((user) => !user.admin);
 
-            // Prepare sectioned data for SectionList
             const sectionData = [];
 
             if (admins.length > 0) {
@@ -30,11 +30,30 @@ const AdminUsers = () => {
             }
 
             setSections(sectionData);
-            setLoading(false); // Set loading to false after data is loaded
+            setFilteredSections(sectionData);
+            setLoading(false);
         });
 
         return unsubscribe;
     }, []);
+
+    const handleSearch = (text) => {
+        setSearchQuery(text);
+
+        if (text === '') {
+            setFilteredSections(sections);
+        } else {
+            const filtered = sections.map(section => ({
+                ...section,
+                data: section.data.filter(user =>
+                    user.displayName.toLowerCase().includes(text.toLowerCase()) ||
+                    user.email.toLowerCase().includes(text.toLowerCase())
+                ),
+            })).filter(section => section.data.length > 0);
+
+            setFilteredSections(filtered);
+        }
+    };
 
     const toggleAdmin = async (userId, isAdmin) => {
         try {
@@ -46,7 +65,6 @@ const AdminUsers = () => {
     };
 
     const renderUser = ({ item }) => {
-        // Ensure the 'author' field check is inside the return block
         if (!item.author) {
             return (
                 <View style={[styles.userCard, item.admin]}>
@@ -55,13 +73,12 @@ const AdminUsers = () => {
                         <Text style={[styles.userName, { color: currentColors.text }]}>{item.displayName}</Text>
                         <Text style={{ color: currentColors.text2 }}>{item.email}</Text>
                         <TouchableOpacity onPress={() => toggleAdmin(item.id, item.admin)}>
-                            <Text style={[styles.toggleButton, { color: currentColors.buttonColor }]}>
+                            <Text style={[styles.toggleButton, { color: item.admin ? 'red' : currentColors.buttonColor }]}>
                                 {item.admin ? 'Remove Admin' : 'Make Admin'}
                             </Text>
                         </TouchableOpacity>
                     </View>
                     {item.admin && <Text style={styles.adminBadge}>Admin</Text>}
-
                 </View>
             );
         }
@@ -69,7 +86,6 @@ const AdminUsers = () => {
     };
 
     const renderSectionHeader = ({ section }) => {
-        // Render section header only if it has data
         return section.data.length > 0 ? (
             <Text style={[styles.sectionHeader, { color: currentColors.text }]}>{section.title}</Text>
         ) : null;
@@ -77,6 +93,7 @@ const AdminUsers = () => {
 
     return (
         <View style={{ flex: 1, backgroundColor: currentColors.backgroundColor }}>
+
             {loading ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color={currentColors.buttonColor} />
@@ -84,7 +101,16 @@ const AdminUsers = () => {
                 </View>
             ) : (
                 <SectionList
-                    sections={sections}
+                    ListHeaderComponent={
+                        <TextInput
+                            style={[styles.searchBar, { backgroundColor: currentColors.cardBackground, color: currentColors.text }]}
+                            placeholder="Search users"
+                            placeholderTextColor={currentColors.text2}
+                            value={searchQuery}
+                            onChangeText={handleSearch}
+                        />
+                    }
+                    sections={filteredSections}
                     renderItem={renderUser}
                     renderSectionHeader={renderSectionHeader}
                     keyExtractor={(item) => item.id}
@@ -100,7 +126,6 @@ const styles = StyleSheet.create({
         padding: 15,
         gap: 15,
         alignItems: "center",
-        borderBottomWidth: 1,
         flexDirection: "row",
         borderBottomColor: '#ddd',
     },
@@ -140,6 +165,13 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    searchBar: {
+        padding: 10,
+        marginHorizontal: 25,
+        marginTop:20,
+        borderRadius: 18,
+        borderColor: '#ccc',
     },
 });
 
