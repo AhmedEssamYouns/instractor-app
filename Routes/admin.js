@@ -9,7 +9,6 @@ import ThemeSwitcherModal from '../components/elements/menu';
 import TabAdminView from '../Admin/videos.js/Tabs';
 import QuizAdminList from '../Admin/manageQuiz.js/quiz_list';
 import ProfileWithStudents from '../Admin/account/profile';
-import AssignmentsList from '../Admin/assignment/list';
 import AssignmentForm from '../Admin/assignment/assign_form';
 
 const Tab = createBottomTabNavigator();
@@ -18,22 +17,7 @@ export default function TeacherTabs() {
     const { theme, setTheme } = useTheme();
     const currentColors = colors[theme];
     const [isModalVisible, setModalVisible] = useState(false);
-    const [isKeyboardVisible, setKeyboardVisible] = useState(false); // Track keyboard visibility
 
-    // Detect keyboard events
-    useEffect(() => {
-        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-            setKeyboardVisible(true);
-        });
-        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-            setKeyboardVisible(false);
-        });
-
-        return () => {
-            keyboardDidShowListener.remove();
-            keyboardDidHideListener.remove();
-        };
-    }, []);
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
@@ -47,39 +31,38 @@ export default function TeacherTabs() {
         <>
             <Tab.Navigator
                 screenOptions={({ route }) => ({
-                    
+                    tabBarHideOnKeyboard:true,
+                    tabBarLabelStyle:{paddingBottom:5},
                     tabBarActiveBackgroundColor: currentColors.background,
                     tabBarInactiveBackgroundColor: currentColors.background,
-                    tabBarShowLabel: false,
                     headerTitleStyle: { fontFamily: 'bold',color:currentColors.text },
                     tabBarIcon: ({ focused, color }) => {
                         let iconName;
 
                         if (route.name === 'Students') {
                             iconName = focused ? 'people' : 'people-outline';
-                            return <Ionicons name={iconName} size={30} color={color} />;
+                            return <Ionicons name={iconName} size={25} color={color} />;
                         } else if (route.name === 'Quizzes') {
                             iconName = focused ? 'document-text' : 'document-text-outline';
-                            return <Ionicons name={iconName} size={30} color={color} />;
+                            return <Ionicons name={iconName} size={25} color={color} />;
                         } else if (route.name === 'UploadLecture') {
                             iconName = 'upload';
-                            return <FontAwesome5 name={iconName} size={26} color={color} />;
+                            return <FontAwesome5 name={iconName} size={21} color={color} />;
                         } else if (route.name === 'Posts') {
                             iconName = focused ? 'clipboard-list' : 'clipboard-list-outline';
-                            return <MaterialCommunityIcons name={iconName} size={30} color={color} />;
+                            return <MaterialCommunityIcons name={iconName} size={25} color={color} />;
                         } else if (route.name === 'Assinments') {
                             iconName = focused ? 'book' : 'book-edit';
-                            return <MaterialCommunityIcons name={iconName} size={30} color={color} />;
+                            return <MaterialCommunityIcons name={iconName} size={25} color={color} />;
                         }
 
                         return <Ionicons name={iconName} size={30} color={color} />;
                     },
                     tabBarActiveTintColor: currentColors.iconFocus,
                     tabBarInactiveTintColor: currentColors.iconColor,
-                    tabBarStyle: isKeyboardVisible ? { display: 'none' } : { // Hide tab bar when keyboard is visible
-                        borderRadius: 1,
-                        borderWidth: 0,
+                    tabBarStyle:{
                         borderTopColor: currentColors.border,
+                        height:50,
                     },
                     headerStyle: {
                         backgroundColor: currentColors.background,

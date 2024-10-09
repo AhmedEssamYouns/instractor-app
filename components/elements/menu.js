@@ -135,7 +135,7 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
             )}
 
             <TouchableOpacity
-              style={[styles.option, { backgroundColor: colors[theme].button }]}
+              style={[styles.option, { backgroundColor: colors[theme].button,paddingTop:14 }]}
               onPress={() => handleOptionPress('logout')}
             >
               <Ionicons name="log-out" size={20} color={colors[theme].text} style={styles.icon} />
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   option: {
-    paddingBottom: 10,
+    paddingBottom: 15,
     paddingHorizontal: 10,
     borderRadius: 5,
     paddingVertical: 5,

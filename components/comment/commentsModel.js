@@ -5,8 +5,9 @@ import { FIREBASE_AUTH } from '../../firebase/config';
 import colors from '../../constants/colors';
 import { useLanguage } from '../elements/language-provider';
 import { useTheme } from '../elements/theme-provider';
-import { FontAwesome, FontAwesome5, AntDesign } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5, AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import CustomText from '../elements/text';
+import { Ionicons, MaterialCommunityIcon } from '@expo/vector-icons';
 
 const CommentModal = ({ visible, onClose, postId }) => {
     const [commentText, setCommentText] = useState('');
@@ -21,24 +22,20 @@ const CommentModal = ({ visible, onClose, postId }) => {
     const inputRef = useRef(null);
     const [modalOffset, setModalOffset] = useState(0);
 
-    // Initialize PanResponder
     const panResponder = useRef(
         PanResponder.create({
             onStartShouldSetPanResponder: () => true,
             onMoveShouldSetPanResponder: () => true,
             onPanResponderMove: (evt, gestureState) => {
-                // Calculate the new position of the modal
                 const newOffset = Math.max(0, modalOffset + gestureState.dy);
                 setModalOffset(newOffset);
             },
             onPanResponderRelease: (evt, gestureState) => {
-                // If the modal is dragged down more than a threshold, close it
                 if (gestureState.dy > 100) {
                     onClose();
                     setModalOffset(0);
 
                 } else {
-                    // Reset position if not dragged enough
                     setModalOffset(0);
                 }
             },
@@ -99,15 +96,15 @@ const CommentModal = ({ visible, onClose, postId }) => {
     };
 
     const handleToggleLike = (commentId) => {
-        // Use functional state updates to ensure we have the latest state
+
         setUserLikes((prevLikes) => {
             const newUserLikes = new Set(prevLikes);
             if (newUserLikes.has(commentId)) {
-                newUserLikes.delete(commentId); // Unlike the comment
+                newUserLikes.delete(commentId);
             } else {
-                newUserLikes.add(commentId); // Like the comment
+                newUserLikes.add(commentId);
             }
-            // Update the like on Firebase as well
+
             handleLikeComment(postId, commentId, userLikes);
             return newUserLikes;
         });
@@ -170,6 +167,23 @@ const CommentModal = ({ visible, onClose, postId }) => {
                                             <View style={styles.commentHeader}>
                                                 <Image source={{ uri: item.photoURL }} style={styles.commentAvatar} />
                                                 <CustomText style={styles.commentName}>{item.displayName}</CustomText>
+                                                {item.admin && (
+                                                            <View style={{flexDirection:'row'}}> 
+                                                                {item.author ? (
+                                                                    <>
+                                                                        <CustomText style={styles.badge}>@author </CustomText>
+                                                                        <MaterialCommunityIcons name="crown" style={styles.badge} />
+
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <CustomText style={styles.badge2}>@admin </CustomText>
+                                                                        <Ionicons name="shield" style={styles.badge2} /> 
+
+                                                                    </>
+                                                                )}
+                                                            </View>
+                                                        )}
                                                 <Text style={{ fontSize: 10, position: 'absolute', right: 10, color: 'grey' }}>{formatCreatedAt(item.timestamp)}</Text>
                                             </View>
                                             <View style={styles.commentItem}>
@@ -215,6 +229,23 @@ const CommentModal = ({ visible, onClose, postId }) => {
                                                     <View style={styles.commentHeader}>
                                                         <Image source={{ uri: reply.photoURL }} style={styles.replyAvatar} />
                                                         <CustomText style={[styles.commentName, { fontSize: 12 }]}>{reply.displayName}</CustomText>
+                                                        {item.admin && (
+                                                            <View style={{flexDirection:'row'}}> 
+                                                                {item.author ? (
+                                                                    <>
+                                                                        <CustomText style={styles.badge}>@author </CustomText>
+                                                                        <MaterialCommunityIcons name="crown" style={styles.badge} />
+
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <CustomText style={styles.badge2}>@admin </CustomText>
+                                                                        <Ionicons name="shield" style={styles.badge2} /> 
+
+                                                                    </>
+                                                                )}
+                                                            </View>
+                                                        )}
                                                         <Text style={{ fontSize: 10, position: 'absolute', right: 0, color: 'grey', }}>{formatCreatedAt(reply.createdAt)}</Text>
                                                     </View>
                                                     <View style={styles.replyItem}>
@@ -292,6 +323,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 5,
+    },
+    badge: {
+        color: 'green',
+        fontSize: 10
+    },
+    badge2: {
+        color: '#5F9EA0',
+        fontSize: 10
     },
     commentAvatar: {
         width: 40,

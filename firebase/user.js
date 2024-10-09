@@ -21,7 +21,9 @@ export const getUserDetailsById = async (userId) => {
       const userData = userDoc.data();
       return {
         displayName: userData.displayName || null,
-        photoURL: userData.photoURL || null
+        photoURL: userData.photoURL || null,
+        admin: userData.admin || false,
+        author: userData.author || false,
       };
     } else {
       // Document does not exist

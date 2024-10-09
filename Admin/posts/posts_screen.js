@@ -42,40 +42,44 @@ const PostsScreen = () => {
           <Text>Loading posts...</Text>
         </View>
       ) : (
-        <PostList
-          header={
-            <View style={{backgroundColor:currentColors.background}}>
-              {isEditing ? (
-                <PostForm
-                  post={currentPost}
-                  onSave={() => {
-                    setCurrentPost(null);
-                    setIsEditing(false); // Close the form when saving
-                  }}
-                  onClose={() => {
-                    setCurrentPost(null);
-                    setIsEditing(false);
-                  }} // Close the form without saving
-                />
-              ) : (
-                isAdmin && (
-                  <View style={[styles.listContainer,{backgroundColor:currentColors.background}]}>
-                    <TouchableOpacity style={styles.addButton} onPress={() => setIsEditing(true)}>
-                      <MaterialIcons name="add" size={24} color="#fff" />
-                      <Text style={styles.addButtonText}>Add Post</Text>
-                    </TouchableOpacity>
-                  </View>
-                )
-              )}
+
+        <>
+     {isEditing ? (
+          <PostForm
+            post={currentPost}
+            onSave={() => {
+              setCurrentPost(null);
+              setIsEditing(false); // Close the form when saving
+            }}
+            onClose={() => {
+              setCurrentPost(null);
+              setIsEditing(false);
+            }} // Close the form without saving
+          />
+        ) : (
+          isAdmin && (
+            <View style={[styles.listContainer,{backgroundColor:currentColors.background}]}>
+              <TouchableOpacity style={styles.addButton} onPress={() => setIsEditing(true)}>
+                <MaterialIcons name="add" size={24} color="#fff" />
+                <Text style={styles.addButtonText}>Add Post</Text>
+              </TouchableOpacity>
             </View>
-          }
-          posts={posts}
-          onEdit={(post) => {
-            setCurrentPost(post);
-            setIsEditing(true);
-          }}
-        />
+          )
+        )}
+          <PostList
+            posts={posts}
+            onEdit={(post) => {
+              setCurrentPost(post);
+              setIsEditing(true);
+            }}
+          />
+
+          
+        </>
+
+
       )}
+
     </View>
   );
 };
@@ -85,7 +89,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContainer: {
-    flex: 1,
   },
   addButton: {
     margin: 10,

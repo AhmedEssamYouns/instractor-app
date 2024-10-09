@@ -160,7 +160,7 @@ const UploadSectionVideo = () => {
 
             {loading ? (
                 <>
-                    <Progress.Bar progress={progress / 100} width={300} />
+                    <Progress.Bar progress={progress / 100} width={250} style={{alignSelf:"center",justifyContent:'center'}} />
                     <CustomText style={styles.progressText}>{Math.round(progress)}% Uploaded</CustomText>
                 </>
             ) : (

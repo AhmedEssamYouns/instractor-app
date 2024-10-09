@@ -98,7 +98,7 @@ const PostForm = ({ post, onSave, onClose }) => {
                         <View style={styles.selectedItem}>
                             <Image source={{ uri: imageUri }} style={styles.selectedImage} />
                             <TouchableOpacity style={styles.cancelButton} onPress={() => cancelSelection('image')}>
-                                <CustomText style={{ fontSize: 10,color:'black' }}>cancel</CustomText>
+                                <CustomText style={{ fontSize: 10, color: 'black' }}>cancel</CustomText>
                                 <FontAwesome name="close" size={15} color="black" />
                             </TouchableOpacity>
                         </View>
@@ -109,7 +109,7 @@ const PostForm = ({ post, onSave, onClose }) => {
                                 {documentName || 'Document Selected'}
                             </Text>
                             <TouchableOpacity style={styles.cancelButton} onPress={() => cancelSelection('document')}>
-                            <CustomText style={{ fontSize: 10,color:'black'}}>cancel</CustomText>
+                                <CustomText style={{ fontSize: 10, color: 'black' }}>cancel</CustomText>
                                 <FontAwesome name="close" size={15} color="black" />
                             </TouchableOpacity>
                         </View>
@@ -139,8 +139,9 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     input: {
-        height: 40,
         elevation: 1,
+        minHeight:40,
+        maxHeight:100,
         backgroundColor: 'white',
         marginBottom: 16,
         paddingHorizontal: 8,

@@ -34,6 +34,8 @@ const PostList = ({ posts, onEdit, header }) => {
 const styles = StyleSheet.create({
     list: {
         backgroundColor: 'white',
+        flex: 1,
+
     },
     container: {
         flex: 1,

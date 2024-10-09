@@ -32,7 +32,7 @@ export const pickImage = async (setImageUri) => {
 };
 
 
-export const pickDocument = async (setDocumentUri,setDocumentName) => {
+export const pickDocument = async (setDocumentUri, setDocumentName) => {
     try {
         let result = await DocumentPicker.getDocumentAsync({
             type: ['application/pdf', 'application/msword', 'application/vnd.ms-excel'],
@@ -114,6 +114,8 @@ export const getComments = async (postId, callback) => {
                         ...comment,
                         displayName: userDetails.displayName || 'user',
                         photoURL: userDetails.photoURL || 'https://redcoraluniverse.com/img/default_profile_image.png',
+                        admin: userDetails.admin || false,
+                        author: userDetails.author || false,
                         replies: await Promise.all(
                             (comment.replies || []).map(async (reply) => {
                                 const replyUser = await getUserDetailsById(reply.user);
@@ -121,6 +123,9 @@ export const getComments = async (postId, callback) => {
                                     ...reply,
                                     displayName: replyUser.displayName || 'user',
                                     photoURL: replyUser.photoURL || 'https://redcoraluniverse.com/img/default_profile_image.png',
+                                    admin: userDetails.admin || false,
+                                    author: userDetails.author || false,
+
                                 };
                             })
                         ),
@@ -257,21 +262,21 @@ export const updatePost = async (id, updatedPost) => {
 };
 export const getPosts = (callback) => {
     const postsCollection = collection(db, 'posts');
-  
+
     return onSnapshot(postsCollection, snapshot => {
-      const posts = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-  
-      // Sort posts by ISO 8601 timestamp (descending order)
-      const sortedPosts = posts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  
-      callback(sortedPosts);
+        const posts = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+
+        // Sort posts by ISO 8601 timestamp (descending order)
+        const sortedPosts = posts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+        callback(sortedPosts);
     }, (error) => {
-      console.error('Error getting posts: ', error);
+        console.error('Error getting posts: ', error);
     });
-  };
+};
 
 // Upload a file and return the URL
 export const uploadFile = async (fileUri, fileName) => {
@@ -539,5 +544,5 @@ export const getCommentAndReplyCounts = (comments) => {
         }
     });
     return (commentCount + replyCount)
-        
+
 };

@@ -117,9 +117,9 @@ const FilterBar = ({ data, setData, originalData }) => {
                 {/* Search icon and expanding search bar */}
                 <View style={styles.searchContainer}>
                     {/* Animated search bar */}
-                    <Animated.View style={[styles.animatedSearch, { width: animatedWidth, backgroundColor: currentColors.cardBackground, }]}>
+                    <Animated.View style={[styles.animatedSearch, { width: animatedWidth, backgroundColor: currentColors.cardBackground, borderColor: currentColors.text }]}>
                         <TextInput
-                            style={[styles.searchInput, { backgroundColor: currentColors.cardBackground, borderColor: currentColors.borderColor }]}
+                            style={[styles.searchInput, { backgroundColor: currentColors.cardBackground, }]}
                             placeholder={translations.search}
                             placeholderTextColor={currentColors.text}
                             onChangeText={handleSearchChange}

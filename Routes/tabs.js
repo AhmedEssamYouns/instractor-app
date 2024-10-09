@@ -18,24 +18,9 @@ export default function Tabs() {
     const { theme, setTheme } = useTheme(); // Get the theme from context and setter
     const currentColors = colors[theme]; // Get colors based on the theme
     const [isModalVisible, setModalVisible] = useState(false);
-    const [isKeyboardVisible, setKeyboardVisible] = useState(false); // Track keyboard visibility
     const { language } = useLanguage(); // Access the current language
 
-    useEffect(() => {
-        // Add keyboard listeners
-        const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-            setKeyboardVisible(true);
-        });
-        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-            setKeyboardVisible(false);
-        });
-
-        return () => {
-            // Cleanup keyboard listeners
-            keyboardDidShowListener.remove();
-            keyboardDidHideListener.remove();
-        };
-    }, []);
+ 
 
     // Toggle modal visibility
     const toggleModal = () => {
@@ -51,10 +36,11 @@ export default function Tabs() {
         <>
             <Tab.Navigator
                 screenOptions={({ route }) => ({
+                    tabBarHideOnKeyboard:true,
                     tabBarActiveBackgroundColor: currentColors.background,
                     tabBarInactiveBackgroundColor: currentColors.background,
                     tabBarShowLabel: false,
-                    tabBarStyle: isKeyboardVisible ? { display: 'none' } : { // Hide tab bar when keyboard is visible
+                    tabBarStyle: {
                         borderRadius: 1,
                         borderWidth: 0,
                         borderTopColor: currentColors.border,
