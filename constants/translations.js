@@ -97,9 +97,13 @@ const translations = {
     mainPoints: 'Main Points',
     noData:'no data yet',
     search:'search',
-    nocomments:'no comments yet'
+    nocomments:'no comments yet',
+    owner:'owner',
+    admin:'admin'
   },
   ar: {
+    owner:'المحاضر',
+    admin:'مشرف',
     home: 'الرئيسية',
     displayName: 'اسمك',
     notes: 'الملاحظات',

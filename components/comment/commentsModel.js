@@ -166,24 +166,28 @@ const CommentModal = ({ visible, onClose, postId }) => {
                                         <Pressable onLongPress={() => deleteComment(postId, item.id, comments)}>
                                             <View style={styles.commentHeader}>
                                                 <Image source={{ uri: item.photoURL }} style={styles.commentAvatar} />
-                                                <CustomText style={styles.commentName}>{item.displayName}</CustomText>
-                                                {item.admin && (
-                                                            <View style={{flexDirection:'row'}}> 
-                                                                {item.author ? (
-                                                                    <>
-                                                                        <CustomText style={styles.badge}>@author </CustomText>
-                                                                        <MaterialCommunityIcons name="crown" style={styles.badge} />
+                                                <View style={{ flexDirection: 'column', width: 150, }}>
 
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        <CustomText style={styles.badge2}>@admin </CustomText>
-                                                                        <Ionicons name="shield" style={styles.badge2} /> 
+                                                    <CustomText style={styles.commentName}>{item.displayName}</CustomText>
+                                                    {item.admin && (
+                                                        <View style={[styles.admin, { backgroundColor: currentColors.cardBackground }]}>
 
-                                                                    </>
-                                                                )}
-                                                            </View>
-                                                        )}
+                                                            {item.author ? (
+                                                                <>
+                                                                    <CustomText style={styles.badge}>@{translations.owner} </CustomText>
+                                                                    <MaterialCommunityIcons name="crown" style={styles.badge} />
+
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <CustomText style={styles.badge2}>@{translations.admin} </CustomText>
+                                                                    <Ionicons name="shield" style={styles.badge2} />
+
+                                                                </>
+                                                            )}
+                                                        </View>
+                                                    )}
+                                                </View>
                                                 <Text style={{ fontSize: 10, position: 'absolute', right: 10, color: 'grey' }}>{formatCreatedAt(item.timestamp)}</Text>
                                             </View>
                                             <View style={styles.commentItem}>
@@ -228,24 +232,26 @@ const CommentModal = ({ visible, onClose, postId }) => {
                                                 <Pressable onLongPress={() => deleteReply(postId, item.id, reply.createdAt)} key={reply.createdAt} style={styles.replyContainer}>
                                                     <View style={styles.commentHeader}>
                                                         <Image source={{ uri: reply.photoURL }} style={styles.replyAvatar} />
-                                                        <CustomText style={[styles.commentName, { fontSize: 12 }]}>{reply.displayName}</CustomText>
-                                                        {item.admin && (
-                                                            <View style={{flexDirection:'row'}}> 
-                                                                {item.author ? (
-                                                                    <>
-                                                                        <CustomText style={styles.badge}>@author </CustomText>
-                                                                        <MaterialCommunityIcons name="crown" style={styles.badge} />
+                                                        <View style={{ flexDirection: 'column', width: 95 }}>
+                                                            <CustomText style={[styles.commentName, { fontSize: 12 }]}>{reply.displayName}</CustomText>
+                                                            {item.admin && (
+                                                                <View style={[styles.admin, { backgroundColor: currentColors.cardBackground }]}>
+                                                                    {item.author ? (
+                                                                        <>
+                                                                            <CustomText style={styles.badge}>@{translations.owner} </CustomText>
+                                                                            <MaterialCommunityIcons name="crown" style={styles.badge} />
 
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        <CustomText style={styles.badge2}>@admin </CustomText>
-                                                                        <Ionicons name="shield" style={styles.badge2} /> 
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <CustomText style={styles.badge2}>@{translations.admin} </CustomText>
+                                                                            <Ionicons name="shield" style={styles.badge2} />
 
-                                                                    </>
-                                                                )}
-                                                            </View>
-                                                        )}
+                                                                        </>
+                                                                    )}
+                                                                </View>
+                                                            )}
+                                                        </View>
                                                         <Text style={{ fontSize: 10, position: 'absolute', right: 0, color: 'grey', }}>{formatCreatedAt(reply.createdAt)}</Text>
                                                     </View>
                                                     <View style={styles.replyItem}>
@@ -293,6 +299,15 @@ const styles = StyleSheet.create({
     },
     out: {
         flex: 0.3,
+    }, admin: {
+        flexDirection: 'row',
+        padding: 3,
+        borderRadius: 4,
+        width: 64,
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 5
+
     },
     modalContent: {
         flex: 0.7,
@@ -346,6 +361,7 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingRight: 10,
         fontSize: 16,
+        textAlign:'left'
     },
     commentItem: {
         marginLeft: 20,
@@ -379,7 +395,7 @@ const styles = StyleSheet.create({
         color: '#444',
     },
     replyContainer: {
-        width: 220,
+        width: 230,
         paddingLeft: 10,
         paddingBottom: 5,
         paddingTop: 10,
