@@ -1,18 +1,17 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // Ionicons is commonly used for arrow icons
+import Icon from 'react-native-vector-icons/Ionicons'; 
 import { useNavigation } from '@react-navigation/native';
-import colors from '../../constants/colors'; // Assuming you have a colors file
-import { useTheme } from '../elements/theme-provider'; // Assuming you're using a theme provider
-import { useLanguage } from './language-provider'; // Import the language context
+import colors from '../../constants/colors';
+import { useTheme } from '../elements/theme-provider'; 
+import { useLanguage } from './language-provider'; 
 
 const BackButton = () => {
   const navigation = useNavigation();
-  const { theme } = useTheme(); // Get the theme from the context
-  const { language } = useLanguage(); // Get the language from context
-  const currentColors = colors[theme]; // Get the current theme's colors
+  const { theme } = useTheme();
+  const { language } = useLanguage(); 
+  const currentColors = colors[theme];
 
-  // If language is Arabic ('ar'), position the button on the right, otherwise on the left
   const buttonPosition = language === 'ar' ? { right: 20 } : { left: 20 };
 
   return (

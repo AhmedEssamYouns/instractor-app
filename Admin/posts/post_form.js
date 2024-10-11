@@ -58,11 +58,11 @@ const PostForm = ({ post, onSave, onClose }) => {
             setImageUri('');
         } else if (type === 'document') {
             setDocumentUri('');
-            setDocumentName(''); // Clear document name when document is canceled
+            setDocumentName(''); 
         }
     };
 
-    const { theme } = useTheme(); // Get theme from context
+    const { theme } = useTheme(); 
     const currentColors = colors[theme];
 
 

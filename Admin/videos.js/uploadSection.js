@@ -15,8 +15,8 @@ const UploadSectionVideo = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [summary, setSummary] = useState('');
-    const [questions, setQuestions] = useState(''); // State for questions
-    const [mainPoints, setMainPoints] = useState(''); // State for main points
+    const [questions, setQuestions] = useState('');
+    const [mainPoints, setMainPoints] = useState(''); 
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const { theme } = useTheme()
@@ -97,11 +97,10 @@ const UploadSectionVideo = () => {
                 posterDownloadURL = await getDownloadURL(posterRef);
             }
 
-            // Save the metadata to Firestore, including questions and main points
             const docRef = await addDoc(collection(db, 'sections'), {
                 title,
-                questions: questions.split('\n'), // Split by line for multiple questions
-                mainPoints: mainPoints.split('\n'), // Split by line for multiple main points
+                questions: questions.split('\n'), 
+                mainPoints: mainPoints.split('\n'), 
                 poster: posterDownloadURL,
                 videoUrl: downloadURL,
                 createdAt: new Date(),
@@ -109,14 +108,13 @@ const UploadSectionVideo = () => {
 
             await updateDoc(docRef, { id: docRef.id });
 
-            // Clear inputs
             setVideoUri(null);
             setPosterUri(null);
             setTitle('');
             setDescription('');
             setSummary('');
-            setQuestions(''); // Clear questions
-            setMainPoints(''); // Clear main points
+            setQuestions(''); 
+            setMainPoints(''); 
             setProgress(0);
         } catch (error) {
             console.error('Upload Error:', error);

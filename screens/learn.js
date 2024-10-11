@@ -13,21 +13,21 @@ import { db } from '../firebase/config';
 LogBox.ignoreAllLogs()
 const initialLayout = { width: Dimensions.get('window').width };
 
-// Lectures tab content
+
 const LecturesRoute = () => {
   const [data, setData] = useState([]);
   const [originalData, setOriginalData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, 'lectures'), orderBy('createdAt')); // Order by createdAt
+    const q = query(collection(db, 'lectures'), orderBy('createdAt')); 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const videoList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));
       setData(videoList);
-      setOriginalData(videoList); // Store original data
+      setOriginalData(videoList); 
       setLoading(false);
     });
 
@@ -41,27 +41,27 @@ const LecturesRoute = () => {
 
   return (
     <VideoList
-      header={<FilterBar data={data} setData={setData} originalData={originalData}  />} // Pass clear handler
+      header={<FilterBar data={data} setData={setData} originalData={originalData}  />} 
       videos={data}
     />
   );
 };
 
-// Sections tab content
+
 const SectionsRoute = () => {
   const [data, setData] = useState([]);
   const [originalData, setOriginalData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, 'sections'), orderBy('createdAt')); // Order by createdAt
+    const q = query(collection(db, 'sections'), orderBy('createdAt')); 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const sectionList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));
       setData(sectionList);
-      setOriginalData(sectionList); // Store original data
+      setOriginalData(sectionList); 
       setLoading(false);
     });
 

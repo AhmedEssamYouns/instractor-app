@@ -23,21 +23,19 @@ const LectureScreen = () => {
         const userData = userDoc.data();
         const viewedLectures = userData.viewedLectures || [];
 
-        // Fetch lectures data in real-time
         const lecturesPromises = viewedLectures.map(async (lectureId) => {
           const lectureRef = doc(db, 'lectures', lectureId);
-          const lectureDoc = await getDoc(lectureRef); // Fetch the lecture document
+          const lectureDoc = await getDoc(lectureRef);
 
           return lectureDoc.exists() ? { id: lectureDoc.id, ...lectureDoc.data() } : null;
         });
 
         const lectures = await Promise.all(lecturesPromises);
-        setLecturesData(lectures.filter(lecture => lecture !== null)); // Filter out nulls
+        setLecturesData(lectures.filter(lecture => lecture !== null)); 
       }
       setLoading(false);
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribeUser();
   }, [userId]);
 

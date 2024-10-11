@@ -2,35 +2,35 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, ToastAndroid } from 'react-native';
 import { forgotPassword } from '../../firebase/auth';
 import colors from '../../constants/colors';
-import translations from '../../constants/translations'; // Import translations
+import translations from '../../constants/translations'; 
 import { useTheme } from '../../components/elements/theme-provider';
-import { useLanguage } from '../../components/elements/language-provider'; // Import the language context
+import { useLanguage } from '../../components/elements/language-provider'; 
 import CustomText from '../../components/elements/text';
 import { useNavigation } from '@react-navigation/native';
 import BackButton from '../../components/elements/back-button';
 
 const ForgotPasswordScreen = () => {
-    const { theme } = useTheme(); // Get the theme from context
-    const { language } = useLanguage(); // Get language from context
-    const currentColors = colors[theme]; // Get colors based on the theme
-    const translation = translations[language] || translations.en; // Fallback to English if translation is not available
+    const { theme } = useTheme(); 
+    const { language } = useLanguage(); 
+    const currentColors = colors[theme]; 
+    const translation = translations[language] || translations.en; 
     const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false); // State to handle loading
+    const [loading, setLoading] = useState(false); 
 
     const handleForgotPassword = async () => {
-        setLoading(true); // Start loading
-        setError(null); // Clear any previous errors
+        setLoading(true); 
+        setError(null); 
         try {
             await forgotPassword(email, language);
-            setLoading(false); // Stop loading
-            // Show a success message
+            setLoading(false); 
+            
             ToastAndroid.show(translation.resetEmailSent, ToastAndroid.SHORT);
-            navigation.navigate('SignIn'); // Navigate back to sign-in or another screen
+            navigation.navigate('SignIn'); 
         } catch (error) {
-            setLoading(false); // Stop loading on error
-            setError(error.message); // Set the error message
+            setLoading(false); 
+            setError(error.message); 
         }
     };
 
@@ -40,7 +40,7 @@ const ForgotPasswordScreen = () => {
             <CustomText style={styles.title}>{translation.forgotPassword}</CustomText>
 
             <TextInput
-                placeholder={translation.email} // Use translations
+                placeholder={translation.email} 
                 placeholderTextColor={currentColors.text}
                 value={email}
                 onChangeText={setEmail}
@@ -51,10 +51,10 @@ const ForgotPasswordScreen = () => {
                 }]}
             />
 
-            {/* Display error message if exists */}
+            {}
             {error && <CustomText style={styles.errorText}>{error}</CustomText>}
 
-            {/* Loading spinner */}
+            {}
             {
                 loading ? (
                     <ActivityIndicator size="large" color={currentColors.text} />

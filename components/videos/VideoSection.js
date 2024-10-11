@@ -19,7 +19,7 @@ const height = Dimensions.get('window').height;
 
 const SectionDetail = () => {
     const route = useRoute();
-    const userId = FIREBASE_AUTH.currentUser.uid; // Get the current user's ID
+    const userId = FIREBASE_AUTH.currentUser.uid; 
     const { sectionId } = route.params;
     const { theme } = useTheme();
     const currentColors = colors[theme];
@@ -49,14 +49,14 @@ const SectionDetail = () => {
     const handleFullscreenUpdate = async (isFullscreen) => {
         if (isFullscreen) {
             await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
-            StatusBar.setHidden(true); // Hide the status bar
+            StatusBar.setHidden(true); 
         } else {
             await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-            StatusBar.setHidden(false); // Show the status bar again
+            StatusBar.setHidden(false); 
         }
     };
 
-    // Listener for dimension changes
+    
     useEffect(() => {
         const updateDimensions = () => {
             setWidth(Dimensions.get('window').width);
@@ -71,7 +71,7 @@ const SectionDetail = () => {
     }, []);
 
 
-    // Add useFocusEffect to handle exiting fullscreen when navigating away
+    
     useFocusEffect(
         React.useCallback(() => {
             return () => {
@@ -88,12 +88,12 @@ const SectionDetail = () => {
         React.useCallback(() => {
             const backAction = () => {
                 if (inFullscreen) {
-                    // If in fullscreen, exit fullscreen mode
+                    
                     setInFullscreen(false);
                     handleFullscreenUpdate(false);
-                    return true; // Prevent default back action
+                    return true; 
                 }
-                return false; // Allow default back action if not in fullscreen
+                return false; 
             };
 
             const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -182,7 +182,7 @@ const SectionDetail = () => {
                         videoProps={{
                             shouldPlay:true,
                             resizeMode: 'contain',
-                            source: { uri: section.videoUrl }, // Use the video's URL from section data
+                            source: { uri: section.videoUrl }, 
                             ref: refVideo,
                             onLoadStart: () => setVideoLoading(true),
                             onReadyForDisplay: () => setVideoLoading(false),

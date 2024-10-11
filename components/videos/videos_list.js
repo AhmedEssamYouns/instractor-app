@@ -7,8 +7,8 @@ import CustomText from '../elements/text';
 import { useLanguage } from '../elements/language-provider';
 
 const VideoList = ({ videos, header }) => {
-    const { theme } = useTheme(); // Get the theme from context
-    const currentColors = colors[theme]; // Get colors based on the theme
+    const { theme } = useTheme(); 
+    const currentColors = colors[theme]; 
     const { language, translations } = useLanguage();
 
     return (

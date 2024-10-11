@@ -23,21 +23,19 @@ const SectionScreen = () => {
         const userData = userDoc.data();
         const viewedSections = userData.viewedSections || [];
 
-        // Fetch sections data in real-time
         const sectionsPromises = viewedSections.map(async (sectionId) => {
           const sectionRef = doc(db, 'sections', sectionId);
-          const sectionDoc = await getDoc(sectionRef); // Fetch the section document
+          const sectionDoc = await getDoc(sectionRef); 
 
           return sectionDoc.exists() ? { id: sectionDoc.id, ...sectionDoc.data() } : null;
         });
 
         const sections = await Promise.all(sectionsPromises);
-        setSectionsData(sections.filter(section => section !== null)); // Filter out nulls
+        setSectionsData(sections.filter(section => section !== null)); 
       }
       setLoading(false);
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribeUser();
   }, [userId]);
 

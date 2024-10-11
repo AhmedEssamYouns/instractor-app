@@ -1,5 +1,4 @@
 
-// colors.js
 const lightColors = {
   background: 'white',
   text: '#333',
@@ -9,21 +8,21 @@ const lightColors = {
   iconFocus: 'black',
   borderColor: '#E0E0E0',
   border: '#E0E0E0',
-  buttonColor: '#007bff', // Button color for light theme (example: blue)
+  buttonColor: '#007bff', 
   indicator:'black'
 
 };
 
 const darkColors = {
-  background: '#121212', // Very dark gray, almost black
-  cardBackground: '#1f1f1f', // Slightly lighter than the main background
-  text: '#e1e1e1', // Soft light gray for text
+  background: '#121212', 
+  cardBackground: '#1f1f1f',
+  text: '#e1e1e1', 
   text2: '#b0b0b0',
-  iconColor: '#b0b0b0', // Light gray for icons, slightly different for a subtle effect
+  iconColor: '#b0b0b0',
   iconFocus: 'white',
-  borderColor: '#e1e1e1', // Medium dark gray for borders
+  borderColor: '#e1e1e1', 
   border: 'black',
-  buttonColor: '#1e90ff', // Button color for dark theme (example: lighter blue)
+  buttonColor: '#1e90ff', 
   indicator:'white'
 };
 

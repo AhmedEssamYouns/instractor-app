@@ -1,4 +1,3 @@
-// utils/downloadImage.js
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import moment from 'moment';
@@ -18,7 +17,7 @@ export const downloadImage = async (imageUrl) => {
 
 const saveFile = async (fileUri) => {
     try {
-        const { status } = await MediaLibrary.getPermissionsAsync(); // Check if permissions are already granted
+        const { status } = await MediaLibrary.getPermissionsAsync(); 
         if (status === "granted") {
             const asset = await MediaLibrary.createAssetAsync(fileUri);
             const album = await MediaLibrary.getAlbumAsync('Download');
@@ -29,8 +28,8 @@ const saveFile = async (fileUri) => {
             }
             ToastAndroid.show('Image saved to gallery.', ToastAndroid.SHORT);
         } else {
-            // Log a message and skip saving if permissions are not granted
-            // console.log('Media Library permission not granted. Skipping image save.');
+            console.log('test');
+            
         }
     } catch (err) {
     }

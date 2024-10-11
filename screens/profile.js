@@ -16,10 +16,10 @@ import { EvilIcons, Feather } from "@expo/vector-icons";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const { theme } = useTheme(); // Get the theme from context
-  const { language, translations } = useLanguage(); // Get translations object
+  const { theme } = useTheme(); 
+  const { language, translations } = useLanguage(); 
 
-  const currentColors = colors[theme]; // Get colors based on the theme
+  const currentColors = colors[theme]; 
 
   const [profileImage, setProfileImage] = useState(FIREBASE_AUTH.currentUser.photoURL || 'https://th.bing.com/th/id/OIP.IFXNgxYGgCrOJ8MwkPbX7wHaHa?w=740&h=740&rs=1&pid=ImgDetMain');
 
@@ -42,8 +42,8 @@ const ProfileScreen = () => {
         borderBottomWidth: 1,borderBottomColor:currentColors.border 
       }]}
       labelStyle={[styles.tabLabel, { color: currentColors.text, fontFamily: language === 'ar' ? 'ar' : 'bold' }]}
-      activeColor={currentColors.iconFocus} // Active tab text color
-      inactiveColor={currentColors.iconColor} // Inactive tab text color
+      activeColor={currentColors.iconFocus} 
+      inactiveColor={currentColors.iconColor} 
 
     />
   );
@@ -62,7 +62,6 @@ const ProfileScreen = () => {
   ]);
 
   useEffect(() => {
-    // Update routes when translations change
     setRoutes([
       { key: 'grades', title: translations.grades },
       { key: 'lectures', title: translations.lectures },

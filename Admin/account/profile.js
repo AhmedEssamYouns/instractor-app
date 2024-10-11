@@ -16,11 +16,10 @@ const ProfileWithStudents = () => {
     const [loading, setLoading] = useState(true);
     const [photoURL, setPhotoURL] = useState('');
     const userId = FIREBASE_AUTH.currentUser.uid;
-    const { theme } = useTheme(); // Get theme from context
+    const { theme } = useTheme();
     const currentColors = colors[theme];
 
     useEffect(() => {
-        // Fetch the logged-in user's document
         const userDocRef = doc(db, 'users', userId);
         const unsubscribeUser = onSnapshot(userDocRef, (docSnap) => {
             if (docSnap.exists()) {
@@ -44,7 +43,7 @@ const ProfileWithStudents = () => {
 
         if (!result.canceled) {
             setPhotoURL(result.assets[0].uri);
-            await updateProfileImage(result.assets[0].uri); // Save the new image to Firestore
+            await updateProfileImage(result.assets[0].uri); 
         }
     };
 
@@ -59,23 +58,20 @@ const ProfileWithStudents = () => {
         }
     };
 
-    // Define the Students tab content
     const StudentsRoute = () => <Students />;
 
-    // Define the Quizzes tab content
     const QuizzesRoute = () => <Quizzes />;
 
-    // Conditionally add Admins tab if the user is an author
     const routes = [
         { key: 'students', title: 'Students' },
         { key: 'quizzes', title: 'Grades' },
-        ...(userData?.author ? [{ key: 'admins', title: 'Admins' }] : []), // Conditionally add 'Admins' tab
+        ...(userData?.author ? [{ key: 'admins', title: 'Admins' }] : []),
     ];
 
     const renderScene = SceneMap({
         students: StudentsRoute,
         quizzes: QuizzesRoute,
-        admins: () => <AdminUsers />, // Admin tab scene
+        admins: () => <AdminUsers />, 
     });
 
     const [index, setIndex] = useState(0);

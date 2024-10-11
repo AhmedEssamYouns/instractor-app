@@ -14,16 +14,15 @@ const PostItem = ({ post, onEdit }) => {
     const currentUserId = FIREBASE_AUTH.currentUser?.uid;
     const [liked, setLiked] = useState(post.likes?.includes(currentUserId) || false);
     const [isCommentModalVisible, setCommentModalVisible] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false); // State to check if the user is an admin
+    const [isAdmin, setIsAdmin] = useState(false);
     const scaleValue = useRef(new Animated.Value(1)).current;
-    const { language, translations } = useLanguage(); // Get translations object
-    const { theme } = useTheme(); // Get theme from context
+    const { language, translations } = useLanguage(); 
+    const { theme } = useTheme(); 
     const currentColors = colors[theme];
 
-    // Fetch admin status when the component mounts
     useEffect(() => {
         const fetchAdminStatus = async () => {
-            const adminStatus = await checkIfUserIsAdmin(); // Check if user is admin
+            const adminStatus = await checkIfUserIsAdmin(); 
             setIsAdmin(adminStatus);
         };
         fetchAdminStatus();
@@ -33,13 +32,11 @@ const PostItem = ({ post, onEdit }) => {
         try {
             const userId = FIREBASE_AUTH.currentUser?.uid;
             if (userId) {
-                // Update the liked state immediately
                 const newLikedState = !liked;
                 setLiked(newLikedState);
 
 
 
-                // Trigger animation
                 Animated.sequence([
                     Animated.timing(scaleValue, {
                         toValue: 1.3,
@@ -124,7 +121,7 @@ const PostItem = ({ post, onEdit }) => {
                     </TouchableOpacity>
                 ) : null}
 
-                {/* Like and Comment Section */}
+                {}
                 <View style={styles.actionContainer}>
                     <TouchableOpacity
                         style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}
@@ -142,7 +139,7 @@ const PostItem = ({ post, onEdit }) => {
                 </View>
             </View>
 
-            {/* Comment Modal */}
+            {}
             <CommentModal
                 visible={isCommentModalVisible}
                 onClose={() => setCommentModalVisible(false)}

@@ -15,7 +15,7 @@ const SignUpScreen = () => {
   const translation = translations[language] || translations.en;
   const navigation = useNavigation();
 
-  const [displayName, setDisplayName] = useState(''); // State for display name
+  const [displayName, setDisplayName] = useState(''); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,7 +27,7 @@ const SignUpScreen = () => {
     setLoading(true);
 
     try {
-      await signUp(email, password, confirmPassword, displayName, language); // Pass display name
+      await signUp(email, password, confirmPassword, displayName, language); 
       setLoading(false);
       ToastAndroid.show(translation.signUpSuccess || 'Sign up successful', ToastAndroid.SHORT);
       navigation.navigate('SignIn');
@@ -44,7 +44,7 @@ const SignUpScreen = () => {
 
       <TextInput
       maxLength={25}
-        placeholder={translation.displayName} // Display name field
+        placeholder={translation.displayName} 
         placeholderTextColor={currentColors.text}
         value={displayName}
         onChangeText={setDisplayName}

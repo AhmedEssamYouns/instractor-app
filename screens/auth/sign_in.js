@@ -2,47 +2,47 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { signIn } from '../../firebase/auth';
 import colors from '../../constants/colors';
-import translations from '../../constants/translations'; // Import translations
+import translations from '../../constants/translations'; 
 import { useTheme } from '../../components/elements/theme-provider';
-import { useLanguage } from '../../components/elements/language-provider'; // Import the language context
-import { FontAwesome5 } from '@expo/vector-icons'; // Import FontAwesome5 for eye icon
+import { useLanguage } from '../../components/elements/language-provider'; 
+import { FontAwesome5 } from '@expo/vector-icons'; 
 import CustomText from '../../components/elements/text';
-import { CommonActions } from '@react-navigation/native'; // Import CommonActions
+import { CommonActions } from '@react-navigation/native'; 
 
 const SignInScreen = ({ navigation }) => {
-  const { theme } = useTheme(); // Get the theme from context
-  const { language } = useLanguage(); // Get language from context
-  const currentColors = colors[theme]; // Get colors based on the theme
-  const translation = translations[language] || translations.en; // Fallback to English if translation is not available
+  const { theme } = useTheme(); 
+  const { language } = useLanguage(); 
+  const currentColors = colors[theme]; 
+  const translation = translations[language] || translations.en; 
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [showPassword, setShowPassword] = useState(false); 
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false); // State to handle loading
+  const [loading, setLoading] = useState(false); 
 
   const handleSignIn = async () => {
-    setLoading(true); // Start loading
-    setError(null); // Clear any previous errors
+    setLoading(true); 
+    setError(null); 
     try {
       await signIn(email, password, language);
-      setLoading(false); // Stop loading after sign-in
+      setLoading(false); 
 
-      // Use navigation.dispatch to reset the stack and navigate to the home screen
+      
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [{ name: 'tabs' }], // The 'tabs' screen
+          routes: [{ name: 'tabs' }], 
         })
       );
     } catch (error) {
-      setLoading(false); // Stop loading on error
-      setError(error.message); // Set the error message
+      setLoading(false); 
+      setError(error.message); 
     }
   };
 
   const handleForgotPassword = () => {
-    // Navigate to forgot password screen
+    
     navigation.navigate('ForgotPassword');
   };
 
@@ -51,7 +51,7 @@ const SignInScreen = ({ navigation }) => {
       <CustomText style={styles.title}>{translation.signIn}</CustomText>
 
       <TextInput
-        placeholder={translation.email} // Use translations
+        placeholder={translation.email} 
         placeholderTextColor={currentColors.text}
         value={email}
         onChangeText={setEmail}
@@ -64,7 +64,7 @@ const SignInScreen = ({ navigation }) => {
 
       <View style={styles.passwordContainer}>
         <TextInput
-          placeholder={translation.password} // Use translations
+          placeholder={translation.password} 
           placeholderTextColor={currentColors.text}
           value={password}
           onChangeText={setPassword}
@@ -92,10 +92,10 @@ const SignInScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Display error message if exists */}
+      {}
       {error && <CustomText style={styles.errorText}>{error}</CustomText>}
 
-      {/* Loading spinner */}
+      {}
       {
         loading ? (
           <ActivityIndicator size="large" color={currentColors.text} />

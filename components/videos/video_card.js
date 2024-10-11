@@ -6,10 +6,10 @@ import colors from '../../constants/colors';
 import CustomText from '../elements/text';
 import { FIREBASE_AUTH } from '../../firebase/config';
 import { collection, doc, onSnapshot, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebase/config'; // Adjust based on your setup
+import { db } from '../../firebase/config'; 
 import { useNavigation } from '@react-navigation/native';
 
-const placeholderImage = 'https://via.placeholder.com/100'; // URL to a placeholder image
+const placeholderImage = 'https://via.placeholder.com/100'; 
 
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
@@ -22,28 +22,24 @@ const VideoCard = ({ video }) => {
   const { theme } = useTheme();
   const currentColors = colors[theme];
   const [seen, setSeen] = useState(false);
-  const userId = FIREBASE_AUTH.currentUser.uid; // Get the current user's ID
+  const userId = FIREBASE_AUTH.currentUser.uid; 
   useEffect(() => {
     const userDocRef = doc(collection(db, 'users'), userId);
 
     const unsubscribe = onSnapshot(userDocRef, (doc) => {
       if (doc.exists()) {
         const data = doc.data();
-        // console.log('User data:', data); // Log the data to see its structure
         const viewedLectures = data.viewedLectures || [];
         const viewedSections = data.viewedSections || [];
 
-        // Log the arrays for verification
         console.log('Viewed Sections:', viewedSections);
-        console.log('Current Video id:', video.id); // Log current video URL
+        console.log('Current Video id:', video.id); 
 
-        // Check if the videoUrl is in either viewed or viewedSections
         if (viewedLectures.includes(video.id) || viewedSections.includes(video.id)) {
           setSeen(true);
           console.log('Video has been seen');
         } else {
           setSeen(false);
-          // console.log('Video has not been seen');
         }
       } else {
         console.log('User document does not exist');
@@ -55,7 +51,6 @@ const VideoCard = ({ video }) => {
   const navigation = useNavigation()
 
 
-  // Call this function when the video is watched (you might need a button or some trigger)
 
   return (
     <TouchableOpacity

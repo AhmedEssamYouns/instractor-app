@@ -13,11 +13,10 @@ const Quizzes = () => {
     const [loadingQuizzes, setLoadingQuizzes] = useState(true);
     const [loadingStudents, setLoadingStudents] = useState(true);
     const [loadingGrades, setLoadingGrades] = useState(true);
-    const { theme } = useTheme(); // Get theme from context
+    const { theme } = useTheme(); 
     const currentColors = colors[theme];
     
     useEffect(() => {
-        // Fetch quizzes
         const quizzesRef = collection(db, 'quizzes');
         const unsubscribeQuizzes = onSnapshot(quizzesRef, (snapshot) => {
             const quizList = snapshot.docs.map(doc => ({
@@ -25,10 +24,9 @@ const Quizzes = () => {
                 ...doc.data(),
             }));
             setQuizzes(quizList);
-            setLoadingQuizzes(false); // Data is loaded
+            setLoadingQuizzes(false); 
         });
 
-        // Fetch students
         const studentsRef = collection(db, 'users');
         const unsubscribeStudents = onSnapshot(studentsRef, (snapshot) => {
             const studentList = snapshot.docs.map(doc => ({
@@ -36,10 +34,9 @@ const Quizzes = () => {
                 ...doc.data(),
             }));
             setStudents(studentList);
-            setLoadingStudents(false); // Data is loaded
+            setLoadingStudents(false); 
         });
 
-        // Fetch grades
         const gradesRef = collection(db, 'grades');
         const unsubscribeGrades = onSnapshot(gradesRef, (snapshot) => {
             const gradeList = snapshot.docs.map(doc => ({
@@ -47,7 +44,7 @@ const Quizzes = () => {
                 ...doc.data(),
             }));
             setGrades(gradeList);
-            setLoadingGrades(false); // Data is loaded
+            setLoadingGrades(false); 
         });
 
         return () => {
@@ -80,7 +77,6 @@ const Quizzes = () => {
         </View>
     );
 
-    // Check if data is still loading
     const isLoading = loadingQuizzes || loadingStudents || loadingGrades;
 
     return (

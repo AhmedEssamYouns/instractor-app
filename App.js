@@ -24,7 +24,6 @@ export default function App() {
       try {
         await fetchFonts();
       } catch (e) {
-        // Handle error
       } finally {
         setFontsLoaded(true);
         SplashScreen.hideAsync();
@@ -35,7 +34,7 @@ export default function App() {
   }, []);
 
   if (!fontsLoaded) {
-    return null; // Optionally, return a loading indicator
+    return null;
   }
 
   return (

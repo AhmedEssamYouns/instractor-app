@@ -12,7 +12,7 @@ import colors from '../../constants/colors';
 const VideoList = () => {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [isHeaderVisible, setHeaderVisible] = useState(false); // State to toggle header visibility
+    const [isHeaderVisible, setHeaderVisible] = useState(false);
     const { theme } = useTheme()
     const currentColors = colors[theme]
 
@@ -31,7 +31,6 @@ const VideoList = () => {
         return () => unsubscribe();
     }, []);
 
-    // Function to handle deleting a video
     const handleDelete = async (id) => {
         Alert.alert(
             'Delete Video',
@@ -65,7 +64,7 @@ const VideoList = () => {
                 <MaterialIcons name="video-library" size={24} color={currentColors.text2} style={styles.icon} />
                 <CustomText style={styles.title}>{item.title}</CustomText>
             </View>
-            {/* Delete button */}
+            {}
             <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteButton}>
                 <MaterialIcons name="delete" size={24} color="red" />
             </TouchableOpacity>
@@ -108,7 +107,7 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between', // Ensure spacing between content and delete button
+        justifyContent: 'space-between',
         padding: 15,
         borderWidth: 1,
         borderColor: '#ccc',

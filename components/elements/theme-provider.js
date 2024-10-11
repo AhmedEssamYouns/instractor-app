@@ -1,19 +1,15 @@
-// ThemeContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from '../../constants/colors';
 
-// Create a context with default value as 'light'
 const ThemeContext = createContext({
   theme: 'light',
   setTheme: () => {},
 });
 
-// Theme Provider component
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('light'); // Default theme is 'light'
+  const [theme, setTheme] = useState('light'); 
 
-  // Load theme from AsyncStorage on mount
   useEffect(() => {
     const loadTheme = async () => {
       try {
@@ -29,7 +25,6 @@ export const ThemeProvider = ({ children }) => {
     loadTheme();
   }, []);
 
-  // Save theme to AsyncStorage when it changes
   useEffect(() => {
     const saveTheme = async () => {
       try {
@@ -49,5 +44,4 @@ export const ThemeProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use theme context
 export const useTheme = () => useContext(ThemeContext);

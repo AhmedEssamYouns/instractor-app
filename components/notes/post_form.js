@@ -58,7 +58,7 @@ const PostForm = ({ post, onSave, onClose }) => {
             setImageUri('');
         } else if (type === 'document') {
             setDocumentUri('');
-            setDocumentName(''); // Clear document name when document is canceled
+            setDocumentName(''); 
         }
     };
 

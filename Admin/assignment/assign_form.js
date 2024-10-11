@@ -15,7 +15,7 @@ const AssignmentForm = () => {
     const [pickedDeadline, setPickedDeadline] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [editingAssignment, setEditingAssignment] = useState(null);
-    const [isFormVisible, setIsFormVisible] = useState(false); // State for form visibility
+    const [isFormVisible, setIsFormVisible] = useState(false); 
 
     const addAssignmentToFirestore = async () => {
         if (!title || !description || !deadline) {
@@ -70,7 +70,7 @@ const AssignmentForm = () => {
 
     const handleCancelEdit = () => {
         resetForm();
-        setEditingAssignment(null); // Clear editing state
+        setEditingAssignment(null); 
     };
 
     const showDeadlinePicker = () => {

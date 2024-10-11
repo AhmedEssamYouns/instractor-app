@@ -28,19 +28,16 @@ const GradeScreen = () => {
             setLoading(false);
         });
 
-        // Cleanup subscription on unmount
         return () => unsubscribe();
     }, []);
 
-    // Calculate success percentages
     const quizSuccessPercentages = gradesData.map(quiz => {
         if (quiz.score && quiz.fullmark) {
             return (quiz.score / quiz.fullmark) * 100;
         }
-        return 0; // Handle invalid values
+        return 0;
     });
 
-    // Prepare labels
     const labels = gradesData.map((quiz, index) => `${index + 1}`);
 
     return (

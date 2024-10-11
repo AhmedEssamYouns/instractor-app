@@ -12,17 +12,15 @@ const StudentAssignmentsPage2 = () => {
     const { language, translations } = useLanguage();
     const [assignments, setAssignments] = useState([]);
     const [submissions, setSubmissions] = useState({});
-    const [loading, setLoading] = useState(true); // Add loading state
+    const [loading, setLoading] = useState(true); 
     const studentId = FIREBASE_AUTH.currentUser.uid;
-    const { theme } = useTheme(); // Get the theme from context
-    const currentColors = colors[theme]; // Get colors based on the theme
+    const { theme } = useTheme(); 
+    const currentColors = colors[theme];
 
     useEffect(() => {
-        // Fetch assignments in real-time
         const unsubscribeAssignments = getAssignments((fetchedAssignments) => {
             setAssignments(fetchedAssignments);
 
-            // Fetch submissions for each assignment
             fetchedAssignments.forEach(assignment => {
                 const unsubscribeSubmission = getStudentSubmission(
                     assignment.id,
@@ -36,17 +34,14 @@ const StudentAssignmentsPage2 = () => {
                 );
             });
 
-            // Set loading to false after fetching is complete
             setLoading(false);
         });
 
-        // Cleanup listeners when component unmounts
         return () => {
             unsubscribeAssignments();
         };
     }, [studentId]);
 
-    // Function to handle state updates for submissions
     const handleSubmissionChange = (assignmentId, updatedSubmission) => {
         setSubmissions(prevSubmissions => ({
             ...prevSubmissions,
@@ -54,9 +49,8 @@ const StudentAssignmentsPage2 = () => {
         }));
     };
 
-    // Render assignment item with submission data
     const renderItem = ({ item }) => {
-        const studentSubmission = submissions[item.id] || null; // Get submission from state
+        const studentSubmission = submissions[item.id] || null; 
         return (
             <AssignmentItem
                 assignment={item}

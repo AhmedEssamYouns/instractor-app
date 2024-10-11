@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons'; // Using @expo/vector-icons
+import { MaterialIcons } from '@expo/vector-icons'; 
 import CustomText from './text';
 
 const CustomCheckbox = ({ isChecked, onPress, label }) => {
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     checked: {
-        backgroundColor: 'transparent', // or use a checked background color if you want
+        backgroundColor: 'transparent', 
     },
 });
 

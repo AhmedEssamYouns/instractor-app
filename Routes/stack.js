@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { FontAwesome6 } from '@expo/vector-icons'; // Import FontAwesome6 for the "bars" icon
+import { FontAwesome6 } from '@expo/vector-icons'; 
 import { TouchableOpacity, StyleSheet, StatusBar, ActivityIndicator, View } from 'react-native';
-import Tabs from './tabs'; // Import your Tabs component
+import Tabs from './tabs'; 
 import SignInScreen from '../screens/auth/sign_in';
 import SignUpScreen from '../screens/auth/sign_up';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
@@ -24,30 +24,30 @@ import checkIfUserIsAdmin from '../firebase/user';
 const Stack = createStackNavigator();
 
 export default function StackScreen() {
-    const [user, setUser] = useState(null); // State to store the authenticated user
-    const [isAdmin, setIsAdmin] = useState(false); // State to store if the user is an admin
-    const [loading, setLoading] = useState(true); // Loading state for authentication check
-    const { theme } = useTheme(); // Get the theme from context
-    const currentColors = colors[theme]; // Get colors based on the theme
+    const [user, setUser] = useState(null); 
+    const [isAdmin, setIsAdmin] = useState(false); 
+    const [loading, setLoading] = useState(true); 
+    const { theme } = useTheme(); 
+    const currentColors = colors[theme]; 
 
     useEffect(() => {
         const auth = getAuth();
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            setUser(currentUser); // Update user state based on authentication status
+            setUser(currentUser); 
 
             if (currentUser) {
                 const adminStatus = await checkIfUserIsAdmin(currentUser.uid);
-                setIsAdmin(adminStatus); // Check if the user is an admin
+                setIsAdmin(adminStatus); 
             }
 
-            setLoading(false); // Authentication check is complete
+            setLoading(false); 
         });
 
-        // Clean up subscription on unmount
+        
         return () => unsubscribe();
     }, []);
 
-    // Show loading indicator while checking authentication state
+    
     if (loading) {
         return (
             <View style={[styles.loadingContainer, { backgroundColor: currentColors.background }]}>
@@ -61,9 +61,9 @@ export default function StackScreen() {
             <StatusBar barStyle="light-content"  backgroundColor="#121212" />
             <Stack.Navigator
                 screenOptions={{
-                    cardStyle: { backgroundColor: currentColors.background }, // Apply black background to all screens
-                    headerStyle: { backgroundColor: currentColors.background }, // Black background for headers
-                    headerTintColor: currentColors.text, // Ensure text is visible
+                    cardStyle: { backgroundColor: currentColors.background }, 
+                    headerStyle: { backgroundColor: currentColors.background }, 
+                    headerTintColor: currentColors.text, 
                 }}>
                 {user ? (
                     <>

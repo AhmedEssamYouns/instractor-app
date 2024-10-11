@@ -1,6 +1,6 @@
 import { collection, addDoc, deleteDoc, updateDoc, doc, getDoc, onSnapshot, query, where, orderBy, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { db, FIREBASE_AUTH, storage } from './config'; // Adjust the path according to your file structure
+import { db, FIREBASE_AUTH, storage } from './config'; 
 import { Alert } from 'react-native';
 import checkIfUserIsAdmin, { getUserDetailsById } from './user';
 
@@ -40,10 +40,9 @@ export const pickDocument = async (setDocumentUri, setDocumentName) => {
 
         if (result.canceled) {
             console.log('Document selection canceled');
-            return; // Exit the function if canceled
+            return; 
         }
 
-        // Check if assets array is populated and handle document URI and name
         if (result.assets && result.assets.length > 0) {
             const { uri, name } = result.assets[0];
             setDocumentUri(uri);
@@ -59,19 +58,17 @@ export const pickDocument = async (setDocumentUri, setDocumentName) => {
 };
 
 
-// Add a comment to a post
 export const addComment = async (postId, userId, commentText, setCommentText) => {
     try {
         const postRef = doc(db, 'posts', postId);
         const comment = {
-            id: new Date().toISOString(), // Unique comment ID
+            id: new Date().toISOString(), 
             user: userId,
             text: commentText,
             timestamp: new Date().toISOString(),
-            likes: [], // Initialize with an empty likes array
-            replies: [] // Initialize with an empty replies array
+            likes: [], 
+            replies: [] 
         };
-        // Fetch the post document
         const postSnapshot = await getDoc(postRef);
         if (postSnapshot.exists()) {
             const postData = postSnapshot.data();
@@ -90,23 +87,20 @@ export const addComment = async (postId, userId, commentText, setCommentText) =>
 
 
 
-// Get real-time comments of a post
 
 export const getComments = async (postId, callback) => {
     try {
         const postRef = doc(db, 'posts', postId);
 
-        // Initialize onSnapshot
         const unsubscribe = onSnapshot(postRef, async (docSnapshot) => {
             if (!docSnapshot.exists()) {
-                callback([], new Set()); // Handle case where the document doesn't exist
+                callback([], new Set()); 
                 return;
             }
 
             const postData = docSnapshot.data();
             const comments = postData?.comments || [];
 
-            // Process comments and their replies to include user details
             const updatedComments = await Promise.all(
                 comments.map(async (comment) => {
                     const userDetails = await getUserDetailsById(comment.user);
@@ -144,19 +138,17 @@ export const getComments = async (postId, callback) => {
                 }
             });
 
-            // Pass updated comments and likes to the callback function
             callback(updatedComments, likes);
         });
 
-        return unsubscribe || (() => { }); // Ensure a valid unsubscribe function is returned
+        return unsubscribe || (() => { }); 
     } catch (error) {
         console.error('Error fetching comments: ', error);
-        return () => { }; // Return a no-op function in case of error
+        return () => { }; 
     }
 };
 
 
-// Like a post
 export const likePost = async (postId, userId) => {
     try {
         const postRef = doc(db, 'posts', postId);
@@ -168,7 +160,6 @@ export const likePost = async (postId, userId) => {
     }
 };
 
-// Unlike a post
 export const unlikePost = async (postId, userId) => {
     try {
         const postRef = doc(db, 'posts', postId);
@@ -180,31 +171,27 @@ export const unlikePost = async (postId, userId) => {
     }
 };
 
-// Add a new post
 export const addPost = async (post) => {
     try {
         const postsCollection = collection(db, 'posts');
 
-        // Add the post to Firestore
         const docRef = await addDoc(postsCollection, {
             ...post,
             timestamp: new Date().toISOString(),
-            comments: [], // Initialize with an empty comments array
-            likes: [] // Initialize with an empty likes array
+            comments: [], 
+            likes: [] 
         });
 
-        // Update the document with the post ID
         await updateDoc(doc(db, 'posts', docRef.id), {
             postId: docRef.id
         });
 
-        return docRef.id; // Return the document ID
+        return docRef.id; 
     } catch (error) {
         console.error('Error adding post: ', error);
     }
 };
 
-// Delete a post by ID with alert confirmation
 export const deletePost = async (id) => {
     return new Promise((resolve, reject) => {
         Alert.alert(
@@ -225,7 +212,6 @@ export const deletePost = async (id) => {
                             const postSnapshot = await getDoc(postDoc);
                             const postData = postSnapshot.data();
 
-                            // Delete files from storage if they exist
                             if (postData?.image) {
                                 const imageRef = ref(storage, postData.image);
                                 await deleteObject(imageRef);
@@ -235,10 +221,10 @@ export const deletePost = async (id) => {
                                 await deleteObject(documentRef);
                             }
 
-                            // Delete the post document
+                            
                             await deleteDoc(postDoc);
 
-                            resolve(); // If successful, resolve the promise
+                            resolve(); 
                         } catch (error) {
                             console.error('Error deleting post: ', error);
                             reject(error);
@@ -251,7 +237,6 @@ export const deletePost = async (id) => {
     });
 };
 
-// Update a post by ID
 export const updatePost = async (id, updatedPost) => {
     try {
         const postDoc = doc(db, 'posts', id);
@@ -269,7 +254,6 @@ export const getPosts = (callback) => {
             ...doc.data(),
         }));
 
-        // Sort posts by ISO 8601 timestamp (descending order)
         const sortedPosts = posts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
         callback(sortedPosts);
@@ -278,7 +262,6 @@ export const getPosts = (callback) => {
     });
 };
 
-// Upload a file and return the URL
 export const uploadFile = async (fileUri, fileName) => {
     try {
         const fileRef = ref(storage, `files/${fileName}`);
@@ -292,7 +275,6 @@ export const uploadFile = async (fileUri, fileName) => {
     }
 };
 
-// Like a comment// Like a comment
 export const likeComment = async (postId, commentId, userId) => {
     try {
         const postRef = doc(db, 'posts', postId);
@@ -304,7 +286,7 @@ export const likeComment = async (postId, commentId, userId) => {
                 if (comment.id === commentId) {
                     return {
                         ...comment,
-                        likes: [...(comment.likes || []), userId] // Add user ID to likes array
+                        likes: [...(comment.likes || []), userId] 
                     };
                 }
                 return comment;
@@ -320,7 +302,6 @@ export const likeComment = async (postId, commentId, userId) => {
 };
 
 
-// Unlike a comment// Unlike a comment
 export const unlikeComment = async (postId, commentId, userId) => {
     try {
         const postRef = doc(db, 'posts', postId);
@@ -332,7 +313,7 @@ export const unlikeComment = async (postId, commentId, userId) => {
                 if (comment.id === commentId) {
                     return {
                         ...comment,
-                        likes: (comment.likes || []).filter(id => id !== userId) // Remove user ID from likes array
+                        likes: (comment.likes || []).filter(id => id !== userId) 
                     };
                 }
                 return comment;
@@ -348,7 +329,6 @@ export const unlikeComment = async (postId, commentId, userId) => {
 };
 
 
-// Add a reply to a comment
 export const addReply = async (postId, commentId, userId, replyText, setCommentText, setActiveReply, setShowReplies) => {
     try {
         const postRef = doc(db, 'posts', postId);
@@ -361,7 +341,7 @@ export const addReply = async (postId, commentId, userId, replyText, setCommentT
                     return {
                         ...comment,
                         replies: [
-                            ...(comment.replies || []), // Keep existing replies if any
+                            ...(comment.replies || []), 
                             {
                                 user: userId,
                                 text: replyText,
@@ -388,14 +368,12 @@ export const addReply = async (postId, commentId, userId, replyText, setCommentT
 };
 
 
-// Delete a comment from a post
 
 export const deleteComment = async (postId, commentId, comments) => {
     const currentUserId = FIREBASE_AUTH.currentUser.uid;
     const comment = comments.find(c => c.id === commentId);
-    const isAdmin = await checkIfUserIsAdmin(); // Check if user is admin
+    const isAdmin = await checkIfUserIsAdmin();
 
-    // Allow deletion if the current user is either the comment's owner or an admin
     if (comment && (comment.user === currentUserId || isAdmin)) {
         Alert.alert(
             'Delete Comment',
@@ -432,13 +410,12 @@ export const deleteComment = async (postId, commentId, comments) => {
             ]
         );
     } else {
-        // Comment not found or user is not authorized
         console.error('Comment not found or user is not authorized.');
     }
 };
 export const deleteReply = async (postId, commentId, createdAt, comments) => {
     const currentUserId = FIREBASE_AUTH.currentUser.uid;
-    const isAdmin = await checkIfUserIsAdmin(); // Check if user is admin
+    const isAdmin = await checkIfUserIsAdmin(); 
 
     try {
         const postRef = doc(db, 'posts', postId);
@@ -448,7 +425,6 @@ export const deleteReply = async (postId, commentId, createdAt, comments) => {
             const postData = postSnapshot.data();
             const updatedComments = (postData.comments || []).map(comment => {
                 if (comment.id === commentId) {
-                    // Find the reply based on createdAt and userId
                     const updatedReplies = (comment.replies || []).filter(reply => {
                         return reply.createdAt !== createdAt || (reply.user !== currentUserId && !isAdmin);
                     });
@@ -512,35 +488,28 @@ export const handleLikeComment = async (postId, commentId, userLikes) => {
 export const formatCreatedAt = (createdAt) => {
     const date = new Date(createdAt);
 
-    // Extract day, month, and hour
-    const day = date.getDate(); // Day of the month
-    const month = date.getMonth() + 1; // Month (0-based index, so add 1)
-    let hours = date.getHours(); // Hours (24-hour format)
-    const minutes = date.getMinutes(); // Minutes
+    const day = date.getDate(); 
+    const month = date.getMonth() + 1; 
+    let hours = date.getHours(); 
+    const minutes = date.getMinutes(); 
 
-    // Determine AM or PM
     const period = hours >= 12 ? 'PM' : 'AM';
 
-    // Convert to 12-hour format
-    hours = hours % 12 || 12; // Convert 24-hour time to 12-hour time
+    hours = hours % 12 || 12; 
 
-    // Format to ensure two digits for minutes
     const formattedMinutes = minutes.toString().padStart(2, '0');
 
-    // Combine day, month, and time
     return `${day}/${month} ${hours}:${formattedMinutes} ${period}`;
 };
 
 export const getCommentAndReplyCounts = (comments) => {
-    // Initialize counts
     let commentCount = 0;
     let replyCount = 0;
 
-    // Iterate over each comment
     comments.forEach(comment => {
-        commentCount++; // Increment comment count
+        commentCount++; 
         if (Array.isArray(comment.replies)) {
-            replyCount += comment.replies.length; // Increment reply count based on number of replies
+            replyCount += comment.replies.length; 
         }
     });
     return (commentCount + replyCount)

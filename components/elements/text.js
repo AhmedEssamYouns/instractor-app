@@ -5,11 +5,10 @@ import { useTheme } from './theme-provider';
 import colors from '../../constants/colors';
 
 const CustomText = ({ style, children, ...props }) => {
-    const { language } = useLanguage(); // Get language from context
-    const { theme } = useTheme(); // Get theme from context
-    const currentColors = colors[theme]; // Get colors based on the theme
+    const { language } = useLanguage(); 
+    const { theme } = useTheme(); 
+    const currentColors = colors[theme]; 
 
-    // Determine font family based on language
 
 
     return (

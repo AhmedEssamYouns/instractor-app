@@ -1,4 +1,3 @@
-// PostList.js
 import React, { useState, useEffect } from 'react';
 import { FlatList, View, StyleSheet, ActivityIndicator } from 'react-native';
 import PostItem from './post_item';
@@ -8,8 +7,8 @@ import { useTheme } from '../elements/theme-provider';
 import colors from '../../constants/colors';
 
 const PostList = ({ posts, onEdit, header }) => {
-    const { language, translations } = useLanguage(); // Get translations object
-    const { theme } = useTheme(); // Get theme from context
+    const { language, translations } = useLanguage(); 
+    const { theme } = useTheme(); 
     const currentColors = colors[theme];
 
     return (

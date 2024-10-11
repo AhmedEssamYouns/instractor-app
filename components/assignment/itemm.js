@@ -26,10 +26,8 @@ const AssignmentItem = ({ assignment, studentSubmission, studentId, onSubmission
     
     const formatDate = (date) => {
     
-        // Format date with default symbols
         let formattedDate = format(date, 'M/d, h:mm a');
     
-        // Replace AM/PM based on the language
         if (language === 'ar') {
             formattedDate = formattedDate.replace('AM', 'ص').replace('PM', 'م');
         }
@@ -39,10 +37,8 @@ const AssignmentItem = ({ assignment, studentSubmission, studentId, onSubmission
     
     const formatCreatedAt = (date) => {
     
-        // Format date with default symbols
         let formattedDate = format(date, 'M/d, h:mm a');
     
-        // Replace AM/PM based on the language
         if (language === 'ar') {
             formattedDate = formattedDate.replace('AM', 'ص').replace('PM', 'م');
         }

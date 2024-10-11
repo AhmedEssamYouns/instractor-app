@@ -11,9 +11,9 @@ import checkIfUserIsAdmin from '../../firebase/user';
 import { useNavigation } from '@react-navigation/native';
 
 const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) => {
-  const { theme, setTheme } = useTheme(); // Access the current theme
-  const { translations, changeLanguage, language, setLanguage } = useLanguage(); // Access language context
-  const [isAdmin, setIsAdmin] = useState(false); // Track if the user is an admin
+  const { theme, setTheme } = useTheme();
+  const { translations, changeLanguage, language, setLanguage } = useLanguage(); 
+  const [isAdmin, setIsAdmin] = useState(false); 
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
 
@@ -22,7 +22,6 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
       const adminStatus = await checkIfUserIsAdmin();
       setIsAdmin(adminStatus);
 
-      // If the user is an admin, set the theme to light and language to English
       if (adminStatus) {
         setLanguage('en');
       }
@@ -44,7 +43,7 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
       case 'mode':
           const newTheme = currentTheme === 'light' ? 'dark' : 'light';
           try {
-            await AsyncStorage.setItem('appTheme', newTheme); // Save the theme in AsyncStorage
+            await AsyncStorage.setItem('appTheme', newTheme); 
             onChangeTheme(newTheme);
             onClose();
           } catch (error) {
@@ -117,7 +116,7 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
               <Text style={[styles.optionText, { color: colors[theme].text }]}>{text}</Text>
             </TouchableOpacity>
 
-            {/* Hide theme and language options if the user is an admin */}
+            {}
             {!isAdmin && (
               <>
 
@@ -145,7 +144,7 @@ const ThemeSwitcherModal = ({ visible, onClose, onChangeTheme, currentTheme }) =
         </Pressable>
       </Modal>
 
-      {/* Password Modal */}
+      {}
       <Modal
         animationType="slide"
         transparent={true}

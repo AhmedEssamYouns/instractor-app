@@ -7,7 +7,7 @@ import * as Sharing from 'expo-sharing';
 const SubmissionsList = ({ assignmentId }) => {
     const [submissions, setSubmissions] = useState([]);
     const [studentDetailsMap, setStudentDetailsMap] = useState({});
-    const [loading, setLoading] = useState(true); // Add loading state
+    const [loading, setLoading] = useState(true); 
 
     useEffect(() => {
         const submissionsRef = collection(db, 'submissions');
@@ -39,15 +39,15 @@ const SubmissionsList = ({ assignmentId }) => {
         });
         await Promise.all(fetchPromises);
         setStudentDetailsMap(detailsMap);
-        setLoading(false); // Stop loading after student details are fetched
+        setLoading(false); 
     };
 
     useEffect(() => {
         if (submissions.length > 0) {
-            setLoading(true); // Start loading when fetching submissions
+            setLoading(true); 
             loadStudentDetails();
         } else {
-            setLoading(false); // Stop loading if no submissions
+            setLoading(false);
         }
     }, [submissions]);
 

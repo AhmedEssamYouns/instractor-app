@@ -6,7 +6,7 @@ import colors from '../../constants/colors';
 import { useLanguage } from './language-provider';
 
 
-const screenWidth = Dimensions.get('window').width // Get the screen width
+const screenWidth = Dimensions.get('window').width 
 
 const FilterBar = ({ data, setData, originalData }) => {
     const { theme } = useTheme();
@@ -15,7 +15,7 @@ const FilterBar = ({ data, setData, originalData }) => {
     const [open, setopen] = useState(true)
     const [searchQuery, setSearchQuery] = useState('');
     const [sortOrder, setSortOrder] = useState('Newest to Oldest');
-    const [animation] = useState(new Animated.Value(0)); // Animation for expanding the search bar width
+    const [animation] = useState(new Animated.Value(0)); 
     const [showSearchInput, setShowSearchInput] = useState(false);
 
 
@@ -43,14 +43,12 @@ const FilterBar = ({ data, setData, originalData }) => {
     const filterData = () => {
         let filteredData = [...originalData];
 
-        // Filter by search query
         if (searchQuery) {
             filteredData = filteredData.filter(item =>
                 item.title.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
 
-        // Sort the data
         filteredData.sort((a, b) => {
             if (sortOrder === 'Newest to Oldest') {
                 return b.createdAt - a.createdAt;
@@ -84,11 +82,10 @@ const FilterBar = ({ data, setData, originalData }) => {
             Animated.timing(animation, {
                 toValue: newShowSearchInput ? 1 : 0,
                 duration: 400,
-                useNativeDriver: false, // Width animation
+                useNativeDriver: false, 
             }).start();
 
             if (!newShowSearchInput) {
-                // When closing the search, reset data
                 setSearchQuery('');
                 setData(originalData);
             }
@@ -97,10 +94,9 @@ const FilterBar = ({ data, setData, originalData }) => {
         });
     };
 
-    // Animate width from 0 to full width
     const animatedWidth = animation.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, screenWidth * 0.8], // Adjust this value to control how much it expands
+        outputRange: [0, screenWidth * 0.8], 
     });
 
     return (
@@ -114,9 +110,9 @@ const FilterBar = ({ data, setData, originalData }) => {
                         <FontAwesome name="sort" size={24} color={currentColors.iconFocus} />
                     </TouchableOpacity>
                 }
-                {/* Search icon and expanding search bar */}
+                {}
                 <View style={styles.searchContainer}>
-                    {/* Animated search bar */}
+                    {}
                     <Animated.View style={[styles.animatedSearch, { width: animatedWidth, backgroundColor: currentColors.cardBackground, borderColor: currentColors.text }]}>
                         <TextInput
                             style={[styles.searchInput, { backgroundColor: currentColors.cardBackground,color:currentColors.text }]}
@@ -166,13 +162,13 @@ const styles = StyleSheet.create({
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-end', // Align content to the right
+        justifyContent: 'flex-end', 
         flex: 1,
         zIndex: 2
     },
     animatedSearch: {
-        position: 'absolute', // Absolutely positioned to expand from the right
-        right: 0, // Expand from the right side
+        position: 'absolute', 
+        right: 0, 
         height: 40,
         borderRadius: 20,
         marginRight: 10,

@@ -11,7 +11,7 @@ const TeacherQuizCreation = () => {
     const [title, setTitle] = useState('');
     const [timeLimit, setTimeLimit] = useState('');
     const [questions, setQuestions] = useState([{ text: '', options: ['', '', '', ''], correctOption: 0 }]);
-    const [loading, setLoading] = useState(false); // Loading state
+    const [loading, setLoading] = useState(false);
     const { theme } = useTheme()
     const currentColors = colors[theme]
     const handleAddQuestion = () => {
@@ -63,7 +63,7 @@ const TeacherQuizCreation = () => {
     const handleSaveQuiz = async () => {
         if (!validateQuiz()) return;
 
-        setLoading(true); // Show loading spinner
+        setLoading(true); 
         try {
             const quizRef = await addDoc(collection(db, 'quizzes'), {
                 title,
@@ -80,7 +80,6 @@ const TeacherQuizCreation = () => {
                 });
             }
 
-            // Clear the form data after saving
             setTitle('');
             setTimeLimit('');
             setQuestions([{ text: '', options: ['', '', '', ''], correctOption: 0 }]);
@@ -89,7 +88,7 @@ const TeacherQuizCreation = () => {
         } catch (error) {
             console.error('Error creating quiz: ', error);
         } finally {
-            setLoading(false); // Hide loading spinner
+            setLoading(false); 
         }
     };
 
@@ -105,7 +104,7 @@ const TeacherQuizCreation = () => {
                 }}
                 placeholder="Enter question text"
                 style={styles.input}
-                multiline // Make it multiline
+                multiline
             />
             {item.options.map((option, optionIndex) => (
                 <View key={optionIndex} style={styles.optionContainer}>
@@ -145,7 +144,7 @@ const TeacherQuizCreation = () => {
                             onChangeText={setTitle}
                             placeholder="Quiz Title"
                             style={styles.input}
-                            multiline // Make the title input multiline
+                            multiline 
                         />
 
                         <TextInput
@@ -197,7 +196,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         fontSize: 16,
         color: '#333',
-        width: '100%', // Ensure consistent width for all inputs
+        width: '100%', 
     },
     questionContainer: {
         padding: 15,

@@ -16,7 +16,7 @@ import { setDoc, doc } from 'firebase/firestore';
 
 
 const getFriendlyErrorMessage = (errorCode, language = 'en') => {
-  const translation = translations[language] || translations.en; // Fallback to English if translation is not available
+  const translation = translations[language] || translations.en; 
 
   switch (errorCode) {
     case 'auth/email-already-in-use':
@@ -51,7 +51,6 @@ export const signUp = async (email, password, confirmPassword, displayName, lang
   const translation = translations[language] || translations.en;
 
   try {
-    // Basic validation with translations
     if (!email || !password || !confirmPassword || !displayName) {
       throw new Error(translation.allFieldsRequired || 'All fields are required.');
     }
@@ -76,14 +75,11 @@ export const signUp = async (email, password, confirmPassword, displayName, lang
       throw new Error(translation.passwordsDoNotMatch || 'Passwords do not match.');
     }
 
-    // Proceed with Firebase sign-up
     const userCredential = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, trimmedPassword);
     const user = userCredential.user;
 
-    // Update the user's profile with the display name
     await updateProfile(user, { displayName: trimmedDisplayName });
 
-    // Create a user document in Firestore
     await setDoc(doc(db, 'users', user.uid), {
       displayName: trimmedDisplayName,
       email: user.email,
@@ -103,7 +99,6 @@ export const signUp = async (email, password, confirmPassword, displayName, lang
 
 
 
-// Sign-In function
 export const signIn = async (email, password, language) => {
   try {
     if (!email || !password) {
@@ -116,18 +111,16 @@ export const signIn = async (email, password, language) => {
     return user;
   } catch (error) {
     if (error.code) {
-      // Map Firebase auth error codes to friendly messages
       throw new Error(getFriendlyErrorMessage(error.code, language));
     }
-    throw error; // Rethrow non-Firebase errors
+    throw error; 
   }
 };
 
 
 
-// Forgot Password function
 export const forgotPassword = async (email, language = 'en') => {
-  const translation = translations[language] || translations.en; // Fallback to English if translation is not available
+  const translation = translations[language] || translations.en; 
 
   try {
     if (!email) {
@@ -142,10 +135,9 @@ export const forgotPassword = async (email, language = 'en') => {
     await sendPasswordResetEmail(FIREBASE_AUTH, email);
   } catch (error) {
     if (error.code) {
-      // Map Firebase auth error codes to friendly messages
       throw new Error(getFriendlyErrorMessage(error.code, language));
     }
-    throw error; // Rethrow non-Firebase errors
+    throw error; 
   }
 };
 
@@ -153,9 +145,8 @@ export const forgotPassword = async (email, language = 'en') => {
 
 
 
-// Change Password function
 export const changePassword = async (currentPassword, newPassword, confirmPassword, language = 'en') => {
-  const translation = translations[language] || translations.en; // Fallback to English if translation is not available
+  const translation = translations[language] || translations.en;
 
   try {
     if (!currentPassword || !newPassword || !confirmPassword) {
@@ -175,14 +166,12 @@ export const changePassword = async (currentPassword, newPassword, confirmPasswo
     await updatePassword(FIREBASE_AUTH.currentUser, newPassword);
   } catch (error) {
     if (error.code) {
-      // Map Firebase auth error codes to friendly messages
       throw new Error(getFriendlyErrorMessage(error.code, language));
     }
-    throw error; // Rethrow non-Firebase errors
+    throw error; 
   }
 };
 
-// Sign-Out function (optional)
 export const signOut = async () => {
   try {
     await firebaseSignOut(FIREBASE_AUTH);

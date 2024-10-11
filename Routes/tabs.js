@@ -15,19 +15,19 @@ import translations from '../constants/translations';
 const Tab = createBottomTabNavigator();
 
 export default function Tabs() {
-    const { theme, setTheme } = useTheme(); // Get the theme from context and setter
-    const currentColors = colors[theme]; // Get colors based on the theme
+    const { theme, setTheme } = useTheme(); 
+    const currentColors = colors[theme]; 
     const [isModalVisible, setModalVisible] = useState(false);
-    const { language } = useLanguage(); // Access the current language
+    const { language } = useLanguage(); 
 
  
 
-    // Toggle modal visibility
+    
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
 
-    // Handle theme change
+    
     const handleThemeChange = (newTheme) => {
         setTheme(newTheme);
     };
@@ -44,13 +44,13 @@ export default function Tabs() {
                         borderRadius: 1,
                         borderWidth: 0,
                         borderTopColor: currentColors.border,
-                        backgroundColor: 'red', // Set your background color here
+                        backgroundColor: 'red', 
 
                     },
                     tabBarIcon: ({ focused, color }) => {
                         let iconName;
 
-                        // Assign different icons based on the tab's route name
+                        
                         if (route.name === 'Home') {
                             iconName = focused ? 'videocam' : 'videocam-outline';
                             return <Ionicons name={iconName} size={30} color={color} />;
@@ -92,26 +92,26 @@ export default function Tabs() {
                 <Tab.Screen
                     name="Home"
                     component={LearnScreen}
-                    options={{ title: translations[language].videos }} // Use translations based on language
+                    options={{ title: translations[language].videos }} 
                 />
                 <Tab.Screen
                     name="Plan"
                     component={PostsScreen}
-                    options={{ title: translations[language].notes }} // Use translations based on language
+                    options={{ title: translations[language].notes }} 
                 />
                 <Tab.Screen
                     name="Practic"
                     component={Practic}
-                    options={{ title: translations[language].train }} // Use translations based on language
+                    options={{ title: translations[language].train }} 
                 />
                 <Tab.Screen
                     name="Profile"
                     component={ProfileScreen}
-                    options={{ title: translations[language].profile }} // Use translations based on language
+                    options={{ title: translations[language].profile }} 
                 />
             </Tab.Navigator>
 
-            {/* Theme Switcher Modal */}
+            {}
             <ThemeSwitcherModal
                 visible={isModalVisible}
                 onClose={toggleModal}

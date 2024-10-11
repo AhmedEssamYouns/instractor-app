@@ -13,12 +13,11 @@ const Students = () => {
     const [loadingStudents, setLoadingStudents] = useState(true);
     const [loadingLectures, setLoadingLectures] = useState(true);
     const [loadingSections, setLoadingSections] = useState(true);
-    const [searchQuery, setSearchQuery] = useState(''); // Add search state
-    const { theme } = useTheme(); // Get theme from context
+    const [searchQuery, setSearchQuery] = useState(''); 
+    const { theme } = useTheme(); 
     const currentColors = colors[theme];
 
     useEffect(() => {
-        // Fetch all student documents
         const studentsRef = collection(db, 'users');
         const unsubscribeStudents = onSnapshot(studentsRef, (snapshot) => {
             const studentList = snapshot.docs.map(doc => ({
@@ -26,10 +25,9 @@ const Students = () => {
                 ...doc.data(),
             }));
             setStudents(studentList);
-            setLoadingStudents(false); // Mark students loading complete
+            setLoadingStudents(false);
         });
 
-        // Fetch all lecture documents
         const lecturesRef = collection(db, 'lectures');
         const unsubscribeLectures = onSnapshot(lecturesRef, (snapshot) => {
             const lectureList = snapshot.docs.map(doc => ({
@@ -37,10 +35,9 @@ const Students = () => {
                 ...doc.data(),
             }));
             setLectures(lectureList);
-            setLoadingLectures(false); // Mark lectures loading complete
+            setLoadingLectures(false);
         });
 
-        // Fetch all section documents
         const sectionsRef = collection(db, 'sections');
         const unsubscribeSections = onSnapshot(sectionsRef, (snapshot) => {
             const sectionList = snapshot.docs.map(doc => ({
@@ -48,7 +45,7 @@ const Students = () => {
                 ...doc.data(),
             }));
             setSections(sectionList);
-            setLoadingSections(false); // Mark sections loading complete
+            setLoadingSections(false); 
         });
 
         return () => {
@@ -63,7 +60,6 @@ const Students = () => {
             <CustomText style={styles.studentName}>{item.displayName}</CustomText>
             <CustomText>{item.email}</CustomText>
 
-            {/* Viewed Lectures */}
             <CustomText style={{ width: 300 }}>Viewed Lectures:
                 {item.viewedLectures && item.viewedLectures.map((lectureId) => {
                     const lecture = lectures.find(lec => lec.id === lectureId);
@@ -71,7 +67,6 @@ const Students = () => {
                 })}
             </CustomText>
 
-            {/* Viewed Sections */}
             <CustomText style={{ width: 300 }}>Viewed Sections:
                 {item.viewedSections && item.viewedSections.map((sectionId) => {
                     const section = sections.find(sec => sec.id === sectionId);
@@ -81,12 +76,10 @@ const Students = () => {
         </View>
     );
 
-    // Filter students by search query (email)
     const filteredStudents = students.filter(student =>
         student.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Check if any data is still loading
     const isLoading = loadingStudents || loadingLectures || loadingSections;
 
     if (isLoading) {
@@ -107,7 +100,7 @@ const Students = () => {
                         placeholder="Search by email"
                         placeholderTextColor={currentColors.text2}
                         value={searchQuery}
-                        onChangeText={setSearchQuery} // Update search query on text input
+                        onChangeText={setSearchQuery} 
                     />
                 }
                 data={filteredStudents}

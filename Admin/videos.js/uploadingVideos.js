@@ -14,7 +14,7 @@ const UploadLectureVideo = () => {
     const [posterUri, setPosterUri] = useState(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [summary, setSummary] = useState(''); // State for summary
+    const [summary, setSummary] = useState(''); 
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const { theme } = useTheme()
@@ -96,13 +96,11 @@ const UploadLectureVideo = () => {
                 posterDownloadURL = await getDownloadURL(posterRef);
             }
 
-            // Save the metadata to Firestore, including the summary
-            // Create a new document and get its ID
             const docRef = await addDoc(collection(db, 'lectures'), {
                 title,
                 description,
                 vd:true,
-                summary, // Save summary to Firestore
+                summary, 
                 poster: posterDownloadURL,
                 videoUrl: downloadURL,
                 createdAt: new Date(),
@@ -114,7 +112,7 @@ const UploadLectureVideo = () => {
             setPosterUri(null);
             setTitle('');
             setDescription('');
-            setSummary(''); // Clear the summary
+            setSummary(''); 
             setProgress(0);
         } catch (error) {
             console.error('Upload Error:', error);
@@ -141,7 +139,7 @@ const UploadLectureVideo = () => {
             />
             <TextInput
                 style={styles.input}
-                placeholder="Video Summary" // Summary input
+                placeholder="Video Summary" 
                 value={summary}
                 multiline
                 onChangeText={setSummary}

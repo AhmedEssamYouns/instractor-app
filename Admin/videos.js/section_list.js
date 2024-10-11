@@ -12,7 +12,7 @@ import colors from '../../constants/colors';
 const SectionList = () => {
     const [sections, setSections] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [isHeaderVisible, setHeaderVisible] = useState(false); // State to toggle header visibility
+    const [isHeaderVisible, setHeaderVisible] = useState(false); 
     const navigation = useNavigation();
     const { theme } = useTheme()
     const currentColors = colors[theme]
@@ -29,7 +29,6 @@ const SectionList = () => {
         return () => unsubscribe();
     }, []);
 
-    // Function to handle deleting a section
     const handleDelete = async (id) => {
         Alert.alert(
             'Delete Section',
@@ -55,7 +54,7 @@ const SectionList = () => {
 
     const renderItem = ({ item }) => (
         <TouchableOpacity style={[styles.card,{backgroundColor:currentColors.cardBackground}]}
-        onPress={() => navigation.navigate('SectionDetail', { sectionId: item.id })} // Adjust to your detail screen
+        onPress={() => navigation.navigate('SectionDetail', { sectionId: item.id })}
         >
             <View
                 style={styles.cardContent}
@@ -63,7 +62,6 @@ const SectionList = () => {
                 <MaterialIcons name="video-library" size={24} color={currentColors.text2} style={styles.icon} />
                 <CustomText style={styles.title}>{item.title}</CustomText>
             </View>
-            {/* Delete button */}
             <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteButton}>
                 <MaterialIcons name="delete" size={24} color="red" />
             </TouchableOpacity>
@@ -71,12 +69,11 @@ const SectionList = () => {
     );
 
     const toggleHeader = () => {
-        setHeaderVisible(!isHeaderVisible); // Toggle header visibility
+        setHeaderVisible(!isHeaderVisible);
     };
 
     return (
         <View style={[styles.container,{backgroundColor:currentColors.background}]}>
-            {/* Button to show/hide Upload Section */}
             <TouchableOpacity onPress={toggleHeader} style={styles.toggleButton}>
                 <CustomText style={styles.toggleButtonText}>
                     {isHeaderVisible ? 'Hide Upload Section' : 'Upload Section'}

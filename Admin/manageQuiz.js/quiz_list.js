@@ -11,7 +11,7 @@ import CustomText from '../../components/elements/text';
 const QuizAdminList = () => {
     const [quizzes, setQuizzes] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showForm, setShowForm] = useState(false);  // State to control form visibility
+    const [showForm, setShowForm] = useState(false); 
     const { theme } = useTheme()
     const currentColors = colors[theme]
     useEffect(() => {
@@ -66,10 +66,10 @@ const QuizAdminList = () => {
 
     return (
         <View style={[styles.container,{backgroundColor:currentColors.background}]}>
-            {/* Button to toggle form visibility */}
+            {}
 
 
-            {/* Show or hide the quiz creation form based on the showForm state */}
+            {}
 
             {loading ? (
                 <ActivityIndicator size="large" color="#007BFF" />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import ArticleScreen from './quiz'; // Import ArticleScreen
+import ArticleScreen from './quiz'; 
 import StudentAssignmentsPage2 from '../components/assignment/list';
 import { useTheme } from '../components/elements/theme-provider';
 import colors from '../constants/colors';
@@ -9,20 +9,20 @@ import { useLanguage } from '../components/elements/language-provider';
 
 const initialLayout = { width: Dimensions.get('window').width };
 
-// Articles tab content
+
 const ArticlesRoute = () => (
     <ArticleScreen />
 );
 
-// Assignments tab content
+
 const AssignmentsRoute = () => (
     <StudentAssignmentsPage2 />
 );
 
 const Practic = () => {
-    const { theme } = useTheme(); // Get the theme from context
-    const currentColors = colors[theme]; // Get colors based on the theme
-    const { language, translations } = useLanguage(); // Get translations object
+    const { theme } = useTheme(); 
+    const currentColors = colors[theme]; 
+    const { language, translations } = useLanguage(); 
 
     const [index, setIndex] = useState(0);
     const [routes, setRoutes] = useState([
@@ -31,7 +31,7 @@ const Practic = () => {
     ]);
 
     useEffect(() => {
-        // Update routes when translations change
+        
         setRoutes([
             { key: 'assignments', title: translations.assignments },
             { key: 'quizzes', title: translations.quizzes },
@@ -43,16 +43,16 @@ const Practic = () => {
         assignments: AssignmentsRoute,
     });
 
-    // Custom TabBar styling
-// Custom TabBar styling
+    
+
 const renderTabBar = (props) => (
     <TabBar
         {...props}
         indicatorStyle={[styles.indicator, { backgroundColor: currentColors.indicator,borderBottomWidth: 1,borderBottomColor:currentColors.border  }]}
         style={[styles.tabBar, { backgroundColor: currentColors.background }]}
-        labelStyle={[styles.label, { color: currentColors.text, fontFamily: language === 'ar' ? 'ar' : 'bold', textTransform: 'none' }]} // Add textTransform: 'none'
-        activeColor={currentColors.iconFocus} // Active tab text color
-        inactiveColor={currentColors.iconColor} // Inactive tab text color
+        labelStyle={[styles.label, { color: currentColors.text, fontFamily: language === 'ar' ? 'ar' : 'bold', textTransform: 'none' }]} 
+        activeColor={currentColors.iconFocus} 
+        inactiveColor={currentColors.iconColor} 
     />
 );
 
@@ -65,7 +65,7 @@ const renderTabBar = (props) => (
                 swipeEnabled={language === 'ar' ? false : true}
                 onIndexChange={setIndex}
                 initialLayout={initialLayout}
-                renderTabBar={renderTabBar} // Use custom TabBar
+                renderTabBar={renderTabBar} 
                 style={[styles.container, { backgroundColor: currentColors.background, borderBottomColor: currentColors.borderColor }]}
             />
         </View>
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     indicator: {
-        height: 3, // Thickness of the indicator
+        height: 3, 
     },
 });
 

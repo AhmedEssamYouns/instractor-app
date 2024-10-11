@@ -12,20 +12,19 @@ const PostsScreen = () => {
   const [posts, setPosts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentPost, setCurrentPost] = useState(null);
-  const [loading, setLoading] = useState(true); // New state for loading posts
-  const [isAdmin, setIsAdmin] = useState(false); // State to check if the user is an admin
-  const { theme } = useTheme(); // Get theme from context
+  const [loading, setLoading] = useState(true); 
+  const [isAdmin, setIsAdmin] = useState(false); 
+  const { theme } = useTheme();
   const currentColors = colors[theme];
 
-  // Fetch posts and admin status when the component mounts
   useEffect(() => {
     const fetchPostsAndAdminStatus = async () => {
       setLoading(true);
       const unsubscribe = getPosts((fetchedPosts) => {
         setPosts(fetchedPosts);
-        setLoading(false); // Stop loading once posts are fetched
+        setLoading(false); 
       });
-      const adminStatus = await checkIfUserIsAdmin(); // Check if user is admin
+      const adminStatus = await checkIfUserIsAdmin();
       setIsAdmin(adminStatus);
 
       return () => unsubscribe();
@@ -49,12 +48,12 @@ const PostsScreen = () => {
             post={currentPost}
             onSave={() => {
               setCurrentPost(null);
-              setIsEditing(false); // Close the form when saving
+              setIsEditing(false);
             }}
             onClose={() => {
               setCurrentPost(null);
               setIsEditing(false);
-            }} // Close the form without saving
+            }}
           />
         ) : (
           isAdmin && (

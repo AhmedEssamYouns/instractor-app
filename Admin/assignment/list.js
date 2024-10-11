@@ -10,7 +10,7 @@ import colors from '../../constants/colors';
 
 const AssignmentsList = ({ onEdit }) => {
     const [assignments, setAssignments] = useState([]);
-    const [loading, setLoading] = useState(true); // Add loading state
+    const [loading, setLoading] = useState(true);
     const { theme } = useTheme()
     const currentColors = colors[theme]
     useEffect(() => {
@@ -19,10 +19,10 @@ const AssignmentsList = ({ onEdit }) => {
             const assignmentList = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
-                showSubmissions: false, // Initialize submission visibility
+                showSubmissions: false, 
             }));
             setAssignments(assignmentList);
-            setLoading(false); // Set loading to false when data is fetched
+            setLoading(false); 
         });
 
         return () => unsubscribe();
@@ -76,7 +76,6 @@ const AssignmentsList = ({ onEdit }) => {
     };
 
     if (loading) {
-        // Show loading spinner in the center of the screen
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#000" />

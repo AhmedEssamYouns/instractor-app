@@ -42,7 +42,7 @@ const StudentQuizAttempt = ({ route }) => {
                 setAnswers(new Array(questionsData.length).fill(null));
 
                 if (quizData.timeLimit) {
-                    setTimeLeft(quizData.timeLimit * 60); // Set time in seconds
+                    setTimeLeft(quizData.timeLimit * 60); 
                 }
             } catch (error) {
                 console.error('Error fetching quiz: ', error);
@@ -57,7 +57,7 @@ const StudentQuizAttempt = ({ route }) => {
             if (timeLeft > 0 && !isSubmitting) {
                 setTimeLeft(prevTime => prevTime - 1);
 
-                // Show half-time alert
+                
                 if (!halfTimeAlertShown && timeLeft <= quiz.timeLimit * 60 / 2) {
                     setHalfTimeAlertShown(true);
                     Alert.alert(
@@ -66,7 +66,7 @@ const StudentQuizAttempt = ({ route }) => {
                     );
                 }
 
-                // Show 20% time left alert
+                
                 if (!twentyPercentTimeAlertShown && timeLeft <= quiz.timeLimit * 60 * 0.2) {
                     setTwentyPercentTimeAlertShown(true);
                     Alert.alert(
@@ -75,14 +75,14 @@ const StudentQuizAttempt = ({ route }) => {
                     );
                 }
             } else if (timeLeft === 0) {
-                handleSubmit(true); // Submit quiz when time is up
+                handleSubmit(true); 
             }
         }, 1000);
         return () => clearInterval(timer);
     }, [timeLeft, isSubmitting, halfTimeAlertShown, twentyPercentTimeAlertShown, language]);
 
 
-    // Handle back button press
+    
     useEffect(() => {
         const handleBackPress = () => {
             if (fullmark !== null) {
@@ -230,7 +230,7 @@ const StudentQuizAttempt = ({ route }) => {
                     bottom: 60,
                     padding: 10,
                     borderRadius: 5,
-                    marginHorizontal: 5, // Add some space between buttons
+                    marginHorizontal: 5, 
                 }} onPress={handleNextQuestion}>
                     <CustomText style={{ color: 'white' }}>{translations.next}</CustomText>
                 </TouchableOpacity>
@@ -279,13 +279,13 @@ const styles = StyleSheet.create({
     },
     navigationContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between', // Space between previous button and the button container
-        alignItems: 'center', // Center vertically
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
         padding: 10,
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'flex-end', // Align next and submit buttons to the right
+        justifyContent: 'flex-end', 
         alignItems: 'center',
     },
     button: {

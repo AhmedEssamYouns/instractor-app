@@ -7,7 +7,7 @@ import translations from '../../constants/translations';
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState('en'); // Default to English
+  const [language, setLanguage] = useState('en'); 
 
   useEffect(() => {
     const loadLanguage = async () => {
@@ -16,7 +16,6 @@ export const LanguageProvider = ({ children }) => {
 
       if (savedLanguage) {
         setLanguage(savedLanguage);
-        // Apply RTL setting based on saved preference
         I18nManager.forceRTL(isRTL === 'true');
       }
     };
@@ -31,7 +30,6 @@ export const LanguageProvider = ({ children }) => {
     I18nManager.forceRTL(isRTL);
     await AsyncStorage.setItem('isRTL', isRTL.toString());
 
-    // Reload app to apply RTL changes
     await Updates.reloadAsync();
   };
 
