@@ -2,9 +2,6 @@
 
 Built with React Native using Expo for the frontend and Firebase Firestore for the backend, this instructor application provides a robust platform for educational interaction. Key features include light and dark mode themes and multilingual support in English and Arabic, ensuring a personalized and accessible user experience.
 
-## 📹 Demo
-![Demo GIF](https://drive.google.com/file/d/1dqtrs20oEbCWcG0Q2yM3U6IsZLwB0Irk/preview)
-
 
 ## 🎓 Student View
 Students can:
@@ -45,6 +42,7 @@ The owner has all admin features plus:
 
 
 ## 📹 Demo
-![Demo GIF](https://drive.google.com/file/d/1dqtrs20oEbCWcG0Q2yM3U6IsZLwB0Irk/preview)
 
-Watch the application in action: [Demo Video on LinkedIn](https://www.linkedin.com/posts/ahmed-essam-195693324_reactnative-expo-firebase-activity-7249909723871748096-egnk?utm_source=share&utm_medium=member_desktop)
+Watch the application in action: 
+- [Demo Video on LinkedIn](https://www.linkedin.com/posts/ahmed-essam-195693324_reactnative-expo-firebase-activity-7249909723871748096-egnk?utm_source=share&utm_medium=member_desktop)
+- [Demo Video on Google Drive](https://drive.google.com/file/d/1dqtrs20oEbCWcG0Q2yM3U6IsZLwB0Irk/preview)
